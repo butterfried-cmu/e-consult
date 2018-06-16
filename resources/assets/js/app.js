@@ -1,22 +1,70 @@
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+import App from './App/App.vue';
+import BootstrapVue from 'bootstrap-vue'
 
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
+import Index from './components/index/Index.vue';
+// import Home from './components/Home.vue';
+import Register from './components/register/Register.vue';
+import Login from './components/login/Login.vue';
+import ExampleComponent from './components/ExampleComponent.vue';
 
-require('./bootstrap');
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-window.Vue = require('vue');
+Vue.use(VueRouter);
+Vue.use(BootstrapVue);
+Vue.use(VueAxios, axios);
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+axios.defaults.baseURL = 'http://localhost:8000/api';
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
-
-const app = new Vue({
-    el: '#app'
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/',
+      name: 'index',
+      component: Index,
+      meta: {
+        auth: false
+      }
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login,
+      meta: {
+        auth: false
+      }
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register,
+      meta: {
+        auth: false
+      }
+    },
+    {
+      path: '/ex',
+      name: 'example',
+      component: ExampleComponent,
+      meta: {
+        auth: true
+      }
+    }
+  ]
 });
+
+Vue.router = router
+
+Vue.use(require('@websanova/vue-auth'), {
+  auth: require('@websanova/vue-auth/drivers/auth/bearer.js'),
+  http: require('@websanova/vue-auth/drivers/http/axios.1.x.js'),
+  router: require('@websanova/vue-auth/drivers/router/vue-router.2.x.js'),
+})
+
+App.router = Vue.router
+
+new Vue(App).$mount('#app');
