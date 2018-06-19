@@ -3,7 +3,7 @@ import VueRouter from 'vue-router';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import App from './App/App.vue';
-import BootstrapVue from 'bootstrap-vue';
+// import BootstrapVue from 'bootstrap-vue';
 import 'es6-promise/auto';
 import Vuex from 'vuex';
 
@@ -14,11 +14,19 @@ import Login from './components/login/Login.vue';
 import ExampleComponent from './components/ExampleComponent.vue';
 import { store } from './vuex/store'
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+// import 'bootstrap/dist/css/bootstrap.css'
+// import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+import Vuikit from 'vuikit'
+import VuikitIcons from '@vuikit/icons'
+
+import '@vuikit/theme'
+
+Vue.use(Vuikit)
+Vue.use(VuikitIcons)
 
 Vue.use(VueRouter);
-Vue.use(BootstrapVue);
+// Vue.use(BootstrapVue);
 Vue.use(VueAxios, axios);
 Vue.use(Vuex);
 
