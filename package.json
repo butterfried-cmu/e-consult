@@ -22,10 +22,13 @@
         "vue": "^2.5.7"
     },
     "dependencies": {
+        "@vuikit/icons": "^0.8.1",
+        "@vuikit/theme": "^0.8.0",
         "@websanova/vue-auth": "^2.21.11-beta",
         "bootstrap-vue": "^2.0.0-rc.11",
         "vue-axios": "^2.1.1",
         "vue-router": "^3.0.1",
-        "vuex": "^3.0.1"
+        "vuex": "^3.0.1",
+        "vuikit": "^0.8.5"
     }
 }
