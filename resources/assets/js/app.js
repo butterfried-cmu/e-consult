@@ -3,13 +3,16 @@ import VueRouter from 'vue-router';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import App from './App/App.vue';
-// import BootstrapVue from 'bootstrap-vue'
+// import BootstrapVue from 'bootstrap-vue';
+import 'es6-promise/auto';
+import Vuex from 'vuex';
 
 import Index from './components/index/Index.vue';
 // import Home from './components/Home.vue';
 import Register from './components/register/Register.vue';
 import Login from './components/login/Login.vue';
 import ExampleComponent from './components/ExampleComponent.vue';
+import { store } from './vuex/store'
 
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -25,6 +28,7 @@ Vue.use(VuikitIcons)
 Vue.use(VueRouter);
 // Vue.use(BootstrapVue);
 Vue.use(VueAxios, axios);
+Vue.use(Vuex);
 
 axios.defaults.baseURL = 'http://localhost:8000/api';
 
@@ -75,4 +79,8 @@ Vue.use(require('@websanova/vue-auth'), {
 
 App.router = Vue.router
 
-new Vue(App).$mount('#app');
+new Vue({
+  el: '#app',
+  store: store,
+  render: h => h(App)
+});
