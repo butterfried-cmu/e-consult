@@ -16,6 +16,7 @@ import { store } from './vuex/store'
 import Profile from './components/profile/Profile.vue';
 import Editprofile from './components/editprofile/Editprofile.vue';
 import Forgetpassword from './components/forgetpassword/Forgetpassword.vue'
+import Resetpassword from './components/forgetpassword/Resetpassword.vue';
 
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -89,6 +90,14 @@ const router = new VueRouter({
       path: '/forgetpassword',
       name: 'forgetpassword',
       component: Forgetpassword,
+      meta: {
+        auth: false
+      }
+    },
+    {
+      path: '/resetpassword',
+      name: 'resetpassword',
+      component: Resetpassword,
       meta: {
         auth: false
       }
