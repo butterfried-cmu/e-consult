@@ -8,7 +8,7 @@ use JWTAuth;
 
 class UserController extends Controller
 {
-    public function signup(Request $request)
+    public function register(Request $request)
     {
       $this->validate($request, [
         'name' => 'required|unique:users',
