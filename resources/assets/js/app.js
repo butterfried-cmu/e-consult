@@ -13,6 +13,7 @@ import Register from './components/register/Register.vue';
 import Login from './components/login/Login.vue';
 import ExampleComponent from './components/ExampleComponent.vue';
 import { store } from './vuex/store'
+import Profile from './components/profile/Profile.vue';
 
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -64,6 +65,14 @@ const router = new VueRouter({
       component: ExampleComponent,
       meta: {
         auth: true
+      }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: Profile,
+      meta: {
+        auth: false
       }
     }
   ]
