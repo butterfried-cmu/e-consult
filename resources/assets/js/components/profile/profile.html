@@ -2,32 +2,32 @@
   <vk-grid class="uk-child-width-expand@s" uk-grid>
     <!-- left column -->
     <div>
-      <vk-grid style="margin-left: 10%;margin-top: 10%">
+      <vk-grid class="uk-padding">
         <div>
           <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->
           <img src="../images/user.png" width="300" height="400" alt="">
         </div>
-        <a class="uk-align-center" href=""><h5><u>Change Password</u></h5></a>
+        <a class="uk-align-center" href="../#/editprofile"><h5><u>Edit Profile</u></h5></a>
       </vk-grid>
       
     </div>
 
     <!-- center column -->
-    <div class="uk-width-1-2 uk-align-left@s">
+    <div class="uk-width-1-2@s uk-align-left@s">
       <br/> <br/>
         <div>
             <ul style="list-style-type: none;">
                 <li><h1>Miss Surawan Wanlai</h1></li>
                 <h4>
-                  <li>1504100019822</li>
-                  <li>Nurse</li>
-                  <li>Gender Female</li>
-                  <li>Date of Birth June 5, 1992</li>
+                  <li id="citizen_id">1504100019822</li>
+                  <li id="role">Nurse</li>
+                  <li id="gender">Gender Female</li>
+                  <li id="date_of_birth">Date of Birth June 5, 1992</li>
                 
                 <hr class="uk-description-list-divider">
                   <li><h4>WORK</h4></li>
-                  <li>Minikokha Hospital</li>
-                  <li>234 Moo99 Bann Kokha 
+                  <li id="unit">Minikokha Hospital</li>
+                  <li id="unit_address">234 Moo99 Bann Kokha 
                     Kokha District Lampang
                     69999</li>
             </h4>
@@ -46,10 +46,9 @@
             <div>
                 <ul style="list-style-type: none;">
                     <li><h4>&nbsp;</h4></li>
-                    <h4><li>0853371111</li>
-                      <li>surawan_n@gmail.com</li>
-                      <li>234 Moo99 Suthep</li>
-                    <li>Mueang District Chiangmai 50200</li></h4>
+                    <h4><li id="contact_number">0853371111</li>
+                      <li id="email">surawan_n@gmail.com</li>
+                      <li id="address">234 Moo99 Suthep <br/>Mueang District Chiangmai 50200</li></h4>
                 </ul>
             </div>
         </vk-grid>
@@ -60,7 +59,7 @@
         <vk-grid class="uk-padding-large">
           <div>
             <ul style="list-style-type: none;">
-              <h5><li style="color:limegreen">STATUS : Present</li></h5>
+              <h5><li style="color:limegreen" id="status">STATUS : Present</li></h5>
             </ul>
           </div>
         </vk-grid>
