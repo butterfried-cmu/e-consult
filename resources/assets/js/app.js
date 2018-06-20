@@ -17,13 +17,13 @@ import { store } from './vuex/store'
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import Vuikit from 'vuikit'
-import VuikitIcons from '@vuikit/icons'
+import Vuikit from 'vuikit';
+import VuikitIcons from '@vuikit/icons';
 
-import '@vuikit/theme'
+import '@vuikit/theme';
 
-Vue.use(Vuikit)
-Vue.use(VuikitIcons)
+Vue.use(Vuikit);
+Vue.use(VuikitIcons);
 
 Vue.use(VueRouter);
 // Vue.use(BootstrapVue);
