@@ -4,7 +4,7 @@
 // import loginService from './adminService.js';
 export default {
 
-  template:require('./register.html'),
+  template:require('./user-add.html'),
 
   data(){
     return {

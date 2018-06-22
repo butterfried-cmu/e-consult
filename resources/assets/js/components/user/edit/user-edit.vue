@@ -3,7 +3,7 @@
 // import {APIENDPOINT} from  '../../http-common.js';
 // import loginService from './adminService.js';
 export default {
-  template:require('./editprofile.html'),
+  template:require('./user-edit.html'),
   data() {
     return {
     }
