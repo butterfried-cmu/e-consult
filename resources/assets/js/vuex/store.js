@@ -37,7 +37,6 @@ export const store = new Vuex.Store({
                         axios.get("/auth/user?token=" + localStorage.getItem('token'))
                             .then((response) => {
                                     // console.log(response)
-                                    localStorage.setItem("token", response.data.token);
                                     this.dispatch('setUser', response.data.user);
                                     this.dispatch('updateIsLoggedIn');
                                     console.log("Token verified");
