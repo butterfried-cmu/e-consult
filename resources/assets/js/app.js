@@ -38,19 +38,20 @@ axios.defaults.baseURL = 'http://localhost:8000/api';
 
 const ifNotLoggedIn = (to, from, next) => {
     if (!store.getters['isLoggedIn']) {
-        next()
+        next();
         return
     }
     next('/')
-}
+};
 
 const ifLoggedIn = (to, from, next) => {
     if (store.getters['isLoggedIn']) {
-        next()
+        next();
         return
     }
     next('/login')
-}
+};
+
 const router = new VueRouter({
     routes: [
         {
@@ -103,15 +104,15 @@ const router = new VueRouter({
     ]
 });
 
-Vue.router = router
+Vue.router = router;
 
 Vue.use(require('@websanova/vue-auth'), {
     auth: require('@websanova/vue-auth/drivers/auth/bearer.js'),
     http: require('@websanova/vue-auth/drivers/http/axios.1.x.js'),
     router: require('@websanova/vue-auth/drivers/router/vue-router.2.x.js'),
-})
+});
 
-App.router = Vue.router
+App.router = Vue.router;
 
 new Vue({
     el: '#app',

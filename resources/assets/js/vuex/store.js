@@ -19,6 +19,7 @@ export const store = new Vuex.Store({
         isLoggedIn(state) {
             return state.isLoggedIn;
         },
+
         currentUser(state) {
             return state.currentUser;
         }
@@ -28,27 +29,6 @@ export const store = new Vuex.Store({
             state.isLoggedIn = false;
             state.currentUser = {};
             console.log("initialiseStore");
-            if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
-                console.log("No Token in localStorage");
-            } else {
-                console.log("Token in localStorage");
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        axios.get("/auth/user?token=" + localStorage.getItem('token'))
-                            .then((response) => {
-                                    // console.log(response)
-                                    localStorage.setItem("token", response.data.token);
-                                    this.dispatch('setUser', response.data.user);
-                                    this.dispatch('updateIsLoggedIn');
-                                    console.log("Token verified");
-                                }
-                            ).catch(
-                            (error) => console.log(error)
-                        );
-                        resolve();
-                    }, 1000);
-                });
-            }
         },
         setUser(state, user) {
             state.currentUser = user;
@@ -58,6 +38,41 @@ export const store = new Vuex.Store({
         }
     },
     actions: {
+        init({commit}) {
+            commit('initialiseStore');
+            this.dispatch('getUser');
+        },
+
+        getUser() {
+            return new Promise((resolve, reject) => {
+                if (!localStorage.getItem('token') || localStorage.getItem('token') === "" ||
+                    localStorage.getItem('token') === "undefined") {
+                    console.log("No Token in localStorage");
+                    reject(error);
+                } else {
+                    console.log("Token in localStorage");
+                    setTimeout(() => {
+                        axios.get("/auth/user?token=" + localStorage.getItem('token'))
+                            .then(
+                                response => {
+                                    // console.log(response)
+                                    this.dispatch('setUser', response.data.user);
+                                    this.dispatch('updateIsLoggedIn');
+                                    console.log("Token verified");
+                                    resolve(response);
+                                }
+                            ).catch(
+                            error => {
+                                console.log(error);
+                                reject(error);
+                            }
+                        );
+                    }, 1000);
+                    reject(error);
+                }
+            })
+        },
+
         updateIsLoggedIn({commit}) {
             commit('updateIsLoggedIn')
         },
@@ -77,7 +92,8 @@ export const store = new Vuex.Store({
                         {
                             headers: {'Content-Type': 'application/json'}
                         }
-                    ).then(response => {
+                    ).then(
+                        response => {
                             // console.log(response)
                             localStorage.setItem("token", response.data.token);
                             this.dispatch('setUser', response.data.user);
@@ -85,7 +101,8 @@ export const store = new Vuex.Store({
                             console.log(response);
                             resolve(response);
                         }
-                    ).catch(error => {
+                    ).catch(
+                        error => {
                             console.log(error);
                             reject(error);
                         }
@@ -98,10 +115,6 @@ export const store = new Vuex.Store({
             localStorage.removeItem("token");
             commit('updateIsLoggedIn');
         },
-
-        init({commit}) {
-            commit('initialiseStore');
-        }
     }
 });
 
