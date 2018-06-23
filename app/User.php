@@ -9,8 +9,6 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    public $timestamps = false;
-
     protected $table = 'users';
 
     /**
@@ -23,7 +21,7 @@ class User extends Authenticatable
         'password',
         'email',
         'role',
-        'title_name',
+        'name_title',
         'first_name',
         'last_name',
         'gender',
@@ -31,6 +29,7 @@ class User extends Authenticatable
         'date_of_birth',
         'contact_number',
         'address',
+        'workplace'
     ];
 
     /**

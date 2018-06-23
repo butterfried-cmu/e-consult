@@ -33,3 +33,6 @@ Route::get('/auth/user', [
 Route::post('/user/add', [
     'uses' => 'UserController@add'
 ]);
+Route::get('/user/form', [
+    'uses' => 'UserController@getFormData'
+]);

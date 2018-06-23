@@ -19,7 +19,7 @@ class CreateUserTable extends Migration
             $table->string('password');
             $table->string('email')->unique();
             $table->integer('role');
-            $table->integer('title_name');
+            $table->integer('name_title');
             $table->string('first_name');
             $table->string('last_name');
             $table->integer('gender');
@@ -27,6 +27,8 @@ class CreateUserTable extends Migration
             $table->date('date_of_birth');
             $table->string('contact_number');
             $table->string('address');
+            $table->string('workplace');
+            $table->timestamps();
         });
     }
 

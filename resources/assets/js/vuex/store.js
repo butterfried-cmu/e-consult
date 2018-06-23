@@ -28,6 +28,24 @@ export const store = new Vuex.Store({
             state.isLoggedIn = false;
             state.currentUser = {};
             console.log("initialiseStore");
+        },
+        setUser(state, user) {
+            state.currentUser = user;
+        },
+        updateIsLoggedIn(state) {
+            state.isLoggedIn = !!localStorage.getItem('token');
+        },
+        clearUser(state) {
+            state.currentUser = {};
+        }
+
+    },
+    actions: {
+        init({commit}) {
+            commit('initialiseStore');
+        },
+
+        getCurrentUser({commit}) {
             if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
                 console.log("No Token in localStorage");
             } else {
@@ -49,14 +67,7 @@ export const store = new Vuex.Store({
                 });
             }
         },
-        setUser(state, user) {
-            state.currentUser = user;
-        },
-        updateIsLoggedIn(state) {
-            state.isLoggedIn = !!localStorage.getItem('token');
-        }
-    },
-    actions: {
+
         updateIsLoggedIn({commit}) {
             commit('updateIsLoggedIn')
         },
@@ -96,11 +107,29 @@ export const store = new Vuex.Store({
         logout({commit}) {
             localStorage.removeItem("token");
             commit('updateIsLoggedIn');
+            commit('clearUser');
         },
 
-        init({commit}) {
-            commit('initialiseStore');
-        }
+        addUser({commit}, user) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.post("/user/add", user,
+                        {
+                            headers: {'Content-Type': 'application/json'}
+                        }
+                    ).then(response => {
+                            // console.log(response)
+                            console.log(response);
+                            resolve(response);
+                        }
+                    ).catch(error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000)
+            });
+        },
     }
 });
 

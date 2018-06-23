@@ -1,12 +1,14 @@
 <div id="navbar">
     <vk-navbar v-if="isLoggedIn">
         <vk-navbar-nav>
-            <vk-navbar-nav-item icon="home" title="MED E-CONSULTs" href="/#/">
-            </vk-navbar-nav-item>
+            <vk-navbar-nav-item icon="home" title="MED E-CONSULTs" href="/#/"></vk-navbar-nav-item>
+            <vk-navbar-item>
+                <router-link to="add" v-if="isRole('ADMIN')">ADD USER</router-link>
+            </vk-navbar-item>
         </vk-navbar-nav>
         <vk-navbar-nav slot="right">
             <vk-navbar-item>
-                <router-link to="profile">{{ user.first_name }} {{user.last_name}}</router-link>
+                <router-link to="profile" >{{ user.first_name.toUpperCase() }} {{user.last_name.toUpperCase()}}</router-link>
             </vk-navbar-item>
             <vk-navbar-nav-item title="logout" v-on:click="logout">
             </vk-navbar-nav-item>

@@ -12,11 +12,12 @@
         methods: {
             login() {
                 var payload = {'username': this.username, 'password': this.password};
+                console.log('LOGIN');
                 this.$store.dispatch('login', payload)
                     .then(response => {
                             this.$router.push("/")
                         }, error => {
-                            console.log(error)
+                            console.log(error);
                             this.errors.push(error)
                         }
                     );

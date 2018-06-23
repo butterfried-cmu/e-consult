@@ -34,14 +34,31 @@ class AuthController extends Controller
             ], 500);
         }
         $currentUser = Auth::user();
-        $role = DB::table('roles')->where('id', $currentUser->role)->first();
+        $user = DB::table('users')
+            ->join('roles', 'roles.id', '=', 'users.role')
+            ->join('name_titles', 'name_titles.id', '=', 'users.name_title')
+            ->join('genders', 'genders.id', '=', 'users.gender')
+            ->where('users.id', $currentUser->id)
+            ->select(
+                'users.id',
+                'users.username',
+                'users.email',
+                'roles.role',
+                'name_titles.name_title',
+                'users.first_name',
+                'users.last_name',
+                'genders.gender',
+                'users.citizen_id',
+                'users.date_of_birth',
+                'users.contact_number',
+                'users.address',
+                'users.workplace',
+                'users.created_at',
+                'users.updated_at'
+            )
+            ->first();
         return response()->json([
-            'user' => [
-                'id' => $currentUser->id,
-                'first_name' => $currentUser->first_name,
-                'last_name' => $currentUser->last_name,
-                'role' => $role->role,
-            ],
+            'user' => $user,
             'token' => $token
         ], 200);
     }
@@ -61,14 +78,31 @@ class AuthController extends Controller
 //        echo $token;
         try {
             $currentUser = JWTAuth::toUser($token);
-            $role = DB::table('roles')->where('id', $currentUser->role)->first();
+            $user = DB::table('users')
+                ->join('roles', 'roles.id', '=', 'users.role')
+                ->join('name_titles', 'name_titles.id', '=', 'users.name_title')
+                ->join('genders', 'genders.id', '=', 'users.gender')
+                ->where('users.id', $currentUser->id)
+                ->select(
+                    'users.id',
+                    'users.username',
+                    'users.email',
+                    'roles.role',
+                    'name_titles.name_title',
+                    'users.first_name',
+                    'users.last_name',
+                    'genders.gender',
+                    'users.citizen_id',
+                    'users.date_of_birth',
+                    'users.contact_number',
+                    'users.address',
+                    'users.workplace',
+                    'users.created_at',
+                    'users.updated_at'
+                )
+                ->first();
             return response()->json([
-                'user' => [
-                    'id' => $currentUser->id,
-                    'first_name' => $currentUser->first_name,
-                    'last_name' => $currentUser->last_name,
-                    'role' => $role->role,
-                ]
+                'user' => $user
             ], 200);
         } catch (JWTException $exeption) {
             return response()->json([

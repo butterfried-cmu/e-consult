@@ -8,8 +8,7 @@ import 'es6-promise/auto';
 import Vuex from 'vuex';
 
 import Index from './components/index/Index.vue';
-// import Home from './components/Home.vue';
-import Register from './components/user/add/user-add.vue';
+import AddUser from './components/user/add/user-add.vue';
 import Login from './components/user/login/Login.vue';
 import { store } from './vuex/store';
 import Profile from './components/user/view/user-view.vue';
@@ -35,6 +34,7 @@ Vue.use(VueAxios, axios);
 Vue.use(Vuex);
 
 axios.defaults.baseURL = 'http://localhost:8000/api';
+// axios.defaults.baseURL = 'http://2012b965.ngrok.io/api';
 
 const ifNotLoggedIn = (to, from, next) => {
     if (!store.getters['isLoggedIn']) {
@@ -66,9 +66,9 @@ const router = new VueRouter({
             beforeEnter: ifNotLoggedIn,
         },
         {
-            path: '/register',
-            name: 'register',
-            component: Register,
+            path: '/add',
+            name: 'add',
+            component: AddUser,
             beforeEnter: ifLoggedIn,
         },
         {
@@ -118,6 +118,7 @@ new Vue({
     store: store,
     created() {
         this.$store.dispatch('init');
+        this.$store.dispatch('getCurrentUser');
     },
     render: h => h(App)
 });
