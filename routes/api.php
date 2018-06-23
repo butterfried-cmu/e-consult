@@ -1,38 +1,39 @@
 <?php
 
-use Illuminate\Http\Request;
+use illuminate\http\request;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| api routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
+| here is where you can register api routes for your application. these
+| routes are loaded by the routeserviceprovider within a group which
+| is assigned the "api" middleware group. enjoy building your api!
 |
 */
 
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
+//route::middleware('auth:api')->get('/user', function (request $request) {
 //    return $request->user();
 //});
 
 Route::post('/auth/login', [
-    'uses' => 'AuthController@login'
+    'uses' => 'authcontroller@login',
 ]);
 
 Route::post('/auth/logout', [
-    'uses' => 'AuthController@logout'
+    'uses' => 'authcontroller@logout'
 ]);
 
 Route::get('/auth/user', [
-    'uses' => 'AuthController@getUser'
+    'uses' => 'authcontroller@getUser'
 ]);
 
 
 Route::post('/user/add', [
-    'uses' => 'UserController@add'
+    'uses' => 'usercontroller@addUser',
+    'middleware' => 'auth.jwt'
 ]);
 Route::get('/user/form', [
-    'uses' => 'UserController@getFormData'
+    'uses' => 'usercontroller@getformdata'
 ]);

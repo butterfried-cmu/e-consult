@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Namshi\JOSE\JWT;
 use Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use JWTAuth;
@@ -11,7 +12,7 @@ use DB;
 
 class UserController extends Controller
 {
-    public function add(Request $request)
+    public function addUser(Request $request)
     {
         $messages = [
             'required' => 'required',
@@ -35,7 +36,6 @@ class UserController extends Controller
 //            'contact_number',
 //            'address'
 //        ];
-
 
         $validator = Validator::make($request->all(), [
             'username' => 'required|unique:users|alpha_num',
@@ -97,10 +97,11 @@ class UserController extends Controller
 
     public function getUser(Request $request)
     {
-        $token = Input::get('id');
+//        $token = Input::get('id');
 //        echo $token;
         try {
-            $currentUser = JWTAuth::toUser($token);
+//            $currentUser = JWTAuth::toUser($token);
+            $currentUser = JWTAuth::parseToken()->toUser();
             $user = DB::table('users')
                 ->join('roles', 'roles.id', '=', 'users.role')
                 ->join('name_titles', 'name_titles.id', '=', 'users.name_title')
