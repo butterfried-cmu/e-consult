@@ -13393,8 +13393,8 @@ var LOGOUT = "LOGOUT";
 var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
     state: {
         isLoggedIn: null,
-        currentUser: null
-
+        currentUser: null,
+        allUsers: null
     },
     getters: {
         isLoggedIn: function isLoggedIn(state) {
@@ -13402,12 +13402,16 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
         },
         currentUser: function currentUser(state) {
             return state.currentUser;
+        },
+        allUsers: function allUsers(state) {
+            return state.allUsers;
         }
     },
     mutations: {
         initialiseStore: function initialiseStore(state) {
             state.isLoggedIn = false;
             state.currentUser = {};
+            state.allUsers = {};
             console.log("initialiseStore");
         },
         setUser: function setUser(state, user) {
@@ -13418,6 +13422,9 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
         },
         clearUser: function clearUser(state) {
             state.currentUser = {};
+        },
+        setAllUsers: function setAllUsers(state, users) {
+            state.allUsers = users;
         }
     },
     actions: {
@@ -13426,7 +13433,7 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 
             commit('initialiseStore');
         },
-        getCurrentUser: function getCurrentUser(_ref2) {
+        onRefresh: function onRefresh(_ref2) {
             var _this = this;
 
             var commit = _ref2.commit;
@@ -13437,7 +13444,7 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                 console.log("Token in localStorage");
                 return new Promise(function (resolve) {
                     setTimeout(function () {
-                        __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get("/auth/user?token=" + localStorage.getItem('token')).then(function (response) {
+                        __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get("/auth/refresh?token=" + localStorage.getItem('token')).then(function (response) {
                             // console.log(response)
                             _this.dispatch('setUser', response.data.user);
                             _this.dispatch('updateIsLoggedIn');
@@ -13486,6 +13493,7 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                         reject(error);
                     });
                 }, 1000);
+                reject();
             });
         },
         logout: function logout(_ref7) {
@@ -13500,18 +13508,42 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 
             return new Promise(function (resolve, reject) {
                 setTimeout(function () {
-                    __WEBPACK_IMPORTED_MODULE_2_axios___default.a.post("/user/add", user, {
+                    __WEBPACK_IMPORTED_MODULE_2_axios___default.a.post("/user/add?token=" + localStorage.getItem('token'), user, {
                         headers: { 'Content-Type': 'application/json' }
                     }).then(function (response) {
                         // console.log(response)
+                        alert("Create success VUEX");
                         console.log(response);
                         resolve(response);
                     }).catch(function (error) {
+                        alert("Create success VUEX");
                         console.log(error);
                         reject(error);
                     });
                 }, 1000);
             });
+        },
+        getAllUsers: function getAllUsers(_ref9) {
+            var commit = _ref9.commit;
+
+            if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
+                console.log("No Token in localStorage");
+            } else {
+                console.log("Token in localStorage");
+                return new Promise(function (resolve) {
+                    setTimeout(function () {
+                        __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get("/users?token=" + localStorage.getItem('token')).then(function (response) {
+                            // console.log(response)
+                            commit('setAllUsers', response.data.allUsers);
+                            console.log(response.data.allUsers);
+                            console.log("All users GET");
+                        }).catch(function (error) {
+                            return console.log(error);
+                        });
+                        resolve();
+                    }, 1000);
+                });
+            }
         }
     }
 });
@@ -13622,16 +13654,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Resetpassword_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Resetpassword_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_not_found_component_not_found_component_vue__ = __webpack_require__(91);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_not_found_component_not_found_component_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15__components_not_found_component_not_found_component_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_vuikit__ = __webpack_require__(96);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__vuikit_icons__ = __webpack_require__(97);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__vuikit_theme__ = __webpack_require__(98);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__vuikit_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_18__vuikit_theme__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_user_list_user_list_vue__ = __webpack_require__(111);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_user_list_user_list_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_16__components_user_list_user_list_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17_vuikit__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__vuikit_icons__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__vuikit_theme__ = __webpack_require__(98);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__vuikit_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_19__vuikit_theme__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20_vue_paginate__ = __webpack_require__(114);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20_vue_paginate___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_20_vue_paginate__);
 
 
 
 
 
 // import BootstrapVue from 'bootstrap-vue';
+
 
 
 
@@ -13653,8 +13690,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_16_vuikit__["a" /* default */]);
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_17__vuikit_icons__["a" /* default */]);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_20_vue_paginate___default.a);
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_17_vuikit__["a" /* default */]);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_18__vuikit_icons__["a" /* default */]);
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]);
 // Vue.use(BootstrapVue);
@@ -13663,6 +13702,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_6_vuex
 
 __WEBPACK_IMPORTED_MODULE_2_axios___default.a.defaults.baseURL = 'http://localhost:8000/api';
 // axios.defaults.baseURL = 'http://2012b965.ngrok.io/api';
+
 
 var ifNotLoggedIn = function ifNotLoggedIn(to, from, next) {
     if (!__WEBPACK_IMPORTED_MODULE_10__vuex_store__["a" /* store */].getters['isLoggedIn']) {
@@ -13692,7 +13732,7 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
         beforeEnter: ifNotLoggedIn
     }, {
         path: '/add',
-        name: 'add',
+        name: 'add-user',
         component: __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue___default.a,
         beforeEnter: ifLoggedIn
     }, {
@@ -13716,6 +13756,14 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
         component: __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Resetpassword_vue___default.a,
         beforeEnter: ifLoggedIn
     }, {
+        path: '/users',
+        name: 'user-list',
+        component: __WEBPACK_IMPORTED_MODULE_16__components_user_list_user_list_vue___default.a
+    }, {
+        path: '/users/:id',
+        name: 'user',
+        component: __WEBPACK_IMPORTED_MODULE_16__components_user_list_user_list_vue___default.a
+    }, {
         path: '*',
         name: 'not-found-component',
         component: __WEBPACK_IMPORTED_MODULE_15__components_not_found_component_not_found_component_vue___default.a
@@ -13737,7 +13785,7 @@ new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
     store: __WEBPACK_IMPORTED_MODULE_10__vuex_store__["a" /* store */],
     created: function created() {
         this.$store.dispatch('init');
-        this.$store.dispatch('getCurrentUser');
+        this.$store.dispatch('onRefresh');
     },
 
     render: function render(h) {
@@ -17730,7 +17778,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$router.push("login");
         },
         isRole: function isRole(role) {
-            return role === this.$store.getters['currentUser'].role;
+            return role === this.$store.getters['currentUser'].role.role;
         }
     }
 });
@@ -17739,7 +17787,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* 50 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"navbar\">\r\n    <vk-navbar v-if=\"isLoggedIn\">\r\n        <vk-navbar-nav>\r\n            <vk-navbar-nav-item icon=\"home\" title=\"MED E-CONSULTs\" href=\"/#/\"></vk-navbar-nav-item>\r\n            <vk-navbar-item>\r\n                <router-link to=\"add\" v-if=\"isRole('ADMIN')\">ADD USER</router-link>\r\n            </vk-navbar-item>\r\n        </vk-navbar-nav>\r\n        <vk-navbar-nav slot=\"right\">\r\n            <vk-navbar-item>\r\n                <router-link to=\"profile\" >{{ user.first_name.toUpperCase() }} {{user.last_name.toUpperCase()}}</router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-nav-item title=\"logout\" v-on:click=\"logout\">\r\n            </vk-navbar-nav-item>\r\n            <vk-navbar-nav-item icon=\"cog\"></vk-navbar-nav-item>\r\n        </vk-navbar-nav>\r\n    </vk-navbar>\r\n</div>";
+module.exports = "<div id=\"navbar\">\r\n    <vk-navbar v-if=\"isLoggedIn\">\r\n        <vk-navbar-nav>\r\n            <vk-navbar-nav-item icon=\"home\" title=\"MED E-CONSULTs\" href=\"/#/\"></vk-navbar-nav-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'add-user' }\" v-if=\"isRole('ADMIN')\">ADD USER</router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'user-list' }\" v-if=\"isRole('ADMIN')\">USER LIST</router-link>\r\n            </vk-navbar-item>\r\n        </vk-navbar-nav>\r\n        <vk-navbar-nav slot=\"right\">\r\n            <vk-navbar-item>\r\n                <router-link to=\"profile\" >{{ user.first_name.toUpperCase() }} {{user.last_name.toUpperCase()}}</router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-nav-item title=\"logout\" v-on:click=\"logout\">\r\n            </vk-navbar-nav-item>\r\n            <vk-navbar-nav-item icon=\"cog\"></vk-navbar-nav-item>\r\n        </vk-navbar-nav>\r\n    </vk-navbar>\r\n</div>";
 
 /***/ }),
 /* 51 */
@@ -19191,15 +19239,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     computed: {},
 
     created: function created() {
-        var _this = this;
-
-        __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("/user/form").then(function (response) {
-            // console.log(response)
-            _this.form = response.data.form;
-            console.log(response);
-        }).catch(function (error) {
-            console.log(error);
-        });
+        this.loadFormdata();
     },
 
 
@@ -19213,14 +19253,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return this.user.date_of_birth;
         },
         addUser: function addUser() {
+            var _this = this;
+
             var payload = this.user;
             console.log(payload);
             this.$store.dispatch('addUser', payload).then(function (response) {
+                alert("Create success");
                 console.log(response);
-                // this.$router.push("/")
+                _this.$router.push("/");
             }, function (error) {
+                alert("Create fail");
                 console.log(error);
                 // this.errors.push(error)
+            });
+        },
+        loadFormdata: function loadFormdata() {
+            var _this2 = this;
+
+            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("/user/form").then(function (response) {
+                // console.log(response)
+                _this2.form = response.data.form;
+                console.log(response);
+            }).catch(function (error) {
+                console.log(error);
             });
         }
     }
@@ -20728,7 +20783,7 @@ var Datepicker = {render: function(){var _vm=this;var _h=_vm.$createElement;var 
 /* 64 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"register\">\r\n\r\n    <div class=\"alert alert-danger\" v-if=\"\">\r\n        <p>There was an error, unable to complete registration.</p>\r\n    </div>\r\n    <div class=\"alert alert-success\" v-if=\"\">\r\n        <p>Registration completed. You can now\r\n            <router-link :to=\"{name:'login'}\">sign in.</router-link>\r\n        </p>\r\n    </div>\r\n\r\n    <vk-grid class=\"uk-text-center uk-child-width-expand@s\" uk-grid>\r\n        <div class=\"uk-width-medium@s\"></div>\r\n        <form autocomplete=\"off\">\r\n            <br/>\r\n            <h1><b>Register</b></h1>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.username\" class=\"uk-input\" type=\"text\" placeholder=\"Username\" required>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.password\" class=\"uk-input\" type=\"password\" placeholder=\"Password\" id=\"password\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.password_confirmation\" class=\"uk-input\" type=\"password\" placeholder=\"Confirm Password\"\r\n                       id=\"cpassword\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.role\" class=\"uk-select\">\r\n                    <option value=\"\" disabled>Role</option>\r\n                    <option v-for=\"role in form.roles\" :value=\"role.id\">{{ role.role }}</option>\r\n                </select>\r\n            </div>\r\n\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <h4>Personal Information</h4>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.citizen_id\" class=\"uk-input\" type=\"number\" placeholder=\"Citizen Id\">\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.name_title\" class=\"uk-select\">\r\n                    <option value=\"\" disabled>Name Title</option>\r\n                    <option v-for=\"title in form.name_titles\" :value=\"title.id\">{{ title.name_title }}</option>\r\n                </select>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\r\n            </div>\r\n\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.gender\" class=\"uk-select\" placeholder=\"gender\">\r\n                    <option value=\"\" disabled>Gender</option>\r\n                    <option v-for=\"gender in form.genders\" :value=\"gender.id\">{{ gender.gender }}</option>\r\n                </select>\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\"></datepicker>\r\n            </div>\r\n\r\n            <h4>Contact Information</h4>\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.contact_number\" class=\"uk-input\" type=\"text\" placeholder=\"Telephone Number\">\r\n            </div>\r\n\r\n            <div class=\"uk-margin\">\r\n                <input  v-model=\"user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\r\n            </div>\r\n\r\n            <h4>Workplace</h4>\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\r\n            </div>\r\n            <p uk-margin class=\"uk-margin-bottom uk-text-center\">\r\n                <button class=\"uk-button uk-button-primary\" v-on:click=\"addUser\">Add</button>\r\n                <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\r\n            </p>\r\n        </form>\r\n        <div class=\"uk-width-medium@s\"></div>\r\n    </vk-grid>\r\n</div>\r\n";
+module.exports = "<div id=\"register\">\r\n\r\n    <div class=\"alert alert-danger\" v-if=\"error\">\r\n        <p>There was an error, unable to complete registration.</p>\r\n    </div>\r\n\r\n    <vk-grid class=\"uk-text-center uk-child-width-expand@s\" uk-grid>\r\n        <div class=\"uk-width-medium@s\"></div>\r\n        <form autocomplete=\"off\">\r\n            <br/>\r\n            <h1><b>Register</b></h1>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.username\" class=\"uk-input\" type=\"text\" placeholder=\"Username\" required>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.password\" class=\"uk-input\" type=\"password\" placeholder=\"Password\" id=\"password\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.password_confirmation\" class=\"uk-input\" type=\"password\" placeholder=\"Confirm Password\"\r\n                       id=\"cpassword\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.role\" class=\"uk-select\">\r\n                    <option value=\"\" disabled>Role</option>\r\n                    <option v-for=\"role in form.roles\" :value=\"role.id\">{{ role.role }}</option>\r\n                </select>\r\n            </div>\r\n\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <h4>Personal Information</h4>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.citizen_id\" class=\"uk-input\" type=\"number\" placeholder=\"Citizen Id\">\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.name_title\" class=\"uk-select\">\r\n                    <option value=\"\" disabled>Name Title</option>\r\n                    <option v-for=\"title in form.name_titles\" :value=\"title.id\">{{ title.name_title }}</option>\r\n                </select>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\r\n            </div>\r\n\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.gender\" class=\"uk-select\" placeholder=\"gender\">\r\n                    <option value=\"\" disabled>Gender</option>\r\n                    <option v-for=\"gender in form.genders\" :value=\"gender.id\">{{ gender.gender }}</option>\r\n                </select>\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\"></datepicker>\r\n            </div>\r\n\r\n            <h4>Contact Information</h4>\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.contact_number\" class=\"uk-input\" type=\"text\" placeholder=\"Telephone Number\">\r\n            </div>\r\n\r\n            <div class=\"uk-margin\">\r\n                <input  v-model=\"user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\r\n            </div>\r\n\r\n            <h4>Workplace</h4>\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\r\n            </div>\r\n            <p uk-margin class=\"uk-margin-bottom uk-text-center\">\r\n                <button class=\"uk-button uk-button-primary\" v-on:click=\"addUser\">Add</button>\r\n                <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\r\n            </p>\r\n        </form>\r\n        <div class=\"uk-width-medium@s\"></div>\r\n    </vk-grid>\r\n</div>\r\n";
 
 /***/ }),
 /* 65 */
@@ -20981,7 +21036,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<div id=\"profile\">\r\n  <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\r\n    <!-- left column -->\r\n    <div>\r\n      <vk-grid class=\"uk-padding\">\r\n        <div>\r\n          <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\r\n          <img src=\"" + __webpack_require__(75) + "\" width=\"300\" height=\"400\" alt=\"\">\r\n        </div>\r\n        <a class=\"uk-align-center\" href=\"/#/editprofile\"><h5><u>Edit Profile</u></h5></a>\r\n      </vk-grid>\r\n      \r\n    </div>\r\n\r\n    <!-- center column -->\r\n    <div class=\"uk-width-1-2@s uk-align-left@s\">\r\n      <br/> <br/>\r\n        <div>\r\n            <ul style=\"list-style-type: none;\">\r\n                <li><h1>{{ user.name_title }} {{ user.first_name.toUpperCase() }} {{ user.last_name.toUpperCase() }}</h1></li>\r\n                <h4>\r\n                  <li id=\"citizen_id\">{{ user.citizen_id }}</li>\r\n                  <li id=\"role\">{{ user.role }}</li>\r\n                  <li id=\"gender\">{{ user.gender }}</li>\r\n                  <li id=\"date_of_birth\">Date of Birth {{ user.date_of_birth }}</li>\r\n                \r\n                <hr class=\"uk-description-list-divider\">\r\n                  <li><h4>WORK</h4></li>\r\n                  <li id=\"unit\">{{ user.workplace }}</li>\r\n            </h4>\r\n            <hr class=\"uk-description-list-divider\">\r\n            </ul>\r\n        </div>\r\n        <vk-grid>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h4>CONTACT INFORMATION</h4></li>\r\n                    <h4><li>Telephone</li>\r\n                      <li>Email</li>\r\n                      <li>Address</li></h4>\r\n                </ul>\r\n            </div>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h4>&nbsp;</h4></li>\r\n                    <h4><li id=\"contact_number\">{{ user.contact_number }}</li>\r\n                      <li id=\"email\">{{ user.email }}</li>\r\n                      <li id=\"address\">{{ user.address }}</li></h4>\r\n                </ul>\r\n            </div>\r\n        </vk-grid>\r\n    </div>\r\n\r\n    <!-- right column -->\r\n    <div class=\"uk-align-center@s\">\r\n        <vk-grid class=\"uk-padding-large\">\r\n        </vk-grid>\r\n    </div>\r\n\r\n  </vk-grid>\r\n</div>\r\n";
+module.exports = "<div id=\"profile\">\r\n  <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\r\n    <!-- left column -->\r\n    <div>\r\n      <vk-grid class=\"uk-padding\">\r\n        <div>\r\n          <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\r\n          <img src=\"" + __webpack_require__(75) + "\" width=\"300\" height=\"400\" alt=\"\">\r\n        </div>\r\n        <a class=\"uk-align-center\" href=\"/#/editprofile\"><h5><u>Edit Profile</u></h5></a>\r\n      </vk-grid>\r\n      \r\n    </div>\r\n\r\n    <!-- center column -->\r\n    <div class=\"uk-width-1-2@s uk-align-left@s\">\r\n      <br/> <br/>\r\n        <div>\r\n            <ul style=\"list-style-type: none;\">\r\n                <li><h1>{{ user.name_title.name_title }} {{ user.first_name.toUpperCase() }} {{ user.last_name.toUpperCase() }}</h1></li>\r\n                <h4>\r\n                  <li id=\"citizen_id\">{{ user.citizen_id }}</li>\r\n                  <li id=\"role\">{{ user.role.role }}</li>\r\n                  <li id=\"gender\">{{ user.gender.gender }}</li>\r\n                  <li id=\"date_of_birth\">Date of Birth {{ user.date_of_birth }}</li>\r\n                \r\n                <hr class=\"uk-description-list-divider\">\r\n                  <li><h4>WORK</h4></li>\r\n                  <li id=\"unit\">{{ user.workplace }}</li>\r\n            </h4>\r\n            <hr class=\"uk-description-list-divider\">\r\n            </ul>\r\n        </div>\r\n        <vk-grid>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h4>CONTACT INFORMATION</h4></li>\r\n                    <h4><li>Telephone</li>\r\n                      <li>Email</li>\r\n                      <li>Address</li></h4>\r\n                </ul>\r\n            </div>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h4>&nbsp;</h4></li>\r\n                    <h4><li id=\"contact_number\">{{ user.contact_number }}</li>\r\n                      <li id=\"email\">{{ user.email }}</li>\r\n                      <li id=\"address\">{{ user.address }}</li></h4>\r\n                </ul>\r\n            </div>\r\n        </vk-grid>\r\n    </div>\r\n\r\n    <!-- right column -->\r\n    <div class=\"uk-align-center@s\">\r\n        <vk-grid class=\"uk-padding-large\">\r\n        </vk-grid>\r\n    </div>\r\n\r\n  </vk-grid>\r\n</div>\r\n";
 
 /***/ }),
 /* 75 */
@@ -33862,6 +33917,697 @@ module.exports = {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 110 */,
+/* 111 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(112)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\user\\list\\user-list.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-68230068", Component.options)
+  } else {
+    hotAPI.reload("data-v-68230068", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 112 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+
+
+// import {APIENDPOINT} from  '../../http-common.js';
+// import loginService from './adminService.js';
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    template: __webpack_require__(113),
+    data: function data() {
+        return {
+            paginate: ['users'],
+            shown: false
+        };
+    },
+    mounted: function mounted() {
+        this.$store.dispatch('getAllUsers');
+    },
+
+    methods: {
+        selectUser: function selectUser(id) {
+            this.$router.push('/user/' + id);
+        }
+    },
+    computed: {
+        users: function users() {
+            return this.$store.getters['allUsers'];
+        }
+    }
+});
+
+/***/ }),
+/* 113 */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=\"user-list\" xmlns:v-on=\"http://www.w3.org/1999/xhtml\">\r\n    <h1>User list</h1>\r\n    <paginate name=\"users\" :list=\"users\" :per=\"10\">\r\n        <div v-for=\"user in paginated('users')\">\r\n            <router-link :to=\"{ name: 'user', params: { id: user.id }}\">{{ user }}</div>\r\n        </div>\r\n    </paginate>\r\n    <paginate-links for=\"users\" :show-step-links=\"true\" :hide-single-page=\"true\" :limit=\"10\"></paginate-links>\r\n</div>";
+
+/***/ }),
+/* 114 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * vue-paginate v3.6.0
+ * (c) 2018 Taha Shashtari
+ * @license MIT
+ */
+(function (global, factory) {
+   true ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.VuePaginate = factory());
+}(this, function () { 'use strict';
+
+  var warn = function () {}
+  var formatComponentName
+
+  var hasConsole = typeof console !== 'undefined'
+
+  warn = function (msg, vm, type) {
+    if ( type === void 0 ) type = 'error';
+
+    if (hasConsole) {
+      console[type]("[vue-paginate]: " + msg + " " + (
+        vm ? formatLocation(formatComponentName(vm)) : ''
+        ))
+    }
+  }
+
+  formatComponentName = function (vm) {
+    if (vm.$root === vm) {
+      return 'root instance'
+    }
+    var name = vm._isVue
+    ? vm.$options.name || vm.$options._componentTag
+    : vm.name
+    return (
+      (name ? ("component <" + name + ">") : "anonymous component") +
+      (vm._isVue && vm.$options.__file ? (" at " + (vm.$options.__file)) : '')
+      )
+  }
+
+  var formatLocation = function (str) {
+    if (str === 'anonymous component') {
+      str += " - use the \"name\" option for better debugging messages."
+    }
+    return ("\n(found in " + str + ")")
+  }
+
+  var Paginate = {
+    name: 'paginate',
+    props: {
+      name: {
+        type: String,
+        required: true
+      },
+      list: {
+        type: Array,
+        required: true
+      },
+      per: {
+        type: Number,
+        default: 3,
+        validator: function validator (value) {
+          return value > 0
+        }
+      },
+      tag: {
+        type: String,
+        default: 'ul'
+      },
+      container: {
+        type: Object,
+        default: null
+      }
+    },
+    data: function data () {
+      return {
+        initialListSize: this.list.length
+      }
+    },
+    computed: {
+      parent: function parent () {
+        return this.container ? this.container : this.$parent
+      },
+      currentPage: {
+        get: function get () {
+          if (this.parent.paginate[this.name]) {
+            return this.parent.paginate[this.name].page
+          }
+        },
+        set: function set (page) {
+          this.parent.paginate[this.name].page = page
+        }
+      },
+      pageItemsCount: function pageItemsCount () {
+        var numOfItems = this.list.length
+        var first = this.currentPage * this.per + 1
+        var last = Math.min((this.currentPage * this.per) + this.per, numOfItems)
+        return (first + "-" + last + " of " + numOfItems)
+      },
+
+      lastPage: function lastPage () {
+        return Math.ceil(this.list.length / this.per)
+      }
+    },
+    mounted: function mounted () {
+      if (this.per <= 0) {
+        warn(("<paginate name=\"" + (this.name) + "\"> 'per' prop can't be 0 or less."), this.parent)
+      }
+      if (!this.parent.paginate[this.name]) {
+        warn(("'" + (this.name) + "' is not registered in 'paginate' array."), this.parent)
+        return
+      }
+      this.paginateList()
+    },
+    watch: {
+      currentPage: function currentPage () {
+        this.paginateList()
+      },
+      list: function list () {
+        if (this.currentPage >= this.lastPage) {
+          this.currentPage = this.lastPage - 1
+        }
+        this.paginateList()
+      },
+      per: function per () {
+        this.currentPage = 0
+        this.paginateList()
+      }
+    },
+    methods: {
+      paginateList: function paginateList () {
+        var index = this.currentPage * this.per
+        var paginatedList = this.list.slice(index, index + this.per)
+        this.parent.paginate[this.name].list = paginatedList
+      },
+      goToPage: function goToPage (page) {
+        var lastPage = Math.ceil(this.list.length / this.per)
+        if (page > lastPage) {
+          warn(("You cannot go to page " + page + ". The last page is " + lastPage + "."), this.parent)
+          return
+        }
+        this.currentPage = page - 1
+      }
+    },
+    render: function render (h) {
+      return h(this.tag, {}, this.$slots.default)
+    }
+  }
+
+  var LEFT_ARROW = '«'
+  var RIGHT_ARROW = '»'
+  var ELLIPSES = '…'
+
+  var LimitedLinksGenerator = function LimitedLinksGenerator (listOfPages, currentPage, limit) {
+    this.listOfPages = listOfPages
+    this.lastPage = listOfPages.length - 1
+    this.currentPage = currentPage === this.lastPage
+      ? this.lastPage - 1
+      : currentPage
+    this.limit = limit
+  };
+
+  LimitedLinksGenerator.prototype.generate = function generate () {
+    var firstHalf = this._buildFirstHalf()
+    var secondHalf = this._buildSecondHalf()
+    return firstHalf.concat( secondHalf)
+  };
+
+  LimitedLinksGenerator.prototype._buildFirstHalf = function _buildFirstHalf () {
+    var firstHalf = this._allPagesButLast()
+      .slice(
+        this._currentChunkIndex(),
+        this._currentChunkIndex() + this.limit
+      )
+    // Add backward ellipses with first page if needed
+    if (this.currentPage >= this.limit) {
+      firstHalf.unshift(ELLIPSES)
+      firstHalf.unshift(0)
+    }
+    // Add ellipses if needed
+    if (this.lastPage - this.limit > this._currentChunkIndex()) {
+      firstHalf.push(ELLIPSES)
+    }
+    return firstHalf
+  };
+
+  LimitedLinksGenerator.prototype._buildSecondHalf = function _buildSecondHalf () {
+    var secondHalf = [this.lastPage]
+    return secondHalf
+  };
+
+  LimitedLinksGenerator.prototype._currentChunkIndex = function _currentChunkIndex () {
+    var currentChunk = Math.floor(this.currentPage / this.limit)
+    return currentChunk * this.limit 
+  };
+
+  LimitedLinksGenerator.prototype._allPagesButLast = function _allPagesButLast () {
+      var this$1 = this;
+
+    return this.listOfPages.filter(function (n) { return n !== this$1.lastPage; })
+  };
+
+  var PaginateLinks = {
+    name: 'paginate-links',
+    props: {
+      for: {
+        type: String,
+        required: true
+      },
+      limit: {
+        type: Number,
+        default: 0
+      },
+      simple: {
+        type: Object,
+        default: null,
+        validator: function validator (obj) {
+          return obj.prev && obj.next
+        }
+      },
+      stepLinks: {
+        type: Object,
+        default: function () {
+          return {
+            prev: LEFT_ARROW,
+            next: RIGHT_ARROW
+          }
+        },
+        validator: function validator$1 (obj) {
+          return obj.prev && obj.next
+        }
+      },
+      showStepLinks: {
+        type: Boolean
+      },
+      hideSinglePage: {
+        type: Boolean
+      },
+      classes: {
+        type: Object,
+        default: null
+      },
+      async: {
+        type: Boolean,
+        default: false
+      },
+      container: {
+        type: Object,
+        default: null
+      }
+    },
+    data: function data () {
+      return {
+        listOfPages: [],
+        numberOfPages: 0,
+        target: null
+      }
+    },
+    computed: {
+      parent: function parent () {
+        return this.container ? this.container.el : this.$parent
+      },
+      state: function state () {
+        return this.container ? this.container.state : this.$parent.paginate[this.for]
+      },
+      currentPage: {
+        get: function get () {
+          if (this.state) {
+            return this.state.page
+          }
+        },
+        set: function set (page) {
+          this.state.page = page
+        }
+      }
+    },
+    mounted: function mounted () {
+      var this$1 = this;
+
+      if (this.simple && this.limit) {
+        warn(("<paginate-links for=\"" + (this.for) + "\"> 'simple' and 'limit' props can't be used at the same time. In this case, 'simple' will take precedence, and 'limit' will be ignored."), this.parent, 'warn')
+      }
+      if (this.simple && !this.simple.next) {
+        warn(("<paginate-links for=\"" + (this.for) + "\"> 'simple' prop doesn't contain 'next' value."), this.parent)
+      }
+      if (this.simple && !this.simple.prev) {
+        warn(("<paginate-links for=\"" + (this.for) + "\"> 'simple' prop doesn't contain 'prev' value."), this.parent)
+      }
+      if (this.stepLinks && !this.stepLinks.next) {
+        warn(("<paginate-links for=\"" + (this.for) + "\"> 'step-links' prop doesn't contain 'next' value."), this.parent)
+      }
+      if (this.stepLinks && !this.stepLinks.prev) {
+        warn(("<paginate-links for=\"" + (this.for) + "\"> 'step-links' prop doesn't contain 'prev' value."), this.parent)
+      }
+      this.$nextTick(function () {
+        this$1.updateListOfPages()
+      })
+    },
+    watch: {
+      'state': {
+        handler: function handler () {
+          this.updateListOfPages()
+        },
+        deep: true
+      },
+      currentPage: function currentPage (toPage, fromPage) {
+        this.$emit('change', toPage + 1, fromPage + 1)
+      }
+    },
+    methods: {
+      updateListOfPages: function updateListOfPages () {
+        this.target = getTargetPaginateComponent(this.parent.$children, this.for)
+        if (!this.target) {
+          if (this.async) { return }
+          warn(("<paginate-links for=\"" + (this.for) + "\"> can't be used without its companion <paginate name=\"" + (this.for) + "\">"), this.parent)
+          warn("To fix that issue you may need to use :async=\"true\" on <paginate-links> component to allow for asyncronous rendering", this.parent, 'warn')
+          return
+        }
+        this.numberOfPages = Math.ceil(this.target.list.length / this.target.per)
+        this.listOfPages = getListOfPageNumbers(this.numberOfPages)
+      }
+    },
+    render: function render (h) {
+      var this$1 = this;
+
+      if (!this.target && this.async) { return null }
+
+      var links = this.simple
+        ? getSimpleLinks(this, h)
+        : this.limit > 1
+        ? getLimitedLinks(this, h)
+        : getFullLinks(this, h)
+
+      if (this.hideSinglePage && this.numberOfPages <= 1) {
+        return null
+      }
+
+      var el = h('ul', {
+        class: ['paginate-links', this.for]
+      }, links)
+
+      if (this.classes) {
+        this.$nextTick(function () {
+          addAdditionalClasses(el.elm, this$1.classes)
+        })
+      }
+      return el
+    }
+  }
+
+  function getFullLinks (vm, h) {
+    var allLinks = vm.showStepLinks
+      ? [vm.stepLinks.prev ].concat( vm.listOfPages, [vm.stepLinks.next])
+      : vm.listOfPages
+    return allLinks.map(function (link) {
+      var data = {
+        on: {
+          click: function (e) {
+            e.preventDefault()
+            vm.currentPage = getTargetPageForLink(
+              link,
+              vm.limit,
+              vm.currentPage,
+              vm.listOfPages,
+              vm.stepLinks
+            )
+          }
+        }
+      }
+      var liClasses = getClassesForLink(
+        link,
+        vm.currentPage,
+        vm.listOfPages.length - 1,
+        vm.stepLinks
+      )
+      var linkText = link === vm.stepLinks.next || link === vm.stepLinks.prev
+        ? link
+        : link + 1 // it means it's a number
+      return h('li', { class: liClasses }, [h('a', data, linkText)])
+    })
+  }
+
+  function getLimitedLinks (vm, h) {
+    var limitedLinks = new LimitedLinksGenerator(
+      vm.listOfPages,
+      vm.currentPage,
+      vm.limit,
+      vm.stepLinks
+    ).generate()
+
+    limitedLinks = vm.showStepLinks
+      ? [vm.stepLinks.prev ].concat( limitedLinks, [vm.stepLinks.next])
+      : limitedLinks
+
+    var limitedLinksMetadata = getLimitedLinksMetadata(limitedLinks)
+
+    return limitedLinks.map(function (link, index) {
+      var data = {
+        on: {
+          click: function (e) {
+            e.preventDefault()
+            vm.currentPage = getTargetPageForLink(
+              link,
+              vm.limit,
+              vm.currentPage,
+              vm.listOfPages,
+              vm.stepLinks,
+              limitedLinksMetadata[index]
+            )
+          }
+        }
+      }
+      var liClasses = getClassesForLink(
+        link,
+        vm.currentPage,
+        vm.listOfPages.length - 1,
+        vm.stepLinks
+      )
+      // If the link is a number,
+      // then incremented by 1 (since it's 0 based).
+      // otherwise, do nothing (so, it's a symbol).
+      var text = (link === parseInt(link, 10)) ? link + 1 : link
+      return h('li', { class: liClasses }, [h('a', data, text)])
+    })
+  }
+
+  function getSimpleLinks (vm, h) {
+    var lastPage = vm.listOfPages.length - 1
+    var prevData = {
+      on: {
+        click: function (e) {
+          e.preventDefault()
+          if (vm.currentPage > 0) { vm.currentPage -= 1 }
+        }
+      }
+    }
+    var nextData = {
+      on: {
+        click: function (e) {
+          e.preventDefault()
+          if (vm.currentPage < lastPage) { vm.currentPage += 1 }
+        }
+      }
+    }
+    var nextListData = { class: ['next', vm.currentPage >= lastPage ? 'disabled' : ''] }
+    var prevListData = { class: ['prev', vm.currentPage <= 0 ? 'disabled' : ''] }
+    var prevLink = h('li', prevListData, [h('a', prevData, vm.simple.prev)])
+    var nextLink = h('li', nextListData, [h('a', nextData, vm.simple.next)])
+    return [prevLink, nextLink]
+  }
+
+  function getTargetPaginateComponent (children, targetName) {
+    return children
+      .filter(function (child) { return (child.$vnode.componentOptions.tag === 'paginate'); })
+      .find(function (child) { return child.name === targetName; })
+  }
+
+  function getListOfPageNumbers (numberOfPages) {
+    // converts number of pages into an array
+    // that contains each individual page number
+    // For Example: 4 => [0, 1, 2, 3]
+    return Array.apply(null, { length: numberOfPages })
+      .map(function (val, index) { return index; })
+  }
+
+  function getClassesForLink(link, currentPage, lastPage, ref) {
+    var prev = ref.prev;
+    var next = ref.next;
+
+    var liClass = []
+    if (link === prev) {
+      liClass.push('left-arrow')
+    } else if (link === next) {
+      liClass.push('right-arrow')
+    } else if (link === ELLIPSES) {
+      liClass.push('ellipses')
+    } else {
+      liClass.push('number')
+    }
+
+    if (link === currentPage) {
+      liClass.push('active')
+    }
+
+    if (link === prev && currentPage <= 0) {
+      liClass.push('disabled')
+    } else if (link === next && currentPage >= lastPage) {
+      liClass.push('disabled')
+    }
+    return liClass
+  }
+
+  function getTargetPageForLink (link, limit, currentPage, listOfPages, ref, metaData) {
+    var prev = ref.prev;
+    var next = ref.next;
+    if ( metaData === void 0 ) metaData = null;
+
+    var currentChunk = Math.floor(currentPage / limit)
+    if (link === prev) {
+      return (currentPage - 1) < 0 ? 0 : currentPage - 1
+    } else if (link === next) {
+      return (currentPage + 1 > listOfPages.length - 1)
+        ? listOfPages.length - 1
+        : currentPage + 1
+    } else if (metaData && metaData === 'right-ellipses') {
+      return (currentChunk + 1) * limit
+    } else if (metaData && metaData === 'left-ellipses') {
+      var chunkContent = listOfPages.slice(currentChunk * limit, currentChunk * limit + limit)
+      var isLastPage = currentPage === listOfPages.length - 1
+      if (isLastPage && chunkContent.length === 1) {
+        currentChunk--
+      }
+      return (currentChunk - 1) * limit + limit - 1
+    }
+    // which is number
+    return link
+  }
+
+  /**
+   * Mainly used here to check whether the displayed
+   * ellipses is for showing previous or next links
+   */
+  function getLimitedLinksMetadata (limitedLinks) {
+    return limitedLinks.map(function (link, index) {
+      if (link === ELLIPSES && limitedLinks[index - 1] === 0) {
+        return 'left-ellipses'
+      } else if (link === ELLIPSES && limitedLinks[index - 1] !== 0) {
+        return 'right-ellipses'
+      }
+      return link
+    })
+  }
+
+  function addAdditionalClasses (linksContainer, classes) {
+    Object.keys(classes).forEach(function (selector) {
+      if (selector === 'ul') {
+        var selectorValue = classes['ul']
+        if (Array.isArray(selectorValue)) {
+          selectorValue.forEach(function (c) { return linksContainer.classList.add(c); })
+        } else {
+          linksContainer.classList.add(selectorValue)
+        }
+      }
+      linksContainer.querySelectorAll(selector).forEach(function (node) {
+        var selectorValue = classes[selector]
+        if (Array.isArray(selectorValue)) {
+          selectorValue.forEach(function (c) { return node.classList.add(c); })
+        } else {
+          node.classList.add(selectorValue)
+        }
+      })
+    })
+  }
+
+  function paginateDataGenerator (listNames) {
+    if ( listNames === void 0 ) listNames = [];
+
+    return listNames.reduce(function (curr, listName) {
+      curr[listName] = {
+        list: [],
+        page: 0
+      }
+      return curr
+    }, {})
+  }
+
+  var vuePaginate = {}
+
+  vuePaginate.install = function (Vue) {
+    Vue.mixin({
+      created: function created () {
+        if (this.paginate !== 'undefined' && this.paginate instanceof Array) {
+          this.paginate = paginateDataGenerator(this.paginate)
+        }
+      },
+      methods: {
+        paginated: function paginated (listName) {
+          if (!this.paginate || !this.paginate[listName]) {
+            warn(("'" + listName + "' is not registered in 'paginate' array."), this)
+            return
+          }
+          return this.paginate[listName].list
+        }
+      }
+    })
+    Vue.component('paginate', Paginate)
+    Vue.component('paginate-links', PaginateLinks)
+  }
+
+  if (typeof window !== 'undefined' && window.Vue) {
+    window.Vue.use(vuePaginate)
+  }
+
+  return vuePaginate;
+
+}));
 
 /***/ })
 /******/ ]);
