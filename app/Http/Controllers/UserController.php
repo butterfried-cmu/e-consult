@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Role;
 use App\User;
 use Illuminate\Http\Request;
-use Namshi\JOSE\JWT;
 use Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use JWTAuth;
@@ -24,10 +23,12 @@ class UserController extends Controller
     {
         $messages = [
             'required' => 'required',
-            'date' => 'date',
-            'email' => 'email',
-            'numeric' => 'num',
-            'unique' => 'unique'
+            'date' => 'not date pattern',
+            'email' => 'not email pattern',
+            'numeric' => 'not numeric',
+            'unique' => 'already exist',
+            'confirmed' => 'not matched',
+
         ];
 
         $validator = Validator::make($request->all(), [
@@ -44,7 +45,7 @@ class UserController extends Controller
             'contact_number' => 'required|regex:/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/',
             'address' => 'required',
             'workplace' => 'required'
-        ]);
+        ], $messages);
 
         if ($validator->fails()) {
             return response()->json($validator->messages(), 200);
