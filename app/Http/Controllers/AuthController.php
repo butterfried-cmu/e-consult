@@ -55,7 +55,7 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function getUser(Request $request)
+    public function onRefresh(Request $request)
     {
         try {
             $currentUser = JWTAuth::parseToken()->toUser();

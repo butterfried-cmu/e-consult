@@ -1,22 +1,26 @@
 <script>
-// import axios from 'axios';
-// import {APIENDPOINT} from  '../../http-common.js';
-// import loginService from './adminService.js';
+    // import axios from 'axios';
+    // import {APIENDPOINT} from  '../../http-common.js';
+    // import loginService from './adminService.js';
 
-import NavBar from '../components/navbar/NavBar.vue';
+    import NavBar from '../components/navbar/NavBar.vue';
 
-export default {
+    export default {
 
-  template:require('./App.html'),
-  data() {
-    return {
-      msg: 'Hello'
+        template: require('./App.html'),
+        data() {
+            return {
+                msg: 'Hello'
+            }
+        },
+        created() {
+            this.$store.dispatch('init');
+            this.$store.dispatch('onRefresh');
+        },
+        components: {
+            NavBar
+        }
     }
-  },
-  components: {
-    NavBar
-  }
-}
 </script>
 
 <style lang="css">

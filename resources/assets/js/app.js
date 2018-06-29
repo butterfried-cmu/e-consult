@@ -131,9 +131,5 @@ App.router = Vue.router
 new Vue({
     el: '#app',
     store: store,
-    created() {
-        this.$store.dispatch('init');
-        this.$store.dispatch('onRefresh');
-    },
     render: h => h(App)
 });

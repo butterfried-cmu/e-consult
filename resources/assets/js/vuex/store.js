@@ -42,7 +42,7 @@ export const store = new Vuex.Store({
         clearUser(state) {
             state.currentUser = {};
         },
-        setAllUsers(state,users){
+        setAllUsers(state, users) {
             state.allUsers = users;
         }
 
@@ -57,17 +57,22 @@ export const store = new Vuex.Store({
                 console.log("No Token in localStorage");
             } else {
                 console.log("Token in localStorage");
-                return new Promise(resolve => {
+                return new Promise((resolve, reject) => {
                     setTimeout(() => {
                         axios.get("/auth/refresh?token=" + localStorage.getItem('token'))
-                            .then((response) => {
+                            .then(
+                                response => {
                                     // console.log(response)
                                     this.dispatch('setUser', response.data.user);
                                     this.dispatch('updateIsLoggedIn');
                                     console.log("Token verified");
+                                    resolve(response);
                                 }
                             ).catch(
-                            (error) => console.log(error)
+                            error => {
+                                console.log(error);
+                                reject(error);
+                            }
                         );
                         resolve();
                     }, 1000);
@@ -108,7 +113,6 @@ export const store = new Vuex.Store({
                         }
                     );
                 }, 1000);
-                reject();
             });
         },
 
@@ -127,12 +131,12 @@ export const store = new Vuex.Store({
                         }
                     ).then(response => {
                             // console.log(response)
-                        alert("Create success VUEX");
+                            alert("Create success VUEX");
                             console.log(response);
                             resolve(response);
                         }
                     ).catch(error => {
-                        alert("Create success VUEX");
+                            alert("Create success VUEX");
                             console.log(error);
                             reject(error);
                         }
@@ -149,16 +153,19 @@ export const store = new Vuex.Store({
                 return new Promise(resolve => {
                     setTimeout(() => {
                         axios.get("/users?token=" + localStorage.getItem('token'))
-                            .then((response) => {
+                            .then(
+                                response => {
                                     // console.log(response)
                                     commit('setAllUsers', response.data.allUsers);
                                     console.log(response.data.allUsers);
                                     console.log("All users GET");
                                 }
                             ).catch(
-                            (error) => console.log(error)
+                            error => {
+                                console.log(error);
+                                resolve(error);
+                            }
                         );
-                        resolve();
                     }, 1000);
                 });
             }
