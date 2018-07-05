@@ -12,7 +12,8 @@ const LOGOUT = "LOGOUT";
 export const store = new Vuex.Store({
     state: {
         isLoggedIn: null,
-        currentUser: null,
+        user: null,
+        account: null,
         allUsers: null,
     },
     getters: {
@@ -20,32 +21,38 @@ export const store = new Vuex.Store({
             return state.isLoggedIn;
         },
         currentUser(state) {
-            return state.currentUser;
+            return state.user;
+        },
+        userRole(state) {
+            return state.account.role;
         },
         allUsers(state) {
             return state.allUsers;
-        }
+        },
     },
     mutations: {
         initialiseStore(state) {
             state.isLoggedIn = false;
-            state.currentUser = {};
+            state.user = {};
+            state.account = {};
             state.allUsers = {};
             console.log("initialiseStore");
         },
         setUser(state, user) {
-            state.currentUser = user;
+            state.user = user;
+        },
+        setAccount(state, account) {
+            state.account = account;
         },
         updateIsLoggedIn(state) {
             state.isLoggedIn = !!localStorage.getItem('token');
         },
         clearUser(state) {
-            state.currentUser = {};
+            state.user = {};
         },
         setAllUsers(state, users) {
             state.allUsers = users;
         }
-
     },
     actions: {
         init({commit}) {
@@ -64,6 +71,7 @@ export const store = new Vuex.Store({
                                 response => {
                                     // console.log(response)
                                     this.dispatch('setUser', response.data.user);
+                                    this.dispatch('setAccount', response.data.account);
                                     this.dispatch('updateIsLoggedIn');
                                     console.log("Token verified");
                                     resolve(response);
@@ -88,6 +96,10 @@ export const store = new Vuex.Store({
             commit('setUser', user)
         },
 
+        setAccount({commit}, account) {
+            commit('setAccount', account)
+        },
+
         login({commit}, {username, password}) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -103,6 +115,7 @@ export const store = new Vuex.Store({
                             // console.log(response)
                             localStorage.setItem("token", response.data.token);
                             this.dispatch('setUser', response.data.user);
+                            this.dispatch('setAccount', response.data.account);
                             this.dispatch('updateIsLoggedIn');
                             console.log(response);
                             resolve(response);
@@ -155,9 +168,8 @@ export const store = new Vuex.Store({
                         axios.get("/users?token=" + localStorage.getItem('token'))
                             .then(
                                 response => {
-                                    // console.log(response)
-                                    commit('setAllUsers', response.data.allUsers);
-                                    console.log(response.data.allUsers);
+                                    console.log(response);
+                                    commit('setAllUsers', response.data.users);
                                     console.log("All users GET");
                                 }
                             ).catch(

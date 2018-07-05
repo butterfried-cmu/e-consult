@@ -25,7 +25,7 @@
             <div class="uk-margin uk-width-1-3@s">
                 <select v-model="user.role" class="uk-select">
                     <option value="" disabled>Role</option>
-                    <option v-for="role in form.roles" :value="role.id">{{ role.role }}</option>
+                    <option v-for="role in form.roles" :value="role.role">{{ role.role }}</option>
                 </select>
             </div>
 
@@ -37,7 +37,7 @@
             <div class="uk-margin uk-width-1-3@s">
                 <select v-model="user.name_title" class="uk-select">
                     <option value="" disabled>Name Title</option>
-                    <option v-for="title in form.name_titles" :value="title.id">{{ title.name_title }}</option>
+                    <option v-for="title in form.name_titles" :value="title.title">{{ title.title }}</option>
                 </select>
             </div>
             <div class="uk-margin">
@@ -50,7 +50,7 @@
             <div class="uk-margin uk-width-1-3@s">
                 <select v-model="user.gender" class="uk-select" placeholder="gender">
                     <option value="" disabled>Gender</option>
-                    <option v-for="gender in form.genders" :value="gender.id">{{ gender.gender }}</option>
+                    <option v-for="gender in form.genders" :value="gender.gender">{{ gender.gender }}</option>
                 </select>
             </div>
             <div class="uk-margin uk-width-1-3@s">
@@ -72,8 +72,14 @@
             <div class="uk-margin">
                 <input v-model="user.workplace" class="uk-input" type="text" placeholder="Workplace">
             </div>
+
+            <div class="" v-if="user.image">
+                <img :src="user.image" class="img-responsive" height="70" width="90">
+            </div>
+            <input type="file" v-on:change="onImageChange" class="form-control">
+
             <p uk-margin class="uk-margin-bottom uk-text-center">
-                <button class="uk-button uk-button-primary" v-on:click="addUser">Add</button>
+                <button @click="addUser" type="button" class="uk-button uk-button-primary">Add</button>
                 <a class="uk-button uk-button-danger" href="../..#/index">Cancel</a>
             </p>
         </form>

@@ -14,13 +14,13 @@ class ValidateRole
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \Closure $next
+     * @param array $roles
      * @return mixed
-     * @throws \Tymon\JWTAuth\Exceptions\JWTException
      */
     public function handle($request, Closure $next, ... $roles)
     {
         $currentUser = JWTAuth::parseToken()->toUser();
-        $userRole = Role::where('id', $currentUser->role)
+        $userRole = Role::where('role', $currentUser->role)
             ->first();
 
         foreach ($roles as $role) {

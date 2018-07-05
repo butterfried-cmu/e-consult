@@ -13393,7 +13393,8 @@ var LOGOUT = "LOGOUT";
 var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
     state: {
         isLoggedIn: null,
-        currentUser: null,
+        user: null,
+        account: null,
         allUsers: null
     },
     getters: {
@@ -13401,7 +13402,10 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
             return state.isLoggedIn;
         },
         currentUser: function currentUser(state) {
-            return state.currentUser;
+            return state.user;
+        },
+        userRole: function userRole(state) {
+            return state.account.role;
         },
         allUsers: function allUsers(state) {
             return state.allUsers;
@@ -13410,18 +13414,22 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
     mutations: {
         initialiseStore: function initialiseStore(state) {
             state.isLoggedIn = false;
-            state.currentUser = {};
+            state.user = {};
+            state.account = {};
             state.allUsers = {};
             console.log("initialiseStore");
         },
         setUser: function setUser(state, user) {
-            state.currentUser = user;
+            state.user = user;
+        },
+        setAccount: function setAccount(state, account) {
+            state.account = account;
         },
         updateIsLoggedIn: function updateIsLoggedIn(state) {
             state.isLoggedIn = !!localStorage.getItem('token');
         },
         clearUser: function clearUser(state) {
-            state.currentUser = {};
+            state.user = {};
         },
         setAllUsers: function setAllUsers(state, users) {
             state.allUsers = users;
@@ -13447,6 +13455,7 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                         __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get("/auth/refresh?token=" + localStorage.getItem('token')).then(function (response) {
                             // console.log(response)
                             _this.dispatch('setUser', response.data.user);
+                            _this.dispatch('setAccount', response.data.account);
                             _this.dispatch('updateIsLoggedIn');
                             console.log("Token verified");
                             resolve(response);
@@ -13469,12 +13478,17 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 
             commit('setUser', user);
         },
-        login: function login(_ref5, _ref6) {
+        setAccount: function setAccount(_ref5, account) {
+            var commit = _ref5.commit;
+
+            commit('setAccount', account);
+        },
+        login: function login(_ref6, _ref7) {
             var _this2 = this;
 
-            var commit = _ref5.commit;
-            var username = _ref6.username,
-                password = _ref6.password;
+            var commit = _ref6.commit;
+            var username = _ref7.username,
+                password = _ref7.password;
 
             return new Promise(function (resolve, reject) {
                 setTimeout(function () {
@@ -13487,6 +13501,7 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                         // console.log(response)
                         localStorage.setItem("token", response.data.token);
                         _this2.dispatch('setUser', response.data.user);
+                        _this2.dispatch('setAccount', response.data.account);
                         _this2.dispatch('updateIsLoggedIn');
                         console.log(response);
                         resolve(response);
@@ -13497,15 +13512,15 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                 }, 1000);
             });
         },
-        logout: function logout(_ref7) {
-            var commit = _ref7.commit;
+        logout: function logout(_ref8) {
+            var commit = _ref8.commit;
 
             localStorage.removeItem("token");
             commit('updateIsLoggedIn');
             commit('clearUser');
         },
-        addUser: function addUser(_ref8, user) {
-            var commit = _ref8.commit;
+        addUser: function addUser(_ref9, user) {
+            var commit = _ref9.commit;
 
             return new Promise(function (resolve, reject) {
                 setTimeout(function () {
@@ -13524,8 +13539,8 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                 }, 1000);
             });
         },
-        getAllUsers: function getAllUsers(_ref9) {
-            var commit = _ref9.commit;
+        getAllUsers: function getAllUsers(_ref10) {
+            var commit = _ref10.commit;
 
             if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
                 console.log("No Token in localStorage");
@@ -13534,9 +13549,8 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                 return new Promise(function (resolve) {
                     setTimeout(function () {
                         __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get("/users?token=" + localStorage.getItem('token')).then(function (response) {
-                            // console.log(response)
-                            commit('setAllUsers', response.data.allUsers);
-                            console.log(response.data.allUsers);
+                            console.log(response);
+                            commit('setAllUsers', response.data.users);
                             console.log("All users GET");
                         }).catch(function (error) {
                             console.log(error);
@@ -17770,6 +17784,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         user: function user() {
             return this.$store.getters['currentUser'];
+        },
+        role: function role() {
+            return this.$store.getters['userRole'];
         }
     },
     methods: {
@@ -17778,7 +17795,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$router.push("login");
         },
         isRole: function isRole(role) {
-            return role === this.$store.getters['currentUser'].role.role;
+            return role === this.$store.getters['userRole'];
         }
     }
 });
@@ -17787,7 +17804,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* 50 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"navbar\">\r\n    <vk-navbar v-if=\"isLoggedIn\">\r\n        <vk-navbar-nav>\r\n            <vk-navbar-nav-item icon=\"home\" title=\"MED E-CONSULTs\" href=\"/#/\"></vk-navbar-nav-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'add-user' }\" v-if=\"isRole('ADMIN')\">ADD USER</router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'user-list' }\" v-if=\"isRole('ADMIN')\">USER LIST</router-link>\r\n            </vk-navbar-item>\r\n        </vk-navbar-nav>\r\n        <vk-navbar-nav slot=\"right\">\r\n            <vk-navbar-item>\r\n                <router-link to=\"profile\" >{{ user.first_name.toUpperCase() }} {{user.last_name.toUpperCase()}}</router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-nav-item title=\"logout\" v-on:click=\"logout\">\r\n            </vk-navbar-nav-item>\r\n            <vk-navbar-nav-item icon=\"cog\"></vk-navbar-nav-item>\r\n        </vk-navbar-nav>\r\n    </vk-navbar>\r\n</div>";
+module.exports = "<div id=\"navbar\">\r\n    <vk-navbar v-if=\"isLoggedIn\">\r\n        <vk-navbar-nav>\r\n            <vk-navbar-nav-item icon=\"home\" title=\"MED E-CONSULTs\" :to=\"{ name: 'index' }\"></vk-navbar-nav-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'add-user' }\" v-if=\"isRole('ADMIN')\">ADD USER</router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'user-list' }\" v-if=\"isRole('ADMIN')\">USER LIST</router-link>\r\n            </vk-navbar-item>\r\n        </vk-navbar-nav>\r\n        <vk-navbar-nav slot=\"right\">\r\n            <vk-navbar-item>\r\n                <router-link to=\"profile\" >{{ user.first_name.toUpperCase() }} {{user.last_name.toUpperCase()}}</router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-nav-item title=\"logout\" v-on:click=\"logout\">\r\n            </vk-navbar-nav-item>\r\n            <vk-navbar-nav-item icon=\"cog\"></vk-navbar-nav-item>\r\n        </vk-navbar-nav>\r\n    </vk-navbar>\r\n</div>";
 
 /***/ }),
 /* 51 */
@@ -19228,10 +19245,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 role: '',
                 gender: '',
                 name_title: '',
-                date_of_birth: ''
+                date_of_birth: '',
+                image: ''
             },
             date: '',
-            form: {},
+            form: {
+                roles: [{ role: "ADMIN" }, { role: "DOCTOR" }, { role: "NURSE" }],
+                name_titles: [{ title: "Mr." }, { title: "Mrs." }, { title: "Miss" }],
+                genders: [{ gender: "Male" }, { gender: "Female" }]
+            },
             error: null
         };
     },
@@ -19240,7 +19262,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     computed: {},
 
     created: function created() {
-        this.loadFormdata();
+        // this.loadFormdata();
     },
 
 
@@ -19259,17 +19281,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var payload = this.user;
             console.log(payload);
             this.$store.dispatch('addUser', payload).then(function (response) {
-                alert("Create success");
-                console.log(response);
-                _this.$router.push("/");
+                if (!!response.data.message && response.data.message === "Successfully created user") {
+                    alert("Create success");
+                    console.log(response);
+                    _this.$router.push("/");
+                } else {
+                    _this.error = response.data;
+                }
             });
         },
-        loadFormdata: function loadFormdata() {
-            var _this2 = this;
-
-            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("/user/form").then(function (response) {
-                // console.log(response)
-                _this2.form = response.data.form;
+        onImageChange: function onImageChange(e) {
+            var files = e.target.files || e.dataTransfer.files;
+            if (!files.length) return;
+            this.createImage(files[0]);
+        },
+        createImage: function createImage(file) {
+            var reader = new FileReader();
+            var vm = this;
+            reader.onload = function (e) {
+                vm.user.image = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+        uploadImage: function uploadImage() {
+            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('/image/store', { image: this.image }).then(function (response) {
                 console.log(response);
             });
         }
@@ -20778,7 +20813,7 @@ var Datepicker = {render: function(){var _vm=this;var _h=_vm.$createElement;var 
 /* 64 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"register\">\r\n\r\n    <div class=\"alert alert-danger\" v-if=\"error\">\r\n        <p>There was an error, unable to complete registration.</p>\r\n    </div>\r\n\r\n    <vk-grid class=\"uk-text-center uk-child-width-expand@s\" uk-grid>\r\n        <div class=\"uk-width-medium@s\"></div>\r\n        <form autocomplete=\"off\">\r\n            <br/>\r\n            <h1><b>Register</b></h1>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.username\" class=\"uk-input\" type=\"text\" placeholder=\"Username\" required>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.password\" class=\"uk-input\" type=\"password\" placeholder=\"Password\" id=\"password\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.password_confirmation\" class=\"uk-input\" type=\"password\" placeholder=\"Confirm Password\"\r\n                       id=\"cpassword\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.role\" class=\"uk-select\">\r\n                    <option value=\"\" disabled>Role</option>\r\n                    <option v-for=\"role in form.roles\" :value=\"role.id\">{{ role.role }}</option>\r\n                </select>\r\n            </div>\r\n\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <h4>Personal Information</h4>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.citizen_id\" class=\"uk-input\" type=\"number\" placeholder=\"Citizen Id\">\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.name_title\" class=\"uk-select\">\r\n                    <option value=\"\" disabled>Name Title</option>\r\n                    <option v-for=\"title in form.name_titles\" :value=\"title.id\">{{ title.name_title }}</option>\r\n                </select>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\r\n            </div>\r\n\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.gender\" class=\"uk-select\" placeholder=\"gender\">\r\n                    <option value=\"\" disabled>Gender</option>\r\n                    <option v-for=\"gender in form.genders\" :value=\"gender.id\">{{ gender.gender }}</option>\r\n                </select>\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\"></datepicker>\r\n            </div>\r\n\r\n            <h4>Contact Information</h4>\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.contact_number\" class=\"uk-input\" type=\"text\" placeholder=\"Telephone Number\">\r\n            </div>\r\n\r\n            <div class=\"uk-margin\">\r\n                <input  v-model=\"user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\r\n            </div>\r\n\r\n            <h4>Workplace</h4>\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\r\n            </div>\r\n            <p uk-margin class=\"uk-margin-bottom uk-text-center\">\r\n                <button class=\"uk-button uk-button-primary\" v-on:click=\"addUser\">Add</button>\r\n                <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\r\n            </p>\r\n        </form>\r\n        <div class=\"uk-width-medium@s\"></div>\r\n    </vk-grid>\r\n</div>\r\n";
+module.exports = "<div id=\"register\">\r\n\r\n    <div class=\"alert alert-danger\" v-if=\"error\">\r\n        <p>There was an error, unable to complete registration.</p>\r\n    </div>\r\n\r\n    <vk-grid class=\"uk-text-center uk-child-width-expand@s\" uk-grid>\r\n        <div class=\"uk-width-medium@s\"></div>\r\n        <form autocomplete=\"off\">\r\n            <br/>\r\n            <h1><b>Register</b></h1>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.username\" class=\"uk-input\" type=\"text\" placeholder=\"Username\" required>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.password\" class=\"uk-input\" type=\"password\" placeholder=\"Password\" id=\"password\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.password_confirmation\" class=\"uk-input\" type=\"password\" placeholder=\"Confirm Password\"\r\n                       id=\"cpassword\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.role\" class=\"uk-select\">\r\n                    <option value=\"\" disabled>Role</option>\r\n                    <option v-for=\"role in form.roles\" :value=\"role.role\">{{ role.role }}</option>\r\n                </select>\r\n            </div>\r\n\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <h4>Personal Information</h4>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.citizen_id\" class=\"uk-input\" type=\"number\" placeholder=\"Citizen Id\">\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.name_title\" class=\"uk-select\">\r\n                    <option value=\"\" disabled>Name Title</option>\r\n                    <option v-for=\"title in form.name_titles\" :value=\"title.title\">{{ title.title }}</option>\r\n                </select>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\r\n            </div>\r\n\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <select v-model=\"user.gender\" class=\"uk-select\" placeholder=\"gender\">\r\n                    <option value=\"\" disabled>Gender</option>\r\n                    <option v-for=\"gender in form.genders\" :value=\"gender.gender\">{{ gender.gender }}</option>\r\n                </select>\r\n            </div>\r\n            <div class=\"uk-margin uk-width-1-3@s\">\r\n                <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\"></datepicker>\r\n            </div>\r\n\r\n            <h4>Contact Information</h4>\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.contact_number\" class=\"uk-input\" type=\"text\" placeholder=\"Telephone Number\">\r\n            </div>\r\n\r\n            <div class=\"uk-margin\">\r\n                <input  v-model=\"user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\r\n            </div>\r\n\r\n            <h4>Workplace</h4>\r\n            <hr class=\"uk-divider-icon\"/>\r\n            <div class=\"uk-margin\">\r\n                <input v-model=\"user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\r\n            </div>\r\n\r\n            <div class=\"\" v-if=\"user.image\">\r\n                <img :src=\"user.image\" class=\"img-responsive\" height=\"70\" width=\"90\">\r\n            </div>\r\n            <input type=\"file\" v-on:change=\"onImageChange\" class=\"form-control\">\r\n\r\n            <p uk-margin class=\"uk-margin-bottom uk-text-center\">\r\n                <button @click=\"addUser\" type=\"button\" class=\"uk-button uk-button-primary\">Add</button>\r\n                <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\r\n            </p>\r\n        </form>\r\n        <div class=\"uk-width-medium@s\"></div>\r\n    </vk-grid>\r\n</div>\r\n";
 
 /***/ }),
 /* 65 */
@@ -20894,7 +20929,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         login: function login() {
             var _this = this;
 
-            var payload = { 'username': this.username, 'password': this.password };
+            var payload = {
+                'username': this.username,
+                'password': this.password
+            };
             console.log('login.vue : login method');
             this.$store.dispatch('login', payload).then(function (response) {
                 console.log('login.vue : login passed');
@@ -20913,7 +20951,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* 69 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"login\">\r\n    <div align=\"center\">\r\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\r\n        <h1>LOGIN</h1>\r\n        <form>\r\n            <div class=\"uk-margin\">\r\n                <div class=\"uk-inline\">\r\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"user\"></vk-icon></span>\r\n                    <input\r\n                            id=\"email\"\r\n                            class=\"uk-input form-control\"\r\n                            type=\"text\"\r\n                            v-model=\"username\"\r\n                            placeholder=\"Username\"\r\n                            required>\r\n                </div>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <div class=\"uk-inline\">\r\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\r\n                    <input\r\n                            id=\"password\"\r\n                            class=\"uk-input form-control\"\r\n                            type=\"password\"\r\n                            v-model=\"password\"\r\n                            placeholder=\"Password\"\r\n                            required>\r\n                </div>\r\n            </div>\r\n\r\n            <button class=\"uk-button uk-button-default uk-button-small uk-button-primary\" v-on:click=\"login\">Login\r\n            </button>\r\n            <br/>\r\n            <a href=\"/#/forgetpassword\" class=\"uk-position-bottom-center uk-margin-large-bottom\">Forget Password</a>\r\n\r\n        </form>\r\n    </div>\r\n\r\n</div>\r\n";
+module.exports = "<div class=\"login\">\r\n    <div align=\"center\">\r\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\r\n        <h1>LOGIN</h1>\r\n        <form>\r\n            <div class=\"uk-margin\">\r\n                <div class=\"uk-inline\">\r\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"user\"></vk-icon></span>\r\n                    <input\r\n                            id=\"email\"\r\n                            class=\"uk-input form-control\"\r\n                            type=\"text\"\r\n                            v-model=\"username\"\r\n                            placeholder=\"Username\"\r\n                            required>\r\n                </div>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <div class=\"uk-inline\">\r\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\r\n                    <input\r\n                            id=\"password\"\r\n                            class=\"uk-input form-control\"\r\n                            type=\"password\"\r\n                            v-model=\"password\"\r\n                            placeholder=\"Password\"\r\n                            required>\r\n                </div>\r\n            </div>\r\n\r\n            <button @click=\"login\" type=\"button\" class=\"uk-button uk-button-default uk-button-small uk-button-primary\">Login\r\n            </button>\r\n            <br/>\r\n            <a href=\"/#/forgetpassword\" class=\"uk-position-bottom-center uk-margin-large-bottom\">Forget Password</a>\r\n\r\n        </form>\r\n    </div>\r\n\r\n</div>\r\n";
 
 /***/ }),
 /* 70 */
@@ -21021,9 +21059,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     template: __webpack_require__(74),
+    data: function data() {
+        return {};
+    },
+
     computed: {
         user: function user() {
             return this.$store.getters['currentUser'];
+        },
+        role: function role() {
+            return this.$store.getters['userRole'];
+        },
+        image_src: function image_src() {
+            return "../../images/users/" + this.$store.getters['currentUser'].image_name;
         }
     },
     methods: {}
@@ -21033,7 +21081,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<div id=\"profile\">\r\n  <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\r\n    <!-- left column -->\r\n    <div>\r\n      <vk-grid class=\"uk-padding\">\r\n        <div>\r\n          <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\r\n          <img src=\"" + __webpack_require__(75) + "\" width=\"300\" height=\"400\" alt=\"\">\r\n        </div>\r\n        <a class=\"uk-align-center\" href=\"/#/editprofile\"><h5><u>Edit Profile</u></h5></a>\r\n      </vk-grid>\r\n      \r\n    </div>\r\n\r\n    <!-- center column -->\r\n    <div class=\"uk-width-1-2@s uk-align-left@s\">\r\n      <br/> <br/>\r\n        <div>\r\n            <ul style=\"list-style-type: none;\">\r\n                <li><h1>{{ user.name_title.name_title }} {{ user.first_name.toUpperCase() }} {{ user.last_name.toUpperCase() }}</h1></li>\r\n                <h4>\r\n                  <li id=\"citizen_id\">{{ user.citizen_id }}</li>\r\n                  <li id=\"role\">{{ user.role.role }}</li>\r\n                  <li id=\"gender\">{{ user.gender.gender }}</li>\r\n                  <li id=\"date_of_birth\">Date of Birth {{ user.date_of_birth }}</li>\r\n                \r\n                <hr class=\"uk-description-list-divider\">\r\n                  <li><h4>WORK</h4></li>\r\n                  <li id=\"unit\">{{ user.workplace }}</li>\r\n            </h4>\r\n            <hr class=\"uk-description-list-divider\">\r\n            </ul>\r\n        </div>\r\n        <vk-grid>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h4>CONTACT INFORMATION</h4></li>\r\n                    <h4><li>Telephone</li>\r\n                      <li>Email</li>\r\n                      <li>Address</li></h4>\r\n                </ul>\r\n            </div>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h4>&nbsp;</h4></li>\r\n                    <h4><li id=\"contact_number\">{{ user.contact_number }}</li>\r\n                      <li id=\"email\">{{ user.email }}</li>\r\n                      <li id=\"address\">{{ user.address }}</li></h4>\r\n                </ul>\r\n            </div>\r\n        </vk-grid>\r\n    </div>\r\n\r\n    <!-- right column -->\r\n    <div class=\"uk-align-center@s\">\r\n        <vk-grid class=\"uk-padding-large\">\r\n        </vk-grid>\r\n    </div>\r\n\r\n  </vk-grid>\r\n</div>\r\n";
+module.exports = "<div id=\"profile\">\r\n  <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\r\n    <!-- left column -->\r\n    <div>\r\n      <vk-grid class=\"uk-padding\">\r\n        <div>\r\n          <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\r\n          <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"user.image_name\">\r\n            <img src=\"" + __webpack_require__(75) + "\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!user.image_name\">\r\n        </div>\r\n        <a class=\"uk-align-center\" href=\"/#/editprofile\"><h5><u>Edit Profile</u></h5></a>\r\n      </vk-grid>\r\n      \r\n    </div>\r\n\r\n    <!-- center column -->\r\n    <div class=\"uk-width-1-2@s uk-align-left@s\">\r\n      <br/> <br/>\r\n        <div>\r\n            <ul style=\"list-style-type: none;\">\r\n                <li><h1>{{ user.name_title }} {{ user.first_name.toUpperCase() }} {{ user.last_name.toUpperCase() }}</h1></li>\r\n                <h4>\r\n                  <li id=\"citizen_id\">{{ user.citizen_id }}</li>\r\n                  <li id=\"role\">{{ role }}</li>\r\n                  <li id=\"gender\">{{ user.gender }}</li>\r\n                  <li id=\"date_of_birth\">Date of Birth {{ user.date_of_birth }}</li>\r\n                \r\n                <hr class=\"uk-description-list-divider\">\r\n                  <li><h4>WORK</h4></li>\r\n                  <li id=\"unit\">{{ user.workplace }}</li>\r\n            </h4>\r\n            <hr class=\"uk-description-list-divider\">\r\n            </ul>\r\n        </div>\r\n        <vk-grid>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h4>CONTACT INFORMATION</h4></li>\r\n                    <h4><li>Telephone</li>\r\n                      <li>Email</li>\r\n                      <li>Address</li></h4>\r\n                </ul>\r\n            </div>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h4>&nbsp;</h4></li>\r\n                    <h4><li id=\"contact_number\">{{ user.contact_number }}</li>\r\n                      <li id=\"email\">{{ user.email }}</li>\r\n                      <li id=\"address\">{{ user.address }}</li></h4>\r\n                </ul>\r\n            </div>\r\n        </vk-grid>\r\n    </div>\r\n\r\n    <!-- right column -->\r\n    <div class=\"uk-align-center@s\">\r\n        <vk-grid class=\"uk-padding-large\">\r\n        </vk-grid>\r\n    </div>\r\n\r\n  </vk-grid>\r\n</div>\r\n";
 
 /***/ }),
 /* 75 */
@@ -21590,7 +21638,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* 98 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"user-list\" xmlns:v-on=\"http://www.w3.org/1999/xhtml\">\r\n    <h1>User list</h1>\r\n    <paginate name=\"users\" :list=\"users\" :per=\"10\">\r\n        <div v-for=\"user in paginated('users')\">\r\n            <router-link :to=\"{ name: 'user', params: { id: user.id }}\">{{ user }}</div>\r\n        </div>\r\n    </paginate>\r\n    <paginate-links for=\"users\" :show-step-links=\"true\" :hide-single-page=\"true\" :limit=\"10\"></paginate-links>\r\n</div>";
+module.exports = "<div id=\"user-list\" xmlns:v-on=\"http://www.w3.org/1999/xhtml\">\r\n    <h1>User list</h1>\r\n    <paginate name=\"users\" :list=\"users\" :per=\"10\">\r\n        <div v-for=\"user in paginated('users')\">\r\n            <router-link :to=\"{ name: 'user', params: { id: user.id }}\">{{ user }}</router-link>\r\n        </div>\r\n    </paginate>\r\n    <paginate-links for=\"users\" :show-step-links=\"true\" :hide-single-page=\"true\" :limit=\"10\"></paginate-links>\r\n</div>";
 
 /***/ }),
 /* 99 */
