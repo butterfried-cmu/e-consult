@@ -17,10 +17,13 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $this->validate($request, [
-            'username' => 'required',
-            'password' => 'required'
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|min:4',
+            'password' => 'required|min:4'
         ]);
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 200);
+        }
         $credentials = $request->only('username', 'password');
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
@@ -34,28 +37,8 @@ class AuthController extends Controller
             ], 500);
         }
         $currentUser = Auth::user();
-        $user = DB::table('users')
-            ->join('roles', 'roles.id', '=', 'users.role')
-            ->join('name_titles', 'name_titles.id', '=', 'users.name_title')
-            ->join('genders', 'genders.id', '=', 'users.gender')
-            ->where('users.id', $currentUser->id)
-            ->select(
-                'users.id',
-                'users.username',
-                'users.email',
-                'roles.role',
-                'name_titles.name_title',
-                'users.first_name',
-                'users.last_name',
-                'genders.gender',
-                'users.citizen_id',
-                'users.date_of_birth',
-                'users.contact_number',
-                'users.address',
-                'users.workplace',
-                'users.created_at',
-                'users.updated_at'
-            )
+        $user = User::with(['role', 'name_title', 'gender'])
+            ->where('id', $currentUser->id)
             ->first();
         return response()->json([
             'user' => $user,
@@ -65,41 +48,19 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        JWTAuth::invalidate();
+        $token = Input::get('token');
+        JWTAuth::invalidate($token);
         return response([
             'status' => 'success',
-            'msg' => 'Logged out Successfully.'
         ], 200);
     }
 
-    public function getUser(Request $request)
+    public function onRefresh(Request $request)
     {
-        $token = Input::get('token');
-//        echo $token;
         try {
-            $currentUser = JWTAuth::toUser($token);
-            $user = DB::table('users')
-                ->join('roles', 'roles.id', '=', 'users.role')
-                ->join('name_titles', 'name_titles.id', '=', 'users.name_title')
-                ->join('genders', 'genders.id', '=', 'users.gender')
-                ->where('users.id', $currentUser->id)
-                ->select(
-                    'users.id',
-                    'users.username',
-                    'users.email',
-                    'roles.role',
-                    'name_titles.name_title',
-                    'users.first_name',
-                    'users.last_name',
-                    'genders.gender',
-                    'users.citizen_id',
-                    'users.date_of_birth',
-                    'users.contact_number',
-                    'users.address',
-                    'users.workplace',
-                    'users.created_at',
-                    'users.updated_at'
-                )
+            $currentUser = JWTAuth::parseToken()->toUser();
+            $user = User::with(['role', 'name_title', 'gender'])
+                ->where('id', $currentUser->id)
                 ->first();
             return response()->json([
                 'user' => $user

@@ -1,12 +1,7 @@
 <div id="register">
 
-    <div class="alert alert-danger" v-if="">
+    <div class="alert alert-danger" v-if="error">
         <p>There was an error, unable to complete registration.</p>
-    </div>
-    <div class="alert alert-success" v-if="">
-        <p>Registration completed. You can now
-            <router-link :to="{name:'login'}">sign in.</router-link>
-        </p>
     </div>
 
     <vk-grid class="uk-text-center uk-child-width-expand@s" uk-grid>

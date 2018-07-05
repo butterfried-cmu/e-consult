@@ -20,23 +20,15 @@
                     date_of_birth: '',
                 },
                 date: '',
-                form: {}
+                form: {},
+                error: null,
             };
         },
 
         computed: {},
 
         created() {
-            axios.get("/user/form")
-                .then(response => {
-                        // console.log(response)
-                        this.form = response.data.form;
-                        console.log(response);
-                    }
-                ).catch(error => {
-                    console.log(error);
-                }
-            );
+            this.loadFormdata();
         },
 
         methods: {
@@ -53,13 +45,20 @@
                 console.log(payload);
                 this.$store.dispatch('addUser', payload)
                     .then(response => {
-                            console.log(response)
-                            // this.$router.push("/")
-                        }, error => {
-                            console.log(error)
-                            // this.errors.push(error)
+                            alert("Create success");
+                            console.log(response);
+                            this.$router.push("/");
                         }
                     );
+            },
+            loadFormdata() {
+                axios.get("/user/form")
+                    .then(response => {
+                            // console.log(response)
+                            this.form = response.data.form;
+                            console.log(response);
+                        }
+                    )
             }
         }
 
