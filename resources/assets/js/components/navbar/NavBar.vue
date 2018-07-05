@@ -12,6 +12,9 @@
             },
             user() {
                 return this.$store.getters['currentUser'];
+            },
+            role() {
+                return this.$store.getters['userRole'];
             }
         },
         methods: {
@@ -20,7 +23,7 @@
                 this.$router.push("login")
             },
             isRole(role) {
-                return role === this.$store.getters['currentUser'].role;
+                return role === this.$store.getters['userRole'];
             }
         }
     }

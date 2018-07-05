@@ -11,8 +11,11 @@
         },
         methods: {
             login() {
-                var payload = {'username': this.username, 'password': this.password};
-                console.log('LOGIN');
+                let payload = {
+                    'username': this.username,
+                    'password': this.password
+                };
+                console.log('login.vue : login method');
                 this.$store.dispatch('login', payload)
                     .then(response => {
                             this.$router.push("/")

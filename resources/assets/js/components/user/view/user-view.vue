@@ -6,9 +6,20 @@
 
     export default {
         template: require('./user-view.html'),
+        data(){
+            return {
+
+            }
+        },
         computed: {
             user(){
                 return this.$store.getters['currentUser'];
+            },
+            role(){
+                return this.$store.getters['userRole']
+            },
+            image_src(){
+                return "../../images/users/" + this.$store.getters['currentUser'].image_name;
             }
         },
         methods: {

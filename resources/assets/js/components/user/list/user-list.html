@@ -1,0 +1,9 @@
+<div id="user-list" xmlns:v-on="http://www.w3.org/1999/xhtml">
+    <h1>User list</h1>
+    <paginate name="users" :list="users" :per="10">
+        <div v-for="user in paginated('users')">
+            <router-link :to="{ name: 'user', params: { id: user.id }}">{{ user }}</router-link>
+        </div>
+    </paginate>
+    <paginate-links for="users" :show-step-links="true" :hide-single-page="true" :limit="10"></paginate-links>
+</div>

@@ -18,25 +18,33 @@
                     gender: '',
                     name_title: '',
                     date_of_birth: '',
+                    image: '',
                 },
                 date: '',
-                form: {}
+                form: {
+                    roles: [
+                        {role: "ADMIN"},
+                        {role: "DOCTOR"},
+                        {role: "NURSE"},
+                    ],
+                    name_titles: [
+                        {title: "Mr."},
+                        {title: "Mrs."},
+                        {title: "Miss"},
+                    ],
+                    genders: [
+                        {gender: "Male"},
+                        {gender: "Female"},
+                    ]
+                },
+                error: null,
             };
         },
 
         computed: {},
 
         created() {
-            axios.get("/user/form")
-                .then(response => {
-                        // console.log(response)
-                        this.form = response.data.form;
-                        console.log(response);
-                    }
-                ).catch(error => {
-                    console.log(error);
-                }
-            );
+            // this.loadFormdata();
         },
 
         methods: {
@@ -49,18 +57,39 @@
                 return this.user.date_of_birth;
             },
             addUser() {
-                var payload = this.user;
+                let payload = this.user;
                 console.log(payload);
                 this.$store.dispatch('addUser', payload)
                     .then(response => {
-                            console.log(response)
-                            // this.$router.push("/")
-                        }, error => {
-                            console.log(error)
-                            // this.errors.push(error)
+                            if (!!response.data.message && response.data.message === "Successfully created user") {
+                                alert("Create success");
+                                console.log(response);
+                                this.$router.push("/");
+                            }else{
+                                this.error = response.data;
+                            }
                         }
                     );
-            }
+            },
+            onImageChange(e) {
+                let files = e.target.files || e.dataTransfer.files;
+                if (!files.length)
+                    return;
+                this.createImage(files[0]);
+            },
+            createImage(file) {
+                let reader = new FileReader();
+                let vm = this;
+                reader.onload = (e) => {
+                    vm.user.image = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            },
+            uploadImage() {
+                axios.post('/image/store', {image: this.image}).then(response => {
+                    console.log(response);
+                });
+            },
         }
 
     }

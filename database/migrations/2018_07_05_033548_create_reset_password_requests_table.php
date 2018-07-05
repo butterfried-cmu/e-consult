@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserRolesTable extends Migration
+class CreateResetPasswordRequestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateUserRolesTable extends Migration
      */
     public function up()
     {
-        Schema::create('roles', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('role');
+        Schema::create('reset_password_requests', function (Blueprint $table) {
+            $table->string('request_id');
+            $table->string('account_username');
         });
     }
 
@@ -26,6 +26,6 @@ class CreateUserRolesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('reset_password_requests');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -33,8 +34,9 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param  \Exception  $exception
+     * @param  \Exception $exception
      * @return void
+     * @throws Exception
      */
     public function report(Exception $exception)
     {
@@ -44,19 +46,21 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Exception $exception
      * @return \Illuminate\Http\Response
      */
     public function render($request, Exception $exception)
     {
-        if ( $exception instanceof TokenExpiredException ) {
+        if ($exception instanceof QueryException) {
+            return Response::json(['error' => 'Error connecting to database'], 500);
+        } else if ($exception instanceof TokenExpiredException) {
             return Response::json(['error' => 'Token Expired'],
                 $exception->getStatusCode());
-        } else if ( $exception instanceof TokenInvalidException ) {
+        } else if ($exception instanceof TokenInvalidException) {
             return Response::json(['error' => 'Token Invalid'],
                 $exception->getStatusCode());
-        } else if ( $exception instanceof JWTException ) {
+        } else if ($exception instanceof JWTException) {
             return Response::json(['error' => 'Error fetching Token'],
                 $exception->getStatusCode());
         }
