@@ -21,23 +21,19 @@ Route::post('/auth/login', [
     'uses' => 'authcontroller@login',
 ]);
 
-Route::any('/auth/logout', [
+Route::post('/auth/logout', [
     'uses' => 'authcontroller@logout'
 ]);
-Route::get('/auth/refresh', [
-    'uses' => 'authcontroller@onRefresh',
-//    'middleware' => ['auth.jwt']
+
+Route::get('/auth/user', [
+    'uses' => 'authcontroller@getUser'
 ]);
 
 
 Route::post('/user/add', [
     'uses' => 'usercontroller@addUser',
-//    'middleware' => ['auth.jwt', 'role:ADMIN']
+    'middleware' => 'auth.jwt'
 ]);
 Route::get('/user/form', [
     'uses' => 'usercontroller@getformdata'
-]);
-Route::get('/users', [
-    'uses' => 'usercontroller@getUsers',
-//    'middleware' => ['auth.jwt']
 ]);

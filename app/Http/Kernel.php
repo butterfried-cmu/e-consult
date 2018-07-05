@@ -61,6 +61,5 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'auth.jwt' => \Tymon\JWTAuth\Middleware\GetUserFromToken::class,
-        'role' => Middleware\ValidateRole::class,
     ];
 }

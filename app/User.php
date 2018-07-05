@@ -9,8 +9,6 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    public $timestamps = false;
-
     protected $table = 'users';
 
     /**
@@ -40,23 +38,6 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password','created_at', 'updated_at', 'remember_token',
+        'password', 'remember_token',
     ];
-
-
-    public function role()
-    {
-        return $this->belongsTo('App\Role','role');
-    }
-
-    public function name_title()
-    {
-        return $this->belongsTo('App\NameTitle','name_title');
-    }
-
-    public function gender()
-    {
-        return $this->belongsTo('App\Gender', 'gender');
-    }
-
 }

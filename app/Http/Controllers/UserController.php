@@ -2,20 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Role;
 use App\User;
 use Illuminate\Http\Request;
+use Namshi\JOSE\JWT;
 use Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use JWTAuth;
 use DB;
-
-/*
- * addUser -> postUser
- * getUser
- * getUsers
- * getFormData
- */
 
 class UserController extends Controller
 {
@@ -23,18 +16,31 @@ class UserController extends Controller
     {
         $messages = [
             'required' => 'required',
-            'date' => 'not date pattern',
-            'email' => 'not email pattern',
-            'numeric' => 'not numeric',
-            'unique' => 'already exist',
-            'confirmed' => 'not matched',
-
+            'date' => 'date',
+            'email' => 'email',
+            'numeric' => 'num',
+            'unique' => 'unique'
         ];
+
+//        $attributes = [
+//            'username',
+//            'password',
+//            'email',
+//            'register_by',
+//            'role',
+//            'first_name',
+//            'middle_name',
+//            'last_name',
+//            'gender',
+//            'date_of_birth',
+//            'contact_number',
+//            'address'
+//        ];
 
         $validator = Validator::make($request->all(), [
             'username' => 'required|unique:users|alpha_num',
             'password' => 'required|confirmed',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users',
             'role' => 'required|numeric',
             'name_title' => 'required|numeric',
             'first_name' => 'required|alpha',
@@ -45,7 +51,22 @@ class UserController extends Controller
             'contact_number' => 'required|regex:/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/',
             'address' => 'required',
             'workplace' => 'required'
-        ], $messages);
+        ]);
+
+//        $validator = $this->validate($request, [
+//            'username' => 'required|unique:users',
+//            'password' => 'required',
+//            'email' => 'required|email|unique:users',
+//            'register_by' => 'nullable|numeric',
+//            'role' => 'required|numeric',
+//            'first_name' => 'required',
+//            'middle_name' => 'required',
+//            'last_name' => 'required',
+//            'gender' => 'required|numeric',
+//            'date_of_birth' => 'required|date',
+//            'contact_number' => 'required',
+//            'address' => 'required'
+//        ]);
 
         if ($validator->fails()) {
             return response()->json($validator->messages(), 200);
@@ -76,11 +97,33 @@ class UserController extends Controller
 
     public function getUser(Request $request)
     {
-        $id = Input::get('id');
+//        $token = Input::get('id');
 //        echo $token;
         try {
-            $user = User::with(['role','name_title','gender'])
-                ->where('id', $id)
+//            $currentUser = JWTAuth::toUser($token);
+            $currentUser = JWTAuth::parseToken()->toUser();
+            $user = DB::table('users')
+                ->join('roles', 'roles.id', '=', 'users.role')
+                ->join('name_titles', 'name_titles.id', '=', 'users.name_title')
+                ->join('genders', 'genders.id', '=', 'users.gender')
+                ->where('users.id', $currentUser->id)
+                ->select(
+                    'users.id',
+                    'users.username',
+                    'users.email',
+                    'roles.role',
+                    'name_titles.name_title',
+                    'users.first_name',
+                    'users.last_name',
+                    'genders.gender',
+                    'users.citizen_id',
+                    'users.date_of_birth',
+                    'users.contact_number',
+                    'users.address',
+                    'users.workplace',
+                    'users.created_at',
+                    'users.updated_at'
+                )
                 ->first();
             return response()->json([
                 'user' => $user
@@ -92,26 +135,10 @@ class UserController extends Controller
         }
     }
 
-    public function getUsers(Request $request)
-    {
-//        $token = Input::get('id');
-//        echo $token;
-        try {
-            $users = User::with(['role','name_title','gender'])->get();
-            return response()->json([
-                'allUsers' => $users
-            ], 200);
-        } catch (JWTException $exeption) {
-            return response()->json([
-                'error' => 'Could not get users'
-            ], 500);
-        }
-    }
-
     public function getFormData(Request $request)
     {
         try {
-            $roles = Role::get();
+            $roles = DB::table('roles')->get();
             $genders = DB::table('genders')->get();
             $name_titles = DB::table('name_titles')->get();
             return response()->json([

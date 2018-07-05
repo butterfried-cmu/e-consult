@@ -12,15 +12,13 @@
         methods: {
             login() {
                 var payload = {'username': this.username, 'password': this.password};
-                console.log('login.vue : login method');
+                console.log('LOGIN');
                 this.$store.dispatch('login', payload)
                     .then(response => {
-                        console.log('login.vue : login passed');
-                            this.$router.push("/");
+                            this.$router.push("/")
                         }, error => {
-                        console.log('login.vue : login failed');
-                            // console.log(error);
-                            // this.errors.push(error)
+                            console.log(error);
+                            this.errors.push(error)
                         }
                     );
             }
