@@ -1,9 +1,59 @@
 <div id="user-list" xmlns:v-on="http://www.w3.org/1999/xhtml">
-    <h1>User list</h1>
-    <paginate name="users" :list="users" :per="10">
+    <div class="uk-container uk-width-auto@m">
+        <div><section></section></div>
+        <h2 class="uk-text-center"><b>User List</b></h2>
+
+    <div uk-grid>
+        <div class="uk-width-auto@m uk-text-center">
+                <div class="uk-margin">
+                        <form class="uk-search uk-search-default">
+                                <span class="uk-search-icon"><vk-icon icon="search"></vk-icon></span>
+                            <input class="uk-search-input" type="search" placeholder="Search...">
+                        </form>
+                </div>
+        </div>
+        <div class="uk-width-auto@m uk-container">
+                <ul class="uk-list uk-list-large uk-list-divider">
+                    <li>
+                        <div class="uk-width-auto">
+                            <img class="uk-border-circle" width="40" height="40" src="user.png">
+                            <span class="uk-text-large">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>
+                            <span class="uk-text-muted">&nbsp;&nbsp;&nbsp;Doctor</span>
+                        </div>
+                    </li>
+                    <li>
+                            <div class="uk-width-auto">
+                                    <img class="uk-border-circle" width="40" height="40" src="user.png">
+                                    <span class="uk-text-large">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>
+                                    <span class="uk-text-muted">&nbsp;&nbsp;&nbsp;Doctor</span>
+                            </div>    
+                    </li>
+                    <li>
+                            <div class="uk-width-auto">
+                                    <img class="uk-border-circle" width="40" height="40" src="user.png">
+                                    <span class="uk-text-large">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>
+                                    <span class="uk-text-muted">&nbsp;&nbsp;&nbsp;Doctor</span>
+                            </div>    
+                    </li>
+                </ul>
+        </div>
+    </div>
+</div>
+<ul class="uk-pagination uk-flex-center" uk-margin>
+        <li><a href="uk-active"><span uk-pagination-previous></span></a></li>
+        <li><a href="#">1</a></li>
+        <li class="uk-disabled"><span>...</span></li>
+        <li><a href="#">5</a></li>
+        <li><a href="#">6</a></li>
+        <li class="#"><span>7</span></li>
+        <li><a href="#">8</a></li>
+        <li><a href="#"><span uk-pagination-next></span></a></li>
+    </ul>
+    
+    <!-- <paginate name="users" :list="users" :per="10">
         <div v-for="user in paginated('users')">
             <router-link :to="{ name: 'user', params: { id: user.id }}">{{ user }}</router-link>
         </div>
     </paginate>
-    <paginate-links for="users" :show-step-links="true" :hide-single-page="true" :limit="10"></paginate-links>
+    <paginate-links for="users" :show-step-links="true" :hide-single-page="true" :limit="10"></paginate-links> -->
 </div>
