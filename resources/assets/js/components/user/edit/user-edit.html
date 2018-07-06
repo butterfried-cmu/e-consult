@@ -12,6 +12,10 @@
                         <input type="file">
                         <button class="uk-button uk-button-default uk-align-center" type="button" tabindex="-1">Change
                         </button>
+                        <div class="" v-if="user.image">
+                            <img :src="user.image" class="img-responsive" height="70" width="90">
+                        </div>
+                        <input type="file" v-on:change="onImageChange" class="form-control">
                     </div>
                 </div>
             </vk-grid>
@@ -36,14 +40,14 @@
                     <hr class="uk-divider-icon"/>
                     <div class="uk-margin uk-width-1-3@s">
                         <select class="uk-select">
-                            <option value="0">Name Title</option>
-                            <option value="1">Mrs.</option>
-                            <option value="2">Mr.</option>
-                            <option value="3">Miss</option>
-                            <option value="4">Professor</option>
-                            <option value="5">Assistant Professor</option>
-                            <option value="6">Associate Professor</option>
-                            <option value="7">Emeritus Professor</option>
+                            <option value="">Name Title</option>
+                            <option value="Mr.">Mr.</option>
+                            <option value="Mrs.">Mrs.</option>
+                            <option value="Miss">Miss</option>
+                            <option value="Professor">Professor</option>
+                            <option value="Assistant Professor">Assistant Professor</option>
+                            <option value="Assistant Professor">Assistant Professor</option>
+                            <option value="Emeritus Professor</">Emeritus Professor</option>
                         </select>
                     </div>
                     <div class="uk-margin">
@@ -60,9 +64,9 @@
                     </div>
                     <div class="uk-margin uk-width-1-3@s">
                         <select class="uk-select">
-                            <option value="0">Sex</option>
-                            <option value="1">Male</option>
-                            <option value="2">Female</option>
+                            <option value="">Sex</option>
+                            <option value="Male">Male</option>
+                            <option value="2"4ff>Female</option>
                         </select>
                     </div>
                     <div class="uk-margin uk-width-1-3@s">

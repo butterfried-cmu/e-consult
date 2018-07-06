@@ -31,7 +31,10 @@
                         {title: "Mr."},
                         {title: "Mrs."},
                         {title: "Miss"},
-                    ],
+                        {title: "Professor"},
+                        {title: "Assistant Professor"},
+                        {title: "Associate "},
+                     ],
                     genders: [
                         {gender: "Male"},
                         {gender: "Female"},
