@@ -13393,31 +13393,46 @@ var LOGOUT = "LOGOUT";
 var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
     state: {
         isLoggedIn: null,
-        currentUser: null
-
+        user: null,
+        account: null,
+        allUsers: null
     },
     getters: {
         isLoggedIn: function isLoggedIn(state) {
             return state.isLoggedIn;
         },
         currentUser: function currentUser(state) {
-            return state.currentUser;
+            return state.user;
+        },
+        userRole: function userRole(state) {
+            return state.account.role;
+        },
+        allUsers: function allUsers(state) {
+            return state.allUsers;
         }
     },
     mutations: {
         initialiseStore: function initialiseStore(state) {
             state.isLoggedIn = false;
-            state.currentUser = {};
+            state.user = {};
+            state.account = {};
+            state.allUsers = {};
             console.log("initialiseStore");
         },
         setUser: function setUser(state, user) {
-            state.currentUser = user;
+            state.user = user;
+        },
+        setAccount: function setAccount(state, account) {
+            state.account = account;
         },
         updateIsLoggedIn: function updateIsLoggedIn(state) {
             state.isLoggedIn = !!localStorage.getItem('token');
         },
         clearUser: function clearUser(state) {
-            state.currentUser = {};
+            state.user = {};
+        },
+        setAllUsers: function setAllUsers(state, users) {
+            state.allUsers = users;
         }
     },
     actions: {
@@ -13440,6 +13455,7 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                         __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get("/auth/user?token=" + localStorage.getItem('token')).then(function (response) {
                             // console.log(response)
                             _this.dispatch('setUser', response.data.user);
+                            _this.dispatch('setAccount', response.data.account);
                             _this.dispatch('updateIsLoggedIn');
                             console.log("Token verified");
                         }).catch(function (error) {
@@ -13460,12 +13476,17 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 
             commit('setUser', user);
         },
-        login: function login(_ref5, _ref6) {
+        setAccount: function setAccount(_ref5, account) {
+            var commit = _ref5.commit;
+
+            commit('setAccount', account);
+        },
+        login: function login(_ref6, _ref7) {
             var _this2 = this;
 
-            var commit = _ref5.commit;
-            var username = _ref6.username,
-                password = _ref6.password;
+            var commit = _ref6.commit;
+            var username = _ref7.username,
+                password = _ref7.password;
 
             return new Promise(function (resolve, reject) {
                 setTimeout(function () {
@@ -13478,6 +13499,7 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                         // console.log(response)
                         localStorage.setItem("token", response.data.token);
                         _this2.dispatch('setUser', response.data.user);
+                        _this2.dispatch('setAccount', response.data.account);
                         _this2.dispatch('updateIsLoggedIn');
                         console.log(response);
                         resolve(response);
@@ -13488,15 +13510,15 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                 }, 1000);
             });
         },
-        logout: function logout(_ref7) {
-            var commit = _ref7.commit;
+        logout: function logout(_ref8) {
+            var commit = _ref8.commit;
 
             localStorage.removeItem("token");
             commit('updateIsLoggedIn');
             commit('clearUser');
         },
-        addUser: function addUser(_ref8, user) {
-            var commit = _ref8.commit;
+        addUser: function addUser(_ref9, user) {
+            var commit = _ref9.commit;
 
             return new Promise(function (resolve, reject) {
                 setTimeout(function () {
@@ -13512,6 +13534,27 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
                     });
                 }, 1000);
             });
+        },
+        getAllUsers: function getAllUsers(_ref10) {
+            var commit = _ref10.commit;
+
+            if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
+                console.log("No Token in localStorage");
+            } else {
+                console.log("Token in localStorage");
+                return new Promise(function (resolve) {
+                    setTimeout(function () {
+                        __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get("/users?token=" + localStorage.getItem('token')).then(function (response) {
+                            console.log(response);
+                            commit('setAllUsers', response.data.users);
+                            console.log("All users GET");
+                        }).catch(function (error) {
+                            console.log(error);
+                            resolve(error);
+                        });
+                    }, 1000);
+                });
+            }
         }
     }
 });
@@ -13622,16 +13665,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Resetpassword_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Resetpassword_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_not_found_component_not_found_component_vue__ = __webpack_require__(91);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_not_found_component_not_found_component_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15__components_not_found_component_not_found_component_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_vuikit__ = __webpack_require__(96);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__vuikit_icons__ = __webpack_require__(97);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__vuikit_theme__ = __webpack_require__(98);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__vuikit_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_18__vuikit_theme__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_user_list_user_list_vue__ = __webpack_require__(115);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_user_list_user_list_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_16__components_user_list_user_list_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17_vuikit__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__vuikit_icons__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__vuikit_theme__ = __webpack_require__(98);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__vuikit_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_19__vuikit_theme__);
 
 
 
 
 
 // import BootstrapVue from 'bootstrap-vue';
+
 
 
 
@@ -13653,8 +13699,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_16_vuikit__["a" /* default */]);
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_17__vuikit_icons__["a" /* default */]);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_17_vuikit__["a" /* default */]);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_18__vuikit_icons__["a" /* default */]);
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]);
 // Vue.use(BootstrapVue);
@@ -13683,42 +13729,46 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
     routes: [{
         path: '/',
         name: 'index',
-        component: __WEBPACK_IMPORTED_MODULE_7__components_index_Index_vue___default.a,
-        beforeEnter: ifLoggedIn
+        component: __WEBPACK_IMPORTED_MODULE_7__components_index_Index_vue___default.a
+        //beforeEnter: ifLoggedIn,
     }, {
         path: '/login',
         name: 'login',
-        component: __WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue___default.a,
-        beforeEnter: ifNotLoggedIn
+        component: __WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue___default.a
+        //beforeEnter: ifNotLoggedIn,
     }, {
         path: '/add',
         name: 'add',
-        component: __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue___default.a,
-        beforeEnter: ifLoggedIn
+        component: __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue___default.a
+        //beforeEnter: ifLoggedIn,
     }, {
         path: '/profile',
         name: 'profile',
-        component: __WEBPACK_IMPORTED_MODULE_11__components_user_view_user_view_vue___default.a,
-        beforeEnter: ifLoggedIn
+        component: __WEBPACK_IMPORTED_MODULE_11__components_user_view_user_view_vue___default.a
+        //beforeEnter: ifLoggedIn,
     }, {
         path: '/editprofile',
         name: 'editprofile',
-        component: __WEBPACK_IMPORTED_MODULE_12__components_user_edit_user_edit_vue___default.a,
-        beforeEnter: ifLoggedIn
+        component: __WEBPACK_IMPORTED_MODULE_12__components_user_edit_user_edit_vue___default.a
+        //beforeEnter: ifLoggedIn,
     }, {
         path: '/forgetpassword',
         name: 'forgetpassword',
-        component: __WEBPACK_IMPORTED_MODULE_13__components_user_forgetpassword_Forgetpassword_vue___default.a,
-        beforeEnter: ifLoggedIn
+        component: __WEBPACK_IMPORTED_MODULE_13__components_user_forgetpassword_Forgetpassword_vue___default.a
+        //beforeEnter: ifLoggedIn,
     }, {
         path: '/resetpassword',
         name: 'resetpassword',
-        component: __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Resetpassword_vue___default.a,
-        beforeEnter: ifLoggedIn
+        component: __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Resetpassword_vue___default.a
+        //beforeEnter: ifLoggedIn,
     }, {
         path: '*',
         name: 'not-found-component',
         component: __WEBPACK_IMPORTED_MODULE_15__components_not_found_component_not_found_component_vue___default.a
+    }, {
+        path: '/user-list',
+        name: 'user-list',
+        component: __WEBPACK_IMPORTED_MODULE_16__components_user_list_user_list_vue___default.a
     }]
 });
 
@@ -17722,6 +17772,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         user: function user() {
             return this.$store.getters['currentUser'];
+        },
+        role: function role() {
+            return this.$store.getters['userRole'];
         }
     },
     methods: {
@@ -17730,7 +17783,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$router.push("login");
         },
         isRole: function isRole(role) {
-            return role === this.$store.getters['currentUser'].role;
+            return role === this.$store.getters['userRole'];
         }
     }
 });
@@ -17739,7 +17792,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* 50 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"navbar\">\n    <vk-navbar v-if=\"isLoggedIn\">\n        <vk-navbar-nav>\n            <vk-navbar-nav-item icon=\"home\" title=\"MED E-CONSULTs\" href=\"/#/\"></vk-navbar-nav-item>\n            <vk-navbar-item>\n                <router-link to=\"add\" v-if=\"isRole('ADMIN')\">ADD USER</router-link>\n            </vk-navbar-item>\n        </vk-navbar-nav>\n        <vk-navbar-nav slot=\"right\">\n            <vk-navbar-item>\n                <router-link to=\"profile\" >{{ user.first_name.toUpperCase() }} {{user.last_name.toUpperCase()}}</router-link>\n            </vk-navbar-item>\n            <vk-navbar-nav-item title=\"logout\" v-on:click=\"logout\">\n            </vk-navbar-nav-item>\n            <vk-navbar-nav-item icon=\"cog\"></vk-navbar-nav-item>\n        </vk-navbar-nav>\n    </vk-navbar>\n</div>";
+module.exports = "<div id=\"navbar\">\n    <vk-navbar v-if=\"isLoggedIn\">\n        <vk-navbar-nav>\n            <vk-navbar-nav-item icon=\"home\" title=\"MED E-CONSULTs\" :to=\"{ name: 'index' }\"></vk-navbar-nav-item>\n            <vk-navbar-item>\n                <router-link to=\"add\" v-if=\"isRole('ADMIN')\">ADD USER</router-link>\n            </vk-navbar-item>\n        </vk-navbar-nav>\n        <vk-navbar-nav slot=\"right\">\n            <vk-navbar-item>\n                <router-link to=\"profile\" >{{ user.first_name.toUpperCase() }} {{user.last_name.toUpperCase()}}</router-link>\n            </vk-navbar-item>\n            <vk-navbar-nav-item title=\"logout\" v-on:click=\"logout\">\n            </vk-navbar-nav-item>\n            <vk-navbar-nav-item icon=\"cog\"></vk-navbar-nav-item>\n        </vk-navbar-nav>\n    </vk-navbar>\n</div>";
 
 /***/ }),
 /* 51 */
@@ -19180,10 +19233,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 role: '',
                 gender: '',
                 name_title: '',
-                date_of_birth: ''
+                date_of_birth: '',
+                image: ''
             },
             date: '',
-            form: {}
+            form: {
+                roles: [{ role: "ADMIN" }, { role: "DOCTOR" }, { role: "NURSE" }],
+                name_titles: [{ title: "Mr." }, { title: "Mrs." }, { title: "Miss" }],
+                genders: [{ gender: "Male" }, { gender: "Female" }]
+            },
+            error: null
         };
     },
 
@@ -19191,15 +19250,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     computed: {},
 
     created: function created() {
-        var _this = this;
-
-        __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("/user/form").then(function (response) {
-            // console.log(response)
-            _this.form = response.data.form;
-            console.log(response);
-        }).catch(function (error) {
-            console.log(error);
-        });
+        // this.loadFormdata();
     },
 
 
@@ -19213,14 +19264,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return this.user.date_of_birth;
         },
         addUser: function addUser() {
+            var _this = this;
+
             var payload = this.user;
             console.log(payload);
             this.$store.dispatch('addUser', payload).then(function (response) {
+                if (!!response.data.message && response.data.message === "Successfully created user") {
+                    alert("Create success");
+                    console.log(response);
+                    _this.$router.push("/");
+                } else {
+                    _this.error = response.data;
+                }
+            });
+        },
+        onImageChange: function onImageChange(e) {
+            var files = e.target.files || e.dataTransfer.files;
+            if (!files.length) return;
+            this.createImage(files[0]);
+        },
+        createImage: function createImage(file) {
+            var reader = new FileReader();
+            var vm = this;
+            reader.onload = function (e) {
+                vm.user.image = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+        uploadImage: function uploadImage() {
+            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('/image/store', { image: this.image }).then(function (response) {
                 console.log(response);
-                // this.$router.push("/")
-            }, function (error) {
-                console.log(error);
-                // this.errors.push(error)
             });
         }
     }
@@ -20728,7 +20801,7 @@ var Datepicker = {render: function(){var _vm=this;var _h=_vm.$createElement;var 
 /* 64 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"register\">\n\n    <div class=\"alert alert-danger\" v-if=\"\">\n        <p>There was an error, unable to complete registration.</p>\n    </div>\n    <div class=\"alert alert-success\" v-if=\"\">\n        <p>Registration completed. You can now\n            <router-link :to=\"{name:'login'}\">sign in.</router-link>\n        </p>\n    </div>\n\n    <vk-grid class=\"uk-text-center uk-child-width-expand@s\" uk-grid>\n        <div class=\"uk-width-medium@s\"></div>\n        <form autocomplete=\"off\">\n            <br/>\n            <h1><b>Register</b></h1>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.username\" class=\"uk-input\" type=\"text\" placeholder=\"Username\" required>\n            </div>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.password\" class=\"uk-input\" type=\"password\" placeholder=\"Password\" id=\"password\">\n            </div>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.password_confirmation\" class=\"uk-input\" type=\"password\" placeholder=\"Confirm Password\"\n                       id=\"cpassword\">\n            </div>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\n            </div>\n            <div class=\"uk-margin uk-width-1-3@s\">\n                <select v-model=\"user.role\" class=\"uk-select\">\n                    <option value=\"\" disabled>Role</option>\n                    <option v-for=\"role in form.roles\" :value=\"role.id\">{{ role.role }}</option>\n                </select>\n            </div>\n\n            <hr class=\"uk-divider-icon\"/>\n            <h4>Personal Information</h4>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.citizen_id\" class=\"uk-input\" type=\"number\" placeholder=\"Citizen Id\">\n            </div>\n            <div class=\"uk-margin uk-width-1-3@s\">\n                <select v-model=\"user.name_title\" class=\"uk-select\">\n                    <option value=\"\" disabled>Name Title</option>\n                    <option v-for=\"title in form.name_titles\" :value=\"title.id\">{{ title.name_title }}</option>\n                </select>\n            </div>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\n            </div>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\n            </div>\n\n            <div class=\"uk-margin uk-width-1-3@s\">\n                <select v-model=\"user.gender\" class=\"uk-select\" placeholder=\"gender\">\n                    <option value=\"\" disabled>Gender</option>\n                    <option v-for=\"gender in form.genders\" :value=\"gender.id\">{{ gender.gender }}</option>\n                </select>\n            </div>\n            <div class=\"uk-margin uk-width-1-3@s\">\n                <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\"></datepicker>\n            </div>\n\n            <h4>Contact Information</h4>\n            <hr class=\"uk-divider-icon\"/>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.contact_number\" class=\"uk-input\" type=\"text\" placeholder=\"Telephone Number\">\n            </div>\n\n            <div class=\"uk-margin\">\n                <input  v-model=\"user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\n            </div>\n\n            <h4>Workplace</h4>\n            <hr class=\"uk-divider-icon\"/>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\n            </div>\n            <p uk-margin class=\"uk-margin-bottom uk-text-center\">\n                <button class=\"uk-button uk-button-primary\" v-on:click=\"addUser\">Add</button>\n                <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\n            </p>\n        </form>\n        <div class=\"uk-width-medium@s\"></div>\n    </vk-grid>\n</div>\n";
+module.exports = "<div id=\"register\">\n\n    <div class=\"alert alert-danger\" v-if=\"\">\n        <p>There was an error, unable to complete registration.</p>\n    </div>\n    <div class=\"alert alert-success\" v-if=\"\">\n        <p>Registration completed. You can now\n            <router-link :to=\"{name:'login'}\">sign in.</router-link>\n        </p>\n    </div>\n\n    <vk-grid class=\"uk-text-center uk-child-width-expand@s\" uk-grid>\n        <div class=\"uk-width-medium@s\"></div>\n        <form autocomplete=\"off\">\n            <br/>\n            <h1><b>Register</b></h1>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.username\" class=\"uk-input\" type=\"text\" placeholder=\"Username\" required>\n            </div>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.password\" class=\"uk-input\" type=\"password\" placeholder=\"Password\" id=\"password\">\n            </div>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.password_confirmation\" class=\"uk-input\" type=\"password\" placeholder=\"Confirm Password\"\n                       id=\"cpassword\">\n            </div>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\n            </div>\n            <div class=\"uk-margin uk-width-1-3@s\">\n                <select v-model=\"user.role\" class=\"uk-select\">\n                    <option value=\"\" disabled>Role</option>\n                    <option v-for=\"role in form.roles\" :value=\"role.role\">{{ role.role }}</option>\n                </select>\n            </div>\n\n            <hr class=\"uk-divider-icon\"/>\n            <h4>Personal Information</h4>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.citizen_id\" class=\"uk-input\" type=\"number\" placeholder=\"Citizen Id\">\n            </div>\n            <div class=\"uk-margin uk-width-1-3@s\">\n                <select v-model=\"user.name_title\" class=\"uk-select\">\n                    <option value=\"\" disabled>Name Title</option>\n                    <option v-for=\"title in form.name_titles\" :value=\"title.title\">{{ title.title }}</option>\n                </select>\n            </div>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\n            </div>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\n            </div>\n\n            <div class=\"uk-margin uk-width-1-3@s\">\n                <select v-model=\"user.gender\" class=\"uk-select\" placeholder=\"gender\">\n                    <option value=\"\" disabled>Gender</option>\n                    <option v-for=\"gender in form.genders\" :value=\"gender.gender\">{{ gender.gender }}</option>\n                </select>\n            </div>\n            <div class=\"uk-margin uk-width-1-3@s\">\n                <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\"></datepicker>\n            </div>\n\n            <h4>Contact Information</h4>\n            <hr class=\"uk-divider-icon\"/>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.contact_number\" class=\"uk-input\" type=\"text\" placeholder=\"Telephone Number\">\n            </div>\n\n            <div class=\"uk-margin\">\n                <input  v-model=\"user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\n            </div>\n\n            <h4>Workplace</h4>\n            <hr class=\"uk-divider-icon\"/>\n            <div class=\"uk-margin\">\n                <input v-model=\"user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\n            </div>\n\n            <div class=\"\" v-if=\"user.image\">\n                <img :src=\"user.image\" class=\"img-responsive\" height=\"70\" width=\"90\">\n            </div>\n            <input type=\"file\" v-on:change=\"onImageChange\" class=\"form-control\">\n\n            <p uk-margin class=\"uk-margin-bottom uk-text-center\">\n                <button @click=\"addUser\" type=\"button\" class=\"uk-button uk-button-primary\">Add</button>\n                <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\n            </p>\n        </form>\n        <div class=\"uk-width-medium@s\"></div>\n    </vk-grid>\n</div>\n";
 
 /***/ }),
 /* 65 */
@@ -20844,8 +20917,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         login: function login() {
             var _this = this;
 
-            var payload = { 'username': this.username, 'password': this.password };
-            console.log('LOGIN');
+            var payload = {
+                'username': this.username,
+                'password': this.password
+            };
+            console.log('login.vue : login method');
             this.$store.dispatch('login', payload).then(function (response) {
                 _this.$router.push("/");
             }, function (error) {
@@ -20861,7 +20937,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* 69 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"login\">\n    <div align=\"center\">\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\n        <h1>LOGIN</h1>\n        <form>\n            <div class=\"uk-margin\">\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"user\"></vk-icon></span>\n                    <input\n                            id=\"email\"\n                            class=\"uk-input form-control\"\n                            type=\"text\"\n                            v-model=\"username\"\n                            placeholder=\"Username\"\n                            required>\n                </div>\n            </div>\n            <div class=\"uk-margin\">\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\n                    <input\n                            id=\"password\"\n                            class=\"uk-input form-control\"\n                            type=\"password\"\n                            v-model=\"password\"\n                            placeholder=\"Password\"\n                            required>\n                </div>\n            </div>\n\n            <button class=\"uk-button uk-button-default uk-button-small uk-button-primary\" v-on:click=\"login\">Login\n            </button>\n            <br/>\n            <a href=\"/#/forgetpassword\" class=\"uk-position-bottom-center uk-margin-large-bottom\">Forget Password</a>\n\n        </form>\n    </div>\n\n</div>\n";
+module.exports = "<div class=\"login\">\n    <div align=\"center\">\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\n        <h1>LOGIN</h1>\n        <form>\n            <div class=\"uk-margin\">\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"user\"></vk-icon></span>\n                    <input\n                            id=\"email\"\n                            class=\"uk-input form-control\"\n                            type=\"text\"\n                            v-model=\"username\"\n                            placeholder=\"Username\"\n                            required>\n                </div>\n            </div>\n            <div class=\"uk-margin\">\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\n                    <input\n                            id=\"password\"\n                            class=\"uk-input form-control\"\n                            type=\"password\"\n                            v-model=\"password\"\n                            placeholder=\"Password\"\n                            required>\n                </div>\n            </div>\n\n            <button @click=\"login\" type=\"button\" class=\"uk-button uk-button-default uk-button-small uk-button-primary\">Login\n            </button>\n            <br/>\n            <a href=\"/#/forgetpassword\" class=\"uk-position-bottom-center uk-margin-large-bottom\">Forget Password</a>\n\n        </form>\n    </div>\n\n</div>\n";
 
 /***/ }),
 /* 70 */
@@ -20969,9 +21045,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     template: __webpack_require__(74),
+    data: function data() {
+        return {};
+    },
+
     computed: {
         user: function user() {
             return this.$store.getters['currentUser'];
+        },
+        role: function role() {
+            return this.$store.getters['userRole'];
+        },
+        image_src: function image_src() {
+            return "../../images/users/" + this.$store.getters['currentUser'].image_name;
         }
     },
     methods: {}
@@ -20981,7 +21067,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<div id=\"profile\">\n  <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\n    <!-- left column -->\n    <div>\n      <vk-grid class=\"uk-padding\">\n        <div>\n          <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\n          <img src=\"" + __webpack_require__(75) + "\" width=\"300\" height=\"400\" alt=\"\">\n        </div>\n        <a class=\"uk-align-center\" href=\"/#/editprofile\"><h5><u>Edit Profile</u></h5></a>\n      </vk-grid>\n      \n    </div>\n\n    <!-- center column -->\n    <div class=\"uk-width-1-2@s uk-align-left@s\">\n      <br/> <br/>\n        <div>\n            <ul style=\"list-style-type: none;\">\n                <li><h1>{{ user.name_title }} {{ user.first_name.toUpperCase() }} {{ user.last_name.toUpperCase() }}</h1></li>\n                <h4>\n                  <li id=\"citizen_id\">{{ user.citizen_id }}</li>\n                  <li id=\"role\">{{ user.role }}</li>\n                  <li id=\"gender\">{{ user.gender }}</li>\n                  <li id=\"date_of_birth\">Date of Birth {{ user.date_of_birth }}</li>\n                \n                <hr class=\"uk-description-list-divider\">\n                  <li><h4>WORK</h4></li>\n                  <li id=\"unit\">{{ user.workplace }}</li>\n            </h4>\n            <hr class=\"uk-description-list-divider\">\n            </ul>\n        </div>\n        <vk-grid>\n            <div>\n                <ul style=\"list-style-type: none;\">\n                    <li><h4>CONTACT INFORMATION</h4></li>\n                    <h4><li>Telephone</li>\n                      <li>Email</li>\n                      <li>Address</li></h4>\n                </ul>\n            </div>\n            <div>\n                <ul style=\"list-style-type: none;\">\n                    <li><h4>&nbsp;</h4></li>\n                    <h4><li id=\"contact_number\">{{ user.contact_number }}</li>\n                      <li id=\"email\">{{ user.email }}</li>\n                      <li id=\"address\">{{ user.address }}</li></h4>\n                </ul>\n            </div>\n        </vk-grid>\n    </div>\n\n    <!-- right column -->\n    <div class=\"uk-align-center@s\">\n        <vk-grid class=\"uk-padding-large\">\n        </vk-grid>\n    </div>\n\n  </vk-grid>\n</div>\n";
+module.exports = "<div id=\"profile\">\n  <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\n    <!-- left column -->\n    <div>\n      <vk-grid class=\"uk-padding\">\n        <div>\n          <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\n          <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"user.image_name\">\n            <img src=\"" + __webpack_require__(75) + "\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!user.image_name\">\n        </div>\n        <a class=\"uk-align-center\" href=\"/#/editprofile\"><h5><u>Edit Profile</u></h5></a>\n      </vk-grid>\n\n    </div>\n\n    <!-- center column -->\n    <div class=\"uk-width-1-2@s uk-align-left@s\">\n      <br/> <br/>\n        <div>\n            <ul style=\"list-style-type: none;\">\n                <li><h1>{{ user.name_title }} {{ user.first_name.toUpperCase() }} {{ user.last_name.toUpperCase() }}</h1></li>\n                <h4>\n                  <li id=\"citizen_id\">{{ user.citizen_id }}</li>\n                  <li id=\"role\">{{ role }}</li>\n                  <li id=\"gender\">{{ user.gender }}</li>\n                  <li id=\"date_of_birth\">Date of Birth {{ user.date_of_birth }}</li>\n\n                <hr class=\"uk-description-list-divider\">\n                  <li><h4>WORK</h4></li>\n                  <li id=\"unit\">{{ user.workplace }}</li>\n            </h4>\n            <hr class=\"uk-description-list-divider\">\n            </ul>\n        </div>\n        <vk-grid>\n            <div>\n                <ul style=\"list-style-type: none;\">\n                    <li><h4>CONTACT INFORMATION</h4></li>\n                    <h4><li>Telephone</li>\n                      <li>Email</li>\n                      <li>Address</li></h4>\n                </ul>\n            </div>\n            <div>\n                <ul style=\"list-style-type: none;\">\n                    <li><h4>&nbsp;</h4></li>\n                    <h4><li id=\"contact_number\">{{ user.contact_number }}</li>\n                      <li id=\"email\">{{ user.email }}</li>\n                      <li id=\"address\">{{ user.address }}</li></h4>\n                </ul>\n            </div>\n        </vk-grid>\n    </div>\n\n    <!-- right column -->\n    <div class=\"uk-align-center@s\">\n        <vk-grid class=\"uk-padding-large\">\n        </vk-grid>\n    </div>\n\n  </vk-grid>\n</div>\n";
 
 /***/ }),
 /* 75 */
@@ -33862,6 +33948,133 @@ module.exports = {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(116)
+}
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(118)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/user/list/user-list.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-46d7552c", Component.options)
+  } else {
+    hotAPI.reload("data-v-46d7552c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 116 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(117);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("5c31d612", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-46d7552c\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-list.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-46d7552c\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-list.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 117 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 118 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+
+// import axios from 'axios';
+// import {APIENDPOINT} from  '../../http-common.js';
+// import loginService from './adminService.js';
+/* harmony default export */ __webpack_exports__["default"] = ({
+  template: __webpack_require__(119),
+  data: function data() {
+    return {};
+  },
+
+  methods: {}
+});
+
+/***/ }),
+/* 119 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = "<div id=\"user-list\" xmlns:v-on=\"http://www.w3.org/1999/xhtml\">\n    <div class=\"uk-container uk-width-auto@m\">\n        <div><section></section></div>\n        <h2 class=\"uk-text-center\"><b>User List</b></h2>\n\n    <div uk-grid>\n        <div class=\"uk-width-auto@m uk-text-center\">\n                <div class=\"uk-margin\">\n                        <form class=\"uk-search uk-search-default\">\n                                <span class=\"uk-search-icon\"><vk-icon icon=\"search\"></vk-icon></span>\n                            <input class=\"uk-search-input\" type=\"search\" placeholder=\"Search...\">\n                        </form>\n                </div>\n        </div>\n        <div class=\"uk-width-auto@m uk-container\">\n                <ul class=\"uk-list uk-list-large uk-list-divider\">\n                    <li>\n                        <div class=\"uk-width-auto\">\n                            <img class=\"uk-border-circle\" width=\"40\" height=\"40\" src=\"" + __webpack_require__(120) + "\">\n                            <span class=\"uk-text-large\">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>\n                            <span class=\"uk-text-muted\">&nbsp;&nbsp;&nbsp;Doctor</span>\n                        </div>\n                    </li>\n                    <li>\n                            <div class=\"uk-width-auto\">\n                                    <img class=\"uk-border-circle\" width=\"40\" height=\"40\" src=\"" + __webpack_require__(120) + "\">\n                                    <span class=\"uk-text-large\">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>\n                                    <span class=\"uk-text-muted\">&nbsp;&nbsp;&nbsp;Doctor</span>\n                            </div>    \n                    </li>\n                    <li>\n                            <div class=\"uk-width-auto\">\n                                    <img class=\"uk-border-circle\" width=\"40\" height=\"40\" src=\"" + __webpack_require__(120) + "\">\n                                    <span class=\"uk-text-large\">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>\n                                    <span class=\"uk-text-muted\">&nbsp;&nbsp;&nbsp;Doctor</span>\n                            </div>    \n                    </li>\n                </ul>\n        </div>\n    </div>\n</div>\n<ul class=\"uk-pagination uk-flex-center\" uk-margin>\n        <li><a href=\"uk-active\"><span uk-pagination-previous></span></a></li>\n        <li><a href=\"#\">1</a></li>\n        <li class=\"uk-disabled\"><span>...</span></li>\n        <li><a href=\"#\">5</a></li>\n        <li><a href=\"#\">6</a></li>\n        <li class=\"#\"><span>7</span></li>\n        <li><a href=\"#\">8</a></li>\n        <li><a href=\"#\"><span uk-pagination-next></span></a></li>\n    </ul>\n    \n    <!-- <paginate name=\"users\" :list=\"users\" :per=\"10\">\n        <div v-for=\"user in paginated('users')\">\n            <router-link :to=\"{ name: 'user', params: { id: user.id }}\">{{ user }}</router-link>\n        </div>\n    </paginate>\n    <paginate-links for=\"users\" :show-step-links=\"true\" :hide-single-page=\"true\" :limit=\"10\"></paginate-links> -->\n</div>";
+
+/***/ }),
+/* 120 */
+/***/ (function(module, exports) {
+
+module.exports = "/images/user.png?065c1b76bda66d87c6c556e9afc4c356";
 
 /***/ })
 /******/ ]);

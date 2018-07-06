@@ -57,6 +57,14 @@ const router = new VueRouter({
             meta: {
                 auth: false
             }
+        },
+        {
+            path: '/userlist',
+            name: 'user-list',
+            component: UserList,
+            meta: {
+                auth: false
+            }
         }
     ]
 });
@@ -82,4 +90,5 @@ module.exports = [
         meta: {
             title: 'Home'
         }
+    }
 ]
