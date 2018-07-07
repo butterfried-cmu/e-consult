@@ -40,7 +40,22 @@
                         {gender: "Female"},
                     ]
                 },
-                error: null,
+                error: {
+                    username: null,
+                    password: null,
+                    role: null,
+                    email: null,
+                    name_title: null,
+                    first_name: null,
+                    last_name: null,
+                    gender: null,
+                    citizen_id: null,
+                    date_of_birth: null,
+                    contact_number: null,
+                    address: null,
+                    workplace: null,
+                    image: null,
+                },
             };
         },
 

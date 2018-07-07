@@ -15,6 +15,7 @@ use JWTAuth;
 use DB;
 use Image;
 use Input;
+use App\Rules\ValidImage;
 
 /*
  * addUser -> postUser
@@ -110,12 +111,14 @@ class UserController extends Controller
     {
         $messages = [
             'required' => 'required',
-            'date' => 'not date pattern',
-            'email' => 'not email pattern',
-            'numeric' => 'not numeric',
-            'unique' => 'already exist',
-            'confirmed' => 'not matched',
-
+            'date' => 'date',
+            'email' => 'email',
+            'numeric' => 'numeric',
+            'unique' => 'unique',
+            'confirmed' => 'confirmed',
+            'alpha_num' => 'alpha_num',
+            'alpha' => 'alpha',
+            'digits' => 'digits',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -134,7 +137,8 @@ class UserController extends Controller
             'address' => 'required',
             'workplace' => 'required',
 
-            'image_name' => 'image',
+            'image' => [new ValidImage],
+//            'image' => 'regex:/^data:image\/(?:gif|png|jpeg|bmp|webp)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/g',
         ], $messages);
 
         if ($validator->fails()) {
@@ -216,7 +220,8 @@ class UserController extends Controller
             'address' => 'required',
             'workplace' => 'required',
 
-            'image_name' => 'image',
+            'image_name' => [new ValidImage],
+//            'image_name' => 'regex:/^data:image\/(?:gif|png|jpeg|bmp|webp)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/g',
         ], $messages);
 
         if ($validator->fails()) {
