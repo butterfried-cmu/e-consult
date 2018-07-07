@@ -5,10 +5,6 @@ import axios from 'axios';
 
 Vue.use(Vuex);
 
-const LOGIN = "LOGIN";
-const LOGIN_SUCCESS = "LOGIN_SUCCESS";
-const LOGOUT = "LOGOUT";
-
 export const store = new Vuex.Store({
     state: {
         isLoggedIn: null,
@@ -143,12 +139,12 @@ export const store = new Vuex.Store({
                         }
                     ).then(response => {
                             // console.log(response)
-                            alert("Create success VUEX");
+                            // alert("Create success VUEX");
                             console.log(response);
                             resolve(response);
                         }
                     ).catch(error => {
-                            alert("Create success VUEX");
+                            // alert("Create success VUEX");
                             console.log(error);
                             reject(error);
                         }

@@ -40,18 +40,18 @@ class UserController extends Controller
             'exists' => 'not exist',
         ];
 
-            $validator = Validator::make($request->all(), [
-                'user_id' => 'required|exists:users',
-            ], $messages);
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users',
+        ], $messages);
 
         if ($validator->fails()) {
             return response()->json($validator->messages(), 200);
         }
 
-            $user = User::find($request->user_id);
-            return response()->json([
-                'user' => $user
-            ], 200);
+        $user = User::find($request->user_id);
+        return response()->json([
+            'user' => $user
+        ], 200);
 
     }
 
@@ -77,11 +77,11 @@ class UserController extends Controller
             return response()->json($validator->messages(), 200);
         }
 
-            $user = User::find($request->user_id);
-            $user->delete();
-            return response()->json([
-                'message' => 'User deleted',
-            ], 200);
+        $user = User::find($request->user_id);
+        $user->delete();
+        return response()->json([
+            'message' => 'User deleted',
+        ], 200);
 
     }
 
@@ -94,10 +94,10 @@ class UserController extends Controller
      */
     public function getUsers(Request $request)
     {
-            $users = User::get();
-            return response()->json([
-                'users' => $users
-            ], 200);
+        $users = Account::with(['user'])->get();
+        return response()->json([
+            'users' => $users
+        ], 200);
     }
 
 

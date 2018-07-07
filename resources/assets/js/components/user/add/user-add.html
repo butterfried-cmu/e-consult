@@ -1,154 +1,209 @@
 <div id="register">
 
-    <div class="alert alert-danger" v-if="error">
-        <p>There was an error, unable to complete registration.</p>
+    <div class="uk-container uk-section">
+
+        <div class="uk-width-3-5@m uk-align-center">
+
+            <h1 class="uk-heading-primary">Add User Account</h1>
+
+            <form autocomplete="off" class="uk-form-horizontal">
+
+                <h2 class="uk-heading-line"><span>Account</span></h2>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Username</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.username" class="uk-input" type="text" placeholder="Username">
+                        <div class="uk-alert-danger" uk-alert v-if="error.username">
+                            <p v-if="error.username == 'required'">Required</p>
+                            <p v-if="error.username == 'unique'">This username is already exists</p>
+                            <p v-if="error.username == 'alpha_num'">Username can be only alphabet and number</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Password</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.password" class="uk-input" type="password" placeholder="Password"
+                               id="password">
+                        <div class="uk-alert-danger" v-if="error.password">
+                            <p v-if="error.password == 'required'">Required</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Confirm Password</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.password_confirmation" class="uk-input" type="password"
+                               placeholder="Confirm Password"
+                               id="cpassword">
+                        <div class="uk-alert-danger" v-if="error.password">
+                            <p v-if="error.password == 'confirmed'">The confirm password is not match</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>E-mail</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.email" class="uk-input" type="email" placeholder="Email" id="email">
+                        <div class="uk-alert-danger" v-if="error.email">
+                            <p v-if="error.email == 'required'">Required</p>
+                            <p v-if="error.email == 'email'">The input E-mail is not in E-mail pattern</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin uk-width-3-5@s">
+                    <label class="uk-form-label"><h4>Role</h4></label>
+                    <div class="uk-form-controls">
+                        <select v-model="user.role" class="uk-select">
+                            <option value="" disabled>Role</option>
+                            <option v-for="role in form.roles" :value="role.role">{{ role.role }}</option>
+                        </select>
+                        <div class="uk-alert-danger" v-if="error.role">
+                            <p v-if="error.role == 'required'">Required</p>
+                            <p v-if="error.role == 'alpha'">Something error</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="uk-heading-line"><span>Personal Information</span></h2>
+
+                <div class="uk-margin uk-width-3-5@s">
+                    <label class="uk-form-label"><h4>Name Title</h4></label>
+                    <div class="uk-form-controls">
+                        <select v-model="user.name_title" class="uk-select">
+                            <option value="" disabled>Name Title</option>
+                            <option v-for="title in form.name_titles" :value="title.title">{{ title.title }}</option>
+                        </select>
+                        <div class="uk-alert-danger" v-if="error.name_title">
+                            <p v-if="error.name_title == 'required'">Required</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>First Name</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.first_name" class="uk-input" type="text" placeholder="First Name">
+                        <div class="uk-alert-danger" v-if="error.first_name">
+                            <p v-if="error.first_name == 'required'">Required</p>
+                            <p v-if="error.first_name == 'alpha'">Only alphabets</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Last Nmae</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.last_name" class="uk-input" type="text" placeholder="Last Name">
+                        <div class="uk-alert-danger" v-if="error.last_name">
+                            <p v-if="error.last_name == 'required'">Required</p>
+                            <p v-if="error.last_name == 'alpha'">Only alphabets</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin uk-width-3-5@s">
+                    <label class="uk-form-label"><h4>Gender</h4></label>
+                    <div class="uk-form-controls">
+                        <select v-model="user.gender" class="uk-select" placeholder="gender">
+                            <option value="" disabled>Gender</option>
+                            <option v-for="gender in form.genders" :value="gender.gender">{{ gender.gender }}</option>
+                        </select>
+                        <div class="uk-alert-danger" v-if="error.gender">
+                            <p v-if="error.gender == 'required'">Required</p>
+                            <p v-if="error.gender == 'alpha'">Something error</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Citizen ID</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.citizen_id" class="uk-input" type="number" placeholder="Citizen Id">
+                        <div class="uk-alert-danger" v-if="error.citizen_id">
+                            <p v-if="error.citizen_id == 'required'">Required</p>
+                            <p v-if="error.citizen_id == 'digits'">Citizen id must be 13 digits</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Date of Birth</h4></label>
+                    <div class="uk-form-controls">
+                        <datepicker v-model="date" v-bind:onclick="dob()" :inline="true"></datepicker>
+                        <div class="uk-alert-danger" v-if="error.date">
+                            <p v-if="error.date == 'required'">Required</p>
+                            <p v-if="error.date == 'date'">Something error</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="uk-heading-line"><span>Contact Information</span></h2>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Telephone Number</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.contact_number" class="uk-input" type="text"
+                               placeholder="Telephone Number">
+                        <div class="uk-alert-danger" v-if="error.contact_number">
+                            <p v-if="error.contact_number == 'required'">Required</p>
+                            <p v-if="error.contact_number == 'The contact number format is invalid.'">
+                                The contact number format is invalid.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Role</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.address" class="uk-input" type="text" placeholder="Address" id="address">
+                        <div class="uk-alert-danger" v-if="error.address">
+                            <p v-if="error.address == 'required'">Required</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="uk-heading-line"><span>Workplace</span></h2>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Workplace</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.workplace" class="uk-input" type="text" placeholder="Workplace">
+                        <div class="uk-alert-danger" v-if="error.workplace">
+                            <p v-if="error.workplace == 'required'">Required</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="uk-heading-line"><span>User Image (Optional)</span></h2>
+
+                <div class="uk-margin uk-width-3-5@s">
+                    <label class="uk-form-label"><h4>Image</h4></label>
+                    <div class="uk-form-controls">
+                        <div class="uk-margin" v-if="user.image">
+                            <img :src="user.image" width="1800" height="1200" alt="" uk-img>
+                            <!--<img :src="user.image" class="" height="" width="">-->
+                        </div>
+                        <input type="file" v-on:change="onImageChange">
+                        <div class="uk-margin">
+                            <div class="uk-alert-danger" v-if="error.image">
+                                <p v-if="error.image == 'image'">Only allow JPG and PNG file</p>
+                            </div>
+                        </div>
+                        <!--<input type="file" v-on:change="onImageChange" class="form-control">-->
+                    </div>
+                </div>
+
+                <p uk-margin class="uk-margin-bottom uk-text-center">
+                    <button @click="addUser" type="button" class="uk-button uk-button-primary">Add</button>
+                    <a class="uk-button uk-button-danger" href="../..#/index">Cancel</a>
+                </p>
+            </form>
+        </div>
     </div>
-
-    <vk-grid class="uk-text-center uk-child-width-expand@s" uk-grid>
-        <div class="uk-width-medium@s"></div>
-        <form autocomplete="off">
-            <br/>
-            <h1><b>Register</b></h1>
-
-            <div class="uk-margin">
-                <div class="alert alert-danger" v-if="error.username">
-                    <p v-if="error.username == 'required'">Required</p>
-                    <p v-if="error.username == 'unique'">This username is already exists</p>
-                    <p v-if="error.username == 'alpha_num'">Username can be only alphabet and number</p>
-                </div>
-                <input v-model="user.username" class="uk-input" type="text" placeholder="Username" required>
-            </div>
-
-            <div class="uk-margin">
-                <div class="alert alert-danger" v-if="error.password">
-                    <p v-if="error.password == 'required'">Required</p>
-                </div>
-                <input v-model="user.password" class="uk-input" type="password" placeholder="Password" id="password">
-            </div>
-
-            <div class="uk-margin">
-                <div class="alert alert-danger" v-if="error.password">
-                    <p v-if="error.password == 'confirmed'">The confirm password is not match</p>
-                </div>
-                <input v-model="user.password_confirmation" class="uk-input" type="password" placeholder="Confirm Password"
-                       id="cpassword">
-            </div>
-
-            <div class="uk-margin">
-                <div class="alert alert-danger" v-if="error.email">
-                    <p v-if="error.email == 'required'">Required</p>
-                    <p v-if="error.email == 'email'">The input E-mail is not in E-mail pattern</p>
-                </div>
-                <input v-model="user.email" class="uk-input" type="email" placeholder="Email" id="email">
-            </div>
-
-            <div class="uk-margin uk-width-1-3@s">
-                <div class="alert alert-danger" v-if="error.role">
-                    <p v-if="error.role == 'required'">Required</p>
-                    <p v-if="error.role == 'alpha'">Something error</p>
-                </div>
-                <select v-model="user.role" class="uk-select">
-                    <option value="" disabled>Role</option>
-                    <option v-for="role in form.roles" :value="role.role">{{ role.role }}</option>
-                </select>
-            </div>
-
-            <hr class="uk-divider-icon"/>
-            <h4>Personal Information</h4>
-            <div class="uk-margin">
-                <div class="alert alert-danger" v-if="error.citizen_id">
-                    <p v-if="error.citizen_id == 'required'">Required</p>
-                    <p v-if="error.citizen_id == 'digits'">Citizen id must be 13 digits</p>
-                </div>
-                <input v-model="user.citizen_id" class="uk-input" type="number" placeholder="Citizen Id">
-            </div>
-
-            <div class="uk-margin uk-width-1-3@s">
-                <div class="alert alert-danger" v-if="error.role">
-                    <p v-if="error.name_title == 'required'">Required</p>
-                </div>
-                <select v-model="user.name_title" class="uk-select">
-                    <option value="" disabled>Name Title</option>
-                    <option v-for="title in form.name_titles" :value="title.title">{{ title.title }}</option>
-                </select>
-            </div>
-
-            <div class="uk-margin">
-                <div class="alert alert-danger" v-if="error.first_name">
-                    <p v-if="error.first_name == 'required'">Required</p>
-                    <p v-if="error.first_name == 'alpha'">Only alphabets</p>
-                </div>
-                <input v-model="user.first_name" class="uk-input" type="text" placeholder="First Name">
-            </div>
-
-            <div class="uk-margin">
-                <div class="alert alert-danger" v-if="error.last_name">
-                    <p v-if="error.last_name == 'required'">Required</p>
-                    <p v-if="error.last_name == 'alpha'">Only alphabets</p>
-                </div>
-                <input v-model="user.last_name" class="uk-input" type="text" placeholder="Last Name">
-            </div>
-
-            <div class="uk-margin uk-width-1-3@s">
-                <div class="alert alert-danger" v-if="error.gender">
-                    <p v-if="error.gender == 'required'">Required</p>
-                    <p v-if="error.gender == 'alpha'">Something error</p>
-                </div>
-                <select v-model="user.gender" class="uk-select" placeholder="gender">
-                    <option value="" disabled>Gender</option>
-                    <option v-for="gender in form.genders" :value="gender.gender">{{ gender.gender }}</option>
-                </select>
-            </div>
-
-            <div class="uk-margin uk-width-1-3@s">
-                <div class="alert alert-danger" v-if="error.date">
-                    <p v-if="error.date == 'required'">Required</p>
-                    <p v-if="error.date == 'date'">Something error</p>
-                </div>
-                <datepicker v-model="date" v-bind:onclick="dob()" :inline="true"></datepicker>
-            </div>
-
-            <h4>Contact Information</h4>
-            <hr class="uk-divider-icon"/>
-
-            <div class="uk-margin">
-                <div class="alert alert-danger" v-if="error.contact_number">
-                    <p v-if="error.contact_number == 'required'">Required</p>
-                    <p v-if="error.contact_number == 'The contact number format is invalid.'">The contact number format is invalid.</p>
-                </div>
-                <input v-model="user.contact_number" class="uk-input" type="text" placeholder="Telephone Number">
-            </div>
-
-            <div class="uk-margin">
-                <div class="alert alert-danger" v-if="error.address">
-                    <p v-if="error.address == 'required'">Required</p>
-                </div>
-                <input  v-model="user.address" class="uk-input" type="text" placeholder="Address" id="address">
-            </div>
-
-            <h4>Workplace</h4>
-            <hr class="uk-divider-icon"/>
-
-            <div class="uk-margin">
-                <div class="alert alert-danger" v-if="error.workplace">
-                    <p v-if="error.workplace == 'required'">Required</p>
-                </div>
-                <input v-model="user.workplace" class="uk-input" type="text" placeholder="Workplace">
-            </div>
-
-            <div class="" v-if="user.image">
-                <div class="alert alert-danger" v-if="error.image">
-                    <p v-if="error.image == 'image'">Only allow JPG and PNG file</p>
-                </div>
-                <img :src="user.image" class="img-responsive" height="70" width="90">
-            </div>
-            <input type="file" v-on:change="onImageChange" class="form-control">
-
-            <p uk-margin class="uk-margin-bottom uk-text-center">
-                <button @click="addUser" type="button" class="uk-button uk-button-primary">Add</button>
-                <a class="uk-button uk-button-danger" href="../..#/index">Cancel</a>
-            </p>
-        </form>
-        <div class="uk-width-medium@s"></div>
-    </vk-grid>
 </div>

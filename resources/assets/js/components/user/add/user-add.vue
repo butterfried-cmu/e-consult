@@ -17,7 +17,6 @@
                     role: '',
                     gender: '',
                     name_title: '',
-                    date_of_birth: '',
                     image: '',
                 },
                 date: '',

@@ -1,60 +1,61 @@
-<div id="user-list" xmlns:v-on="http://www.w3.org/1999/xhtml">
-    <div class="uk-container uk-width-auto@m">
-        <div><section></section></div>
-        <h2 class="uk-text-center"><b>User List</b></h2>
+<div id="user-list">
 
-    <div uk-grid>
-        <div class="uk-width-auto@m uk-text-center">
-                <div class="uk-margin">
-                        <form class="uk-search uk-search-default">
-                                <span class="uk-search-icon"><vk-icon icon="search"></vk-icon></span>
-                            <input class="uk-search-input" type="search" placeholder="Search...">
-                        </form>
+    <div class="uk-container uk-section">
+
+        <div class="uk-width-3-5@m uk-align-center">
+
+            <h1 class="uk-heading-primary">User List</h1>
+
+            <div>
+                <div class="uk-text-center uk-width-1-1">
+                    <form class="uk-search uk-search-default uk-width-1-1">
+                        <span class="uk-search-icon"><vk-icon icon="search"></vk-icon></span>
+                        <input class="uk-search-input" type="search" placeholder="Search...">
+                    </form>
                 </div>
-        </div>
-        <div class="uk-width-auto@m uk-container">
-                <ul class="uk-list uk-list-large uk-list-divider">
-                    <li>
-                        <div class="uk-width-auto">
-                            <img class="uk-border-circle" width="40" height="40" src="user.png">
-                            <span class="uk-text-large">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>
-                            <span class="uk-text-muted">&nbsp;&nbsp;&nbsp;Doctor</span>
-                        </div>
-                    </li>
-                    <li>
-                            <div class="uk-width-auto">
+
+                <br>
+
+                    <paginate name="users" :list="users" :per="10" class="uk-list uk-list-large uk-list-divider uk-width-1-1">
+                        <!--<ul class="uk-list uk-list-large uk-list-divider uk-width-1-1">-->
+                            <li v-for="user in paginated('users')">
+                                <div class="uk-width-auto" v-on:click="selectUser(user.user_id)">
                                     <img class="uk-border-circle" width="40" height="40" src="user.png">
-                                    <span class="uk-text-large">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>
-                                    <span class="uk-text-muted">&nbsp;&nbsp;&nbsp;Doctor</span>
-                            </div>    
-                    </li>
-                    <li>
-                            <div class="uk-width-auto">
-                                    <img class="uk-border-circle" width="40" height="40" src="user.png">
-                                    <span class="uk-text-large">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>
-                                    <span class="uk-text-muted">&nbsp;&nbsp;&nbsp;Doctor</span>
-                            </div>    
-                    </li>
-                </ul>
+                                    <span class="uk-text-large">&nbsp;&nbsp;&nbsp;{{ user.user.name_title }} {{ user.user.first_name }} {{ user.user.last_name }}</span>
+                                    <span class="uk-text-muted">&nbsp;&nbsp;&nbsp;{{ user.role }}</span>
+                                    <span class="uk-text-muted" v-on:click.stop="deleteUser(user.username)">
+                                        <button>Delete</button>
+                                    </span>
+                                </div>
+                            </li>
+                        <!--</ul>-->
+                    </paginate>
+                </div>
         </div>
     </div>
 </div>
-<ul class="uk-pagination uk-flex-center" uk-margin>
-        <li><a href="uk-active"><span uk-pagination-previous></span></a></li>
-        <li><a href="#">1</a></li>
-        <li class="uk-disabled"><span>...</span></li>
-        <li><a href="#">5</a></li>
-        <li><a href="#">6</a></li>
-        <li class="#"><span>7</span></li>
-        <li><a href="#">8</a></li>
-        <li><a href="#"><span uk-pagination-next></span></a></li>
-    </ul>
-    
-    <!-- <paginate name="users" :list="users" :per="10">
-        <div v-for="user in paginated('users')">
-            <router-link :to="{ name: 'user', params: { id: user.id }}">{{ user }}</router-link>
-        </div>
-    </paginate>
-    <paginate-links for="users" :show-step-links="true" :hide-single-page="true" :limit="10"></paginate-links> -->
+<!--<ul class="uk-pagination uk-flex-center" uk-margin>-->
+<!--<li><a href="uk-active"><span uk-pagination-previous></span></a></li>-->
+<!--<li><a href="#">1</a></li>-->
+<!--<li class="uk-disabled"><span>...</span></li>-->
+<!--<li><a href="#">5</a></li>-->
+<!--<li><a href="#">6</a></li>-->
+<!--<li class="#"><span>7</span></li>-->
+<!--<li><a href="#">8</a></li>-->
+<!--<li><a href="#"><span uk-pagination-next></span></a></li>-->
+<!--</ul>-->
+
+<!--<paginate name="users" :list="users" :per="10">-->
+<!--<div v-for="user in paginated('users')">-->
+<!--<router-link :to="{ name: 'user', params: { id: user.user_id }}">-->
+<!--<div class="uk-width-auto">-->
+<!--<img class="uk-border-circle" width="40" height="40" src="user.png">-->
+<!--<span class="uk-text-large">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>-->
+<!--<span class="uk-text-muted">&nbsp;&nbsp;&nbsp;Doctor</span>-->
+<!--</div>-->
+<!--</router-link>-->
+<!--</div>-->
+<!--</paginate>-->
+<paginate-links for="users" :show-step-links="true" :hide-single-page="true" :limit="10"></paginate-links>
 
 </div>
