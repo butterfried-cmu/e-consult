@@ -14,8 +14,8 @@ class ValidateRole
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \Closure $next
-     * @param array $roles
      * @return mixed
+     * @throws \Tymon\JWTAuth\Exceptions\JWTException
      */
     public function handle($request, Closure $next, ... $roles)
     {

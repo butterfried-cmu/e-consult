@@ -16,7 +16,7 @@ import EditProfile from './components/user/edit/user-edit.vue';
 import ForgetPassword from './components/user/forgetpassword/Forgetpassword.vue';
 import ResetPassword from './components/user/forgetpassword/Resetpassword.vue';
 import NotFoundComponent from './components/not-found-component/not-found-component.vue';
-import Userlist from './components/user/list/user-list.vue'
+import UserList from './components/user/list/user-list.vue';
 
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -25,6 +25,8 @@ import Vuikit from 'vuikit';
 import VuikitIcons from '@vuikit/icons';
 
 import '@vuikit/theme';
+import VuePaginate from 'vue-paginate'
+Vue.use(VuePaginate);
 
 Vue.use(Vuikit);
 Vue.use(VuikitIcons);
@@ -36,6 +38,8 @@ Vue.use(Vuex);
 
 axios.defaults.baseURL = 'http://localhost:8000/api';
 // axios.defaults.baseURL = 'http://2012b965.ngrok.io/api';
+
+
 
 const ifNotLoggedIn = (to, from, next) => {
     if (!store.getters['isLoggedIn']) {
@@ -58,54 +62,59 @@ const router = new VueRouter({
             path: '/',
             name: 'index',
             component: Index,
-            //beforeEnter: ifLoggedIn,
+            beforeEnter: ifLoggedIn,
         },
         {
             path: '/login',
             name: 'login',
             component: Login,
-            //beforeEnter: ifNotLoggedIn,
+            beforeEnter: ifNotLoggedIn,
         },
         {
             path: '/add',
-            name: 'add',
+            name: 'add-user',
             component: AddUser,
-            //beforeEnter: ifLoggedIn,
+            beforeEnter: ifLoggedIn,
         },
         {
             path: '/profile',
             name: 'profile',
             component: Profile,
-            //beforeEnter: ifLoggedIn,
+            beforeEnter: ifLoggedIn,
         },
         {
             path: '/editprofile',
             name: 'editprofile',
             component: EditProfile,
-            //beforeEnter: ifLoggedIn,
+            beforeEnter: ifLoggedIn,
         },
         {
             path: '/forgetpassword',
             name: 'forgetpassword',
             component: ForgetPassword,
-            //beforeEnter: ifLoggedIn,
+            beforeEnter: ifLoggedIn,
         },
         {
             path: '/resetpassword',
             name: 'resetpassword',
             component: ResetPassword,
-            //beforeEnter: ifLoggedIn,
+            beforeEnter: ifLoggedIn,
+        },
+        {
+            path: '/users',
+            name: 'user-list',
+            component: UserList
+        },
+        {
+            path: '/users/:id',
+            name: 'user',
+            component: UserList
         },
         {
             path: '*',
             name: 'not-found-component',
             component: NotFoundComponent
         },
-        {
-            path: '/user-list',
-            name: 'user-list',
-            component: Userlist
-        }
     ]
 });
 
@@ -122,9 +131,5 @@ App.router = Vue.router
 new Vue({
     el: '#app',
     store: store,
-    created() {
-        this.$store.dispatch('init');
-        this.$store.dispatch('getCurrentUser');
-    },
     render: h => h(App)
 });

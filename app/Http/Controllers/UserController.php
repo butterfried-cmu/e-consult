@@ -4,17 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Account;
 use AppHelper;
+
 use App\Role;
 use App\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Namshi\JOSE\JWT;
 use Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use JWTAuth;
 use DB;
 use Image;
 use Input;
+
+/*
+ * addUser -> postUser
+ * getUser
+ * getUsers
+ * getFormData
+ */
 
 class UserController extends Controller
 {
@@ -103,26 +110,13 @@ class UserController extends Controller
     {
         $messages = [
             'required' => 'required',
-            'date' => 'date',
-            'email' => 'email',
-            'numeric' => 'num',
-            'unique' => 'unique'
-        ];
+            'date' => 'not date pattern',
+            'email' => 'not email pattern',
+            'numeric' => 'not numeric',
+            'unique' => 'already exist',
+            'confirmed' => 'not matched',
 
-//        $attributes = [
-//            'username',
-//            'password',
-//            'email',
-//            'register_by',
-//            'role',
-//            'first_name',
-//            'middle_name',
-//            'last_name',
-//            'gender',
-//            'date_of_birth',
-//            'contact_number',
-//            'address'
-//        ];
+        ];
 
         $validator = Validator::make($request->all(), [
             'username' => 'required|unique:accounts|alpha_num',

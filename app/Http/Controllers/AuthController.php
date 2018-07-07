@@ -30,6 +30,9 @@ class AuthController extends Controller
             'username' => 'required',
             'password' => 'required'
         ]);
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 200);
+        }
         $credentials = $request->only('username', 'password');
 
         if (!$token = JWTAuth::attempt($credentials)) {
@@ -57,14 +60,11 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $token = Input::get('token');
-
         JWTAuth::invalidate($token);
         return response([
             'status' => 'success',
-            'msg' => 'Logged out Successfully.'
         ], 200);
     }
-
 
     /**
      * Allow user to logout from the system

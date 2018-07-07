@@ -26,5 +26,4 @@ class Account extends Authenticatable
         'password', 'remember_token'
     ];
 
-
 }

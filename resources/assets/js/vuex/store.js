@@ -59,25 +59,29 @@ export const store = new Vuex.Store({
             commit('initialiseStore');
         },
 
-        getCurrentUser({commit}) {
+        onRefresh({commit}) {
             if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
                 console.log("No Token in localStorage");
             } else {
                 console.log("Token in localStorage");
-                return new Promise(resolve => {
+                return new Promise((resolve, reject) => {
                     setTimeout(() => {
-                        axios.get("/auth/user?token=" + localStorage.getItem('token'))
-                            .then((response) => {
+                        axios.get("/auth/refresh?token=" + localStorage.getItem('token'))
+                            .then(
+                                response => {
                                     // console.log(response)
                                     this.dispatch('setUser', response.data.user);
                                     this.dispatch('setAccount', response.data.account);
                                     this.dispatch('updateIsLoggedIn');
                                     console.log("Token verified");
+                                    resolve(response);
                                 }
                             ).catch(
-                            (error) => console.log(error)
+                            error => {
+                                console.log(error);
+                                reject(error);
+                            }
                         );
-                        resolve();
                     }, 1000);
                 });
             }
@@ -120,7 +124,7 @@ export const store = new Vuex.Store({
                             reject(error);
                         }
                     );
-                }, 1000)
+                }, 1000);
             });
         },
 
@@ -133,16 +137,18 @@ export const store = new Vuex.Store({
         addUser({commit}, user) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    axios.post("/user/add", user,
+                    axios.post("/user/add?token=" + localStorage.getItem('token'), user,
                         {
                             headers: {'Content-Type': 'application/json'}
                         }
                     ).then(response => {
                             // console.log(response)
+                            alert("Create success VUEX");
                             console.log(response);
                             resolve(response);
                         }
                     ).catch(error => {
+                            alert("Create success VUEX");
                             console.log(error);
                             reject(error);
                         }
