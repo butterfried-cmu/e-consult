@@ -45,18 +45,18 @@
                         <input v-model="edited_user.first_name" class="uk-input" type="text" placeholder="First Name">
                         <div class="uk-alert-danger" v-if="error.first_name">
                             <p v-if="error.first_name == 'required'">Required</p>
-                            <p v-if="error.first_name == 'alpha'">Only alphabets</p>
+                            <p v-if="error.first_name == 'not_alpha'">Only alphabets</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="uk-margin">
-                    <label class="uk-form-label"><h4>Last Nmae</h4></label>
+                    <label class="uk-form-label"><h4>Last Name</h4></label>
                     <div class="uk-form-controls">
                         <input v-model="edited_user.last_name" class="uk-input" type="text" placeholder="Last Name">
                         <div class="uk-alert-danger" v-if="error.last_name">
                             <p v-if="error.last_name == 'required'">Required</p>
-                            <p v-if="error.last_name == 'alpha'">Only alphabets</p>
+                            <p v-if="error.last_name == 'not_alpha'">Only alphabets</p>
                         </div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                         </select>
                         <div class="uk-alert-danger" v-if="error.gender">
                             <p v-if="error.gender == 'required'">Required</p>
-                            <p v-if="error.gender == 'alpha'">Something error</p>
+                            <p v-if="error.gender == 'not_alpha'">Something error</p>
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                         <datepicker v-model="date" v-bind:onclick="dob()" :inline="true" :value="edited_user.date_of_birth"></datepicker>
                         <div class="uk-alert-danger" v-if="error.date">
                             <p v-if="error.date == 'required'">Required</p>
-                            <p v-if="error.date == 'date'">Something error</p>
+                            <p v-if="error.date == 'not_date'">Something error</p>
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                         <input v-model="edited_user.email" class="uk-input" type="email" placeholder="Email" id="email">
                         <div class="uk-alert-danger" v-if="error.email">
                             <p v-if="error.email == 'required'">Required</p>
-                            <p v-if="error.email == 'email'">The input E-mail is not in E-mail pattern</p>
+                            <p v-if="error.email == 'not_email'">The input E-mail is not in E-mail pattern</p>
                         </div>
                     </div>
                 </div>
@@ -153,7 +153,7 @@
                         <input type="file" v-on:change="onImageChange">
                         <div class="uk-margin">
                             <div class="uk-alert-danger" v-if="error.image">
-                                <p v-if="error.image == 'image'">Only allow JPG and PNG file</p>
+                                <p v-if="error.image == 'not_image'">Only allow JPG and PNG file</p>
                             </div>
                         </div>
                         <!--<input type="file" v-on:change="onImageChange" class="form-control">-->

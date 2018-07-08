@@ -9,17 +9,18 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class LoginTest extends TestCase
 {
+    use WithoutMiddleware;
+
     public function testLoginWithValidUsernameAndPassword()
     {
         $response = $this->json('POST', 'api/auth/login', [
             'username' => 'admin1',
             'password' => 'admin1'
         ]);
-
-        $response->assertStatus(200);
 
         $response->assertJson([
             "account" => [
@@ -51,8 +52,6 @@ class LoginTest extends TestCase
             'password' => 'admin1'
         ]);
 
-        $response->assertStatus(401);
-
         $response->assertJson([
             "error" => "Invalid Credentials"
         ]);
@@ -64,8 +63,6 @@ class LoginTest extends TestCase
             'username' => 'admin1',
             'password' => '123456'
         ]);
-
-        $response->assertStatus(401);
 
         $response->assertJson([
             "error" => "Invalid Credentials"
@@ -79,8 +76,6 @@ class LoginTest extends TestCase
             'password' => '123456'
         ]);
 
-        $response->assertStatus(401);
-
         $response->assertJson([
             "error" => "Invalid Credentials"
         ]);
@@ -91,8 +86,6 @@ class LoginTest extends TestCase
         $response = $this->json('POST', 'api/auth/login', [
             'password' => '123456'
         ]);
-
-        $response->assertStatus(200);
 
         $response->assertJson([
             "username" => [
@@ -107,8 +100,6 @@ class LoginTest extends TestCase
             'username' => 'abcdef'
         ]);
 
-        $response->assertStatus(200);
-
         $response->assertJson([
             "password" => [
                 "required"
@@ -119,8 +110,6 @@ class LoginTest extends TestCase
     public function testLoginWithoutUsernameAndPassword()
     {
         $response = $this->json('POST', 'api/auth/login', []);
-
-        $response->assertStatus(200);
 
         $response->assertJson([
             "password" => [

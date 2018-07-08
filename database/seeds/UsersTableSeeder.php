@@ -27,7 +27,7 @@ class UsersTableSeeder extends Seeder
             ],
             [
                 'user_id' => '2222222222222',
-                'email' => 'econsult.developer@gmail.com',
+                'email' => 'econsult.developer.fake1@gmail.com',
                 'name_title' => 'Mrs.',
                 'first_name' => 'doctor',
                 'last_name' => 'two',
@@ -40,7 +40,7 @@ class UsersTableSeeder extends Seeder
             ],
             [
                 'user_id' => '3333333333333',
-                'email' => 'econsult.developer@gmail.com',
+                'email' => 'econsult.developer.fake2@gmail.com',
                 'name_title' => 'Mrs.',
                 'first_name' => 'nurse',
                 'last_name' => 'three',

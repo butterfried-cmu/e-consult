@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Account;
+use App\Rules\ValidNameTitle;
+use App\Rules\ValidRole;
 use AppHelper;
 
 use App\Role;
@@ -16,6 +18,7 @@ use DB;
 use Image;
 use Input;
 use App\Rules\ValidImage;
+use App\Rules\ValidGender;
 
 /*
  * addUser -> postUser
@@ -37,7 +40,7 @@ class UserController extends Controller
     {
         $messages = [
             'required' => 'required',
-            'exists' => 'not exist',
+            'exists' => 'not_exist',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -111,26 +114,27 @@ class UserController extends Controller
     {
         $messages = [
             'required' => 'required',
-            'date' => 'date',
-            'email' => 'email',
-            'numeric' => 'numeric',
-            'unique' => 'unique',
-            'confirmed' => 'confirmed',
-            'alpha_num' => 'alpha_num',
-            'alpha' => 'alpha',
-            'digits' => 'digits',
+            'date' => 'not_date',
+            'email' => 'not_email',
+            'numeric' => 'not_numeric',
+            'unique' => 'not_unique',
+            'confirmed' => 'not_confirmed',
+            'alpha_num' => 'not_alpha_num',
+            'alpha' => 'not_alpha',
+            'digits' => 'not_digits',
+            'regex' => 'not_valid_pattern',
         ];
 
         $validator = Validator::make($request->all(), [
             'username' => 'required|unique:accounts|alpha_num',
             'password' => 'required|confirmed',
-            'role' => 'required|alpha',
+            'role' => ['required', new ValidRole()],
 
-            'email' => 'required|email',
-            'name_title' => 'required',
+            'email' => 'required|email|unique:users',
+            'name_title' => ['required', new ValidNameTitle()],
             'first_name' => 'required|alpha',
             'last_name' => 'required|alpha',
-            'gender' => 'required',
+            'gender' => ['required', new ValidGender()],
             'citizen_id' => 'required|digits:13|unique:users',
             'date_of_birth' => 'required|date',
             'contact_number' => 'required|regex:/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/',
@@ -194,19 +198,22 @@ class UserController extends Controller
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     *
+     * ++ updateUser have more custom validate after Validator checked
      */
     public function updateUser(Request $request)
     {
         $messages = [
             'required' => 'required',
-            'date' => 'date',
-            'email' => 'email',
-            'numeric' => 'numeric',
-            'unique' => 'unique',
-            'confirmed' => 'confirmed',
-            'alpha_num' => 'alpha_num',
-            'alpha' => 'alpha',
-            'digits' => 'digits',
+            'date' => 'not_date',
+            'email' => 'not_email',
+            'numeric' => 'not_numeric',
+            'unique' => 'not_unique',
+            'confirmed' => 'not_confirmed',
+            'alpha_num' => 'not_alpha_num',
+            'alpha' => 'not_alpha',
+            'digits' => 'not_digits',
+            'regex' => 'not_valid_pattern',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -218,7 +225,7 @@ class UserController extends Controller
             'name_title' => 'required',
             'first_name' => 'required|alpha',
             'last_name' => 'required|alpha',
-            'gender' => 'required',
+            'gender' => ['required'],
 //            'citizen_id' => 'required|digits:13|unique:users',
             'date_of_birth' => 'required|date',
             'contact_number' => 'required|regex:/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/',
@@ -234,6 +241,16 @@ class UserController extends Controller
             return response()->json($validator->messages(), 200);
         }
 
+        // Check that the input email is not exist except from the updated user
+        $count = User::where('email', $request->get('email'))->whereNotIn('user_id', [$request->input('user_id')])->count();
+        if( $count >= 1 ){
+            return response()->json([
+                'email' => [
+                    'not_unique'
+                ]
+            ], 200);
+        }
+
         if ($request->get('image')) {
             echo $request->get('image');
             $image = $request->get('image');
@@ -241,7 +258,7 @@ class UserController extends Controller
             \Image::make($request->get('image'))->save(public_path('images/') . $name);
         }
 
-        $user = User::find($request->user_id);
+        $user = User::find($request->input('user_id'));
 
         $user->email = $request->input('email');
         $user->name_title = $request->input('name_title');

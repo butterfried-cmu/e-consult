@@ -60,6 +60,6 @@ class ValidImage implements Rule
      */
     public function message()
     {
-        return 'image';
+        return 'not_image';
     }
 }
