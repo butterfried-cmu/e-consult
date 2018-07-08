@@ -1,105 +1,170 @@
-<div id="editprofile">
-    <vk-grid class="uk-child-width-expand@s" uk-grid>
-        <!-- left column -->
-        <div>
-            <vk-grid class="uk-padding">
-                <div>
-                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->
-                    <img src="/resources/assets/js/components/images/user.png" width="300" height="400" alt="">
-                </div>
-                <div class="uk-margin">
-                    <div uk-form-custom>
-                        <input type="file">
-                        <button class="uk-button uk-button-default uk-align-center" type="button" tabindex="-1">Change
-                        </button>
-                        <div class="" v-if="user.image">
-                            <img :src="user.image" class="img-responsive" height="70" width="90">
+<div id="edit">
+
+    <div class="uk-container uk-section">
+
+        <div class="uk-width-3-5@m uk-align-center">
+
+            <h1 class="uk-heading-primary">Edit Profile</h1>
+
+            <form autocomplete="off" class="uk-form-horizontal">
+
+                <!--<h2 class="uk-heading-line"><span>Account</span></h2>-->
+
+                <!--<div class="uk-margin uk-width-3-5@s">-->
+                    <!--<label class="uk-form-label"><h4>Role</h4></label>-->
+                    <!--<div class="uk-form-controls">-->
+                        <!--<select v-model="user.role" class="uk-select" >-->
+                            <!--<option value="" disabled selected>Role</option>-->
+                            <!--<option v-for="role in form.roles" :value="role.role">{{ role.role }}</option>-->
+                        <!--</select>-->
+                        <!--<div class="uk-alert-danger" v-if="error.role">-->
+                            <!--<p v-if="error.role == 'required'">Required</p>-->
+                            <!--<p v-if="error.role == 'alpha'">Something error</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+                <h2 class="uk-heading-line"><span>Personal Information</span></h2>
+
+                <div class="uk-margin uk-width-3-5@s">
+                    <label class="uk-form-label"><h4>Name Title</h4></label>
+                    <div class="uk-form-controls">
+                        <select v-model="edited_user.name_title" class="uk-select">
+                            <option value="" disabled>Name Title</option>
+                            <option v-for="title in form.name_titles" :value="title.title" :selected="edited_user.name_title == title.title ? true : false">{{ title.title }}</option>
+                        </select>
+                        <div class="uk-alert-danger" v-if="error.name_title">
+                            <p v-if="error.name_title == 'required'">Required</p>
                         </div>
-                        <input type="file" v-on:change="onImageChange" class="form-control">
                     </div>
                 </div>
-            </vk-grid>
 
-        </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>First Name</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="edited_user.first_name" class="uk-input" type="text" placeholder="First Name">
+                        <div class="uk-alert-danger" v-if="error.first_name">
+                            <p v-if="error.first_name == 'required'">Required</p>
+                            <p v-if="error.first_name == 'alpha'">Only alphabets</p>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- center column -->
-        <div class="uk-width-1-2@s">
-            <form>
-                <fieldset class="uk-fieldset">
-                    <br/>
-                    <h2>Edit Profile</h2>
-                    <div class="uk-margin">
-                        <input class="uk-input" type="password" placeholder="Old Password" id="password" required>
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Last Nmae</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="edited_user.last_name" class="uk-input" type="text" placeholder="Last Name">
+                        <div class="uk-alert-danger" v-if="error.last_name">
+                            <p v-if="error.last_name == 'required'">Required</p>
+                            <p v-if="error.last_name == 'alpha'">Only alphabets</p>
+                        </div>
                     </div>
-                    <div class="uk-margin">
-                        <input class="uk-input" type="password" placeholder="New Password" id="npassword">
-                    </div>
-                    <div class="uk-margin">
-                        <input class="uk-input" type="password" placeholder="Confirm Password" id="cpassword">
-                    </div>
-                    <hr class="uk-divider-icon"/>
-                    <div class="uk-margin uk-width-1-3@s">
-                        <select class="uk-select">
-                            <option value="">Name Title</option>
-                            <option value="Mr.">Mr.</option>
-                            <option value="Mrs.">Mrs.</option>
-                            <option value="Miss">Miss</option>
-                            <option value="Professor">Professor</option>
-                            <option value="Assistant Professor">Assistant Professor</option>
-                            <option value="Assistant Professor">Assistant Professor</option>
-                            <option value="Emeritus Professor</">Emeritus Professor</option>
+                </div>
+
+                <div class="uk-margin uk-width-3-5@s">
+                    <label class="uk-form-label"><h4>Gender</h4></label>
+                    <div class="uk-form-controls">
+                        <select v-model="edited_user.gender" class="uk-select" placeholder="gender">
+                            <option value="" disabled>Gender</option>
+                            <option v-for="gender in form.genders" :value="gender.gender">{{ gender.gender }}</option>
                         </select>
+                        <div class="uk-alert-danger" v-if="error.gender">
+                            <p v-if="error.gender == 'required'">Required</p>
+                            <p v-if="error.gender == 'alpha'">Something error</p>
+                        </div>
                     </div>
-                    <div class="uk-margin">
-                        <input class="uk-input" type="text" placeholder="Name" id="first_name">
-                    </div>
-                    <div class="uk-margin">
-                        <input class="uk-input" type="text" placeholder="Surname" id="last_name">
-                    </div>
-                    <div class="uk-margin">
-                        <input class="uk-input" type="number" placeholder="Citizen Id" id="citizen_id">
-                    </div>
-                    <div class="uk-margin">
-                        <input class="uk-input" type="text" placeholder="Role" id="role">
-                    </div>
-                    <div class="uk-margin uk-width-1-3@s">
-                        <select class="uk-select">
-                            <option value="">Sex</option>
-                            <option value="Male">Male</option>
-                            <option value="2"4ff>Female</option>
-                        </select>
-                    </div>
-                    <div class="uk-margin uk-width-1-3@s">
-                        <input class="uk-input" type="date" placeholder="Date of Birth" id="date_of_birth">
-                    </div>
-                    <hr class="uk-divider-icon"/>
+                </div>
 
-                    <div class="uk-margin">
-                        <input class="uk-input" type="number" placeholder="Telephone Number" width="10"
-                               id="contact_number">
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Citizen ID</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="edited_user.citizen_id" class="uk-input" type="number" placeholder="Citizen Id" disabled>
                     </div>
-                    <div class="uk-margin">
-                        <input class="uk-input" type="email" placeholder="Email" id="email">
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Date of Birth</h4></label>
+                    <div class="uk-form-controls">
+                        <datepicker v-model="date" v-bind:onclick="dob()" :inline="true" :value="edited_user.date_of_birth"></datepicker>
+                        <div class="uk-alert-danger" v-if="error.date">
+                            <p v-if="error.date == 'required'">Required</p>
+                            <p v-if="error.date == 'date'">Something error</p>
+                        </div>
                     </div>
-                    <div class="uk-margin">
-                        <input class="uk-input" type="text" placeholder="Address" id="address">
+                </div>
+
+                <h2 class="uk-heading-line"><span>Contact Information</span></h2>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>E-mail</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="edited_user.email" class="uk-input" type="email" placeholder="Email" id="email">
+                        <div class="uk-alert-danger" v-if="error.email">
+                            <p v-if="error.email == 'required'">Required</p>
+                            <p v-if="error.email == 'email'">The input E-mail is not in E-mail pattern</p>
+                        </div>
                     </div>
-                </fieldset>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Telephone Number</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="edited_user.contact_number" class="uk-input" type="text"
+                               placeholder="Telephone Number">
+                        <div class="uk-alert-danger" v-if="error.contact_number">
+                            <p v-if="error.contact_number == 'required'">Required</p>
+                            <p v-if="error.contact_number == 'The contact number format is invalid.'">
+                                The contact number format is invalid.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Address</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="edited_user.address" class="uk-input" type="text" placeholder="Address" id="address">
+                        <div class="uk-alert-danger" v-if="error.address">
+                            <p v-if="error.address == 'required'">Required</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="uk-heading-line"><span>Workplace</span></h2>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Workplace</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="edited_user.workplace" class="uk-input" type="text" placeholder="Workplace">
+                        <div class="uk-alert-danger" v-if="error.workplace">
+                            <p v-if="error.workplace == 'required'">Required</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="uk-heading-line"><span>User Image (Optional)</span></h2>
+
+                <div class="uk-margin uk-width-3-5@s">
+                    <label class="uk-form-label"><h4>Image</h4></label>
+                    <div class="uk-form-controls">
+                        <div class="uk-margin" v-if="edited_user.image">
+                            <img :src="edited_user.image" width="1800" height="1200" alt="" uk-img>
+                            <!--<img :src="user.image" class="" height="" width="">-->
+                        </div>
+                        <input type="file" v-on:change="onImageChange">
+                        <div class="uk-margin">
+                            <div class="uk-alert-danger" v-if="error.image">
+                                <p v-if="error.image == 'image'">Only allow JPG and PNG file</p>
+                            </div>
+                        </div>
+                        <!--<input type="file" v-on:change="onImageChange" class="form-control">-->
+                    </div>
+                </div>
+
                 <p uk-margin class="uk-margin-bottom uk-text-center">
-                    <button class="uk-button uk-button-primary" type="submit">Save</button>
-                    <a class="uk-button uk-button-danger" href="../#/profile">Cancel</a>
+                    <button @click="updateUser" type="button" class="uk-button uk-button-primary">Update</button>
+                    <a class="uk-button uk-button-danger" href="../..#/index">Cancel</a>
                 </p>
             </form>
-
-
         </div>
-
-        <!-- right column -->
-        <div class="uk-align-center@s">
-            <vk-grid class="uk-padding-large">
-
-            </vk-grid>
-        </div>
-
-    </vk-grid>
+    </div>
 </div>

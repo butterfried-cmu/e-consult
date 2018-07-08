@@ -4,9 +4,7 @@
     // import {APIENDPOINT} from  '../../http-common.js';
     // import loginService from './adminService.js';
     export default {
-
         template: require('./user-add.html'),
-
         components: {
             Datepicker
         },
@@ -75,6 +73,10 @@
             },
             addUser() {
                 let payload = this.user;
+                if (payload.date_of_birth == 'NaN/NaN/NaN'){
+                    console.log('checked');
+                    payload.date_of_birth = '';
+                }
                 console.log(payload);
                 this.$store.dispatch('addUser', payload)
                     .then(response => {

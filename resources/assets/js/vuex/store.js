@@ -153,6 +153,29 @@ export const store = new Vuex.Store({
             });
         },
 
+        updateUser({commit}, user) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.post("/user/update?token=" + localStorage.getItem('token'), user,
+                        {
+                            headers: {'Content-Type': 'application/json'}
+                        }
+                    ).then(response => {
+                            // console.log(response)
+                            // alert("Create success VUEX");
+                            console.log(response);
+                            resolve(response);
+                        }
+                    ).catch(error => {
+                            // alert("Create success VUEX");
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000)
+            });
+        },
+
         getAllUsers({commit}) {
             if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
                 console.log("No Token in localStorage");

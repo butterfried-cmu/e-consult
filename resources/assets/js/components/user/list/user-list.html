@@ -7,30 +7,52 @@
             <h1 class="uk-heading-primary">User List</h1>
 
             <div>
-                <div class="uk-text-center uk-width-1-1">
-                    <form class="uk-search uk-search-default uk-width-1-1">
-                        <span class="uk-search-icon"><vk-icon icon="search"></vk-icon></span>
-                        <input class="uk-search-input" type="search" placeholder="Search...">
+                <vk-grid class="uk-text-center">
+                    <form class="uk-search uk-search-default uk-width-expand@s">
+                        <!--<span class="uk-search-icon"><vk-icon icon="search"></vk-icon></span>-->
+                        <input class="uk-search-input" type="search" placeholder="Input keyword to search here">
                     </form>
-                </div>
+                    <button class="uk-button uk-button-primary uk-width-auto@s">Search</button>
+                </vk-grid>
+                <!--<div class="uk-text-center uk-width-1-1">-->
+                    <!--<form class="uk-search uk-search-default uk-width-expand@s">-->
+                        <!--<span class="uk-search-icon"><vk-icon icon="search"></vk-icon></span>-->
+                        <!--<input class="uk-search-input" type="search" placeholder="Search...">-->
+                    <!--</form>-->
+                    <!--<button class="uk-button uk-button-primary uk-width-auto@s">Search</button>-->
+                <!--</div>-->
 
                 <br>
 
-                    <paginate name="users" :list="users" :per="10" class="uk-list uk-list-large uk-list-divider uk-width-1-1">
-                        <!--<ul class="uk-list uk-list-large uk-list-divider uk-width-1-1">-->
-                            <li v-for="user in paginated('users')">
-                                <div class="uk-width-auto" v-on:click="selectUser(user.user_id)">
-                                    <img class="uk-border-circle" width="40" height="40" src="user.png">
-                                    <span class="uk-text-large">&nbsp;&nbsp;&nbsp;{{ user.user.name_title }} {{ user.user.first_name }} {{ user.user.last_name }}</span>
-                                    <span class="uk-text-muted">&nbsp;&nbsp;&nbsp;{{ user.role }}</span>
-                                    <span class="uk-text-muted" v-on:click.stop="deleteUser(user.username)">
-                                        <button>Delete</button>
-                                    </span>
+                <paginate name="users" :list="users" :per="10"
+                          class="uk-list uk-list-large uk-list-divider uk-width-1-1">
+                    <!--<ul class="uk-list uk-list-large uk-list-divider uk-width-1-1">-->
+                    <li v-for="user in paginated('users')">
+                        <vk-grid gutter="small" class="uk-child-width-expand@s" v-on:click="selectUser(user.user_id)">
+                            <div class="uk-child-width-auto@s">
+                                <img class="uk-border-circle uk-child-width-1-5" :src="'images/users/' + user.user.image_name" v-if="user.user.image_name">
+                                <img class="uk-border-circle uk-child-width-1-5" src="user.png" v-if="!user.user.image_name">
+                            </div>
+                            <div class="uk-child-width-expand@s">
+                                <span class="uk-text-large uk-text-bold">{{ user.user.name_title }} {{ user.user.first_name }} {{ user.user.last_name }}</span><br>
+                                <span class="uk-text">Citizen ID: {{ user.user.citizen_id }}</span><br>
+                                <span class="uk-text">Role: {{ user.role }}</span><br>
+                            </div>
+                            <div class="uk-child-width-auto@s">
+                                <div class="uk-button-group uk-align-right">
+                                    <button v-on:click.stop="editUser(user.username)"
+                                            class="uk-button uk-button-secondary ">Edit
+                                    </button>
+                                    <button v-on:click.stop="deleteUser(user.username)"
+                                            class="uk-button uk-button-default ">Delete
+                                    </button>
                                 </div>
-                            </li>
-                        <!--</ul>-->
-                    </paginate>
-                </div>
+                            </div>
+                        </vk-grid>
+                    </li>
+                    <!--</ul>-->
+                </paginate>
+            </div>
         </div>
     </div>
 </div>

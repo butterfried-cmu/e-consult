@@ -26,10 +26,23 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        $messages = [
+            'required' => 'required',
+            'date' => 'date',
+            'email' => 'email',
+            'numeric' => 'numeric',
+            'unique' => 'unique',
+            'confirmed' => 'confirmed',
+            'alpha_num' => 'alpha_num',
+            'alpha' => 'alpha',
+            'digits' => 'digits',
+        ];
+
         $validator = Validator::make($request->all(), [
             'username' => 'required',
             'password' => 'required'
-        ]);
+        ], $messages);
+
         if ($validator->fails()) {
             return response()->json($validator->messages(), 200);
         }

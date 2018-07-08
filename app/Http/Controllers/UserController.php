@@ -137,8 +137,9 @@ class UserController extends Controller
             'address' => 'required',
             'workplace' => 'required',
 
+//            'image' => 'is_png',
             'image' => [new ValidImage],
-//            'image' => 'regex:/^data:image\/(?:gif|png|jpeg|bmp|webp)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/g',
+//            'image' => array('regex:/^data:image\/(?:gif|png|jpeg|bmp|webp)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/'),
         ], $messages);
 
         if ($validator->fails()) {
@@ -198,30 +199,35 @@ class UserController extends Controller
     {
         $messages = [
             'required' => 'required',
-            'date' => 'not date pattern',
-            'email' => 'not email pattern',
-            'numeric' => 'not numeric',
-            'unique' => 'already exist',
-            'confirmed' => 'not matched',
-            'exists' => 'not exist',
+            'date' => 'date',
+            'email' => 'email',
+            'numeric' => 'numeric',
+            'unique' => 'unique',
+            'confirmed' => 'confirmed',
+            'alpha_num' => 'alpha_num',
+            'alpha' => 'alpha',
+            'digits' => 'digits',
         ];
 
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users',
+//            'username' => 'required|unique:accounts|alpha_num',
+//            'password' => 'required|confirmed',
+//            'role' => 'required|alpha',
 
             'email' => 'required|email',
-            'name_title' => 'required|numeric',
+            'name_title' => 'required',
             'first_name' => 'required|alpha',
             'last_name' => 'required|alpha',
-            'gender' => 'required|numeric',
+            'gender' => 'required',
 //            'citizen_id' => 'required|digits:13|unique:users',
-//            'date_of_birth' => 'required|date',
+            'date_of_birth' => 'required|date',
             'contact_number' => 'required|regex:/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/',
             'address' => 'required',
             'workplace' => 'required',
 
-            'image_name' => [new ValidImage],
-//            'image_name' => 'regex:/^data:image\/(?:gif|png|jpeg|bmp|webp)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/g',
+//            'image' => 'is_png',
+            'image' => [new ValidImage],
+//            'image' => array('regex:/^data:image\/(?:gif|png|jpeg|bmp|webp)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/'),
         ], $messages);
 
         if ($validator->fails()) {
