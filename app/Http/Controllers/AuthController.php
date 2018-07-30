@@ -26,26 +26,26 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $messages = [
-            'required' => 'required',
-            'date' => 'date',
-            'email' => 'email',
-            'numeric' => 'numeric',
-            'unique' => 'unique',
-            'confirmed' => 'confirmed',
-            'alpha_num' => 'alpha_num',
-            'alpha' => 'alpha',
-            'digits' => 'digits',
-        ];
-
-        $validator = Validator::make($request->all(), [
-            'username' => 'required',
-            'password' => 'required'
-        ], $messages);
-
-        if ($validator->fails()) {
-            return response()->json($validator->messages(), 200);
-        }
+//        $messages = [
+//            'required' => 'required',
+//            'date' => 'date',
+//            'email' => 'email',
+//            'numeric' => 'numeric',
+//            'unique' => 'unique',
+//            'confirmed' => 'confirmed',
+//            'alpha_num' => 'alpha_num',
+//            'alpha' => 'alpha',
+//            'digits' => 'digits',
+//        ];
+//
+//        $validator = Validator::make($request->all(), [
+//            'username' => 'required',
+//            'password' => 'required'
+//        ], $messages);
+//
+//        if ($validator->fails()) {
+//            return response()->json($validator->messages(), 200);
+//        }
         $credentials = $request->only('username', 'password');
 
         if (!$token = JWTAuth::attempt($credentials)) {
@@ -56,6 +56,17 @@ class AuthController extends Controller
 
         $currentUser = Auth::user();
         $user = User::where("user_id", $currentUser->user_id)->first();
+
+        $query = "SELECT role_id FROM accounts_roles WHERE accounts_roles.account_username = '$currentUser->username'";
+        $role_array = DB::SELECT($query);
+
+        $role_list = [];
+
+        foreach ($role_array as $role){
+            array_push($role_list, $role->role_id);
+        }
+
+        $currentUser->role = $role_list;
 
         return response()->json([
             'account' => $currentUser,
@@ -89,7 +100,7 @@ class AuthController extends Controller
     {
         $messages = [
             'required' => 'required',
-            'email' => 'not email pattern',
+            'email' => 'not_email',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -123,7 +134,7 @@ class AuthController extends Controller
         $passwordResetRequest->save();
 
         return response()->json([
-            'message' => 'Mail sent'
+            'message' => 'mail sent'
         ], 200);
     }
 
@@ -135,9 +146,15 @@ class AuthController extends Controller
      */
     public function resetPassword(Request $request)
     {
+        if (!(ResetPasswordRequest::where("request_id", $request->request_id)->exists())) {
+            return response()->json([
+                'error' => 'request does not exist',
+            ], 200);
+        }
+
         $messages = [
             'required' => 'required',
-            'confirmed' => 'not matched',
+            'confirmed' => 'not_confirmed',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -146,12 +163,6 @@ class AuthController extends Controller
         ], $messages);
         if ($validator->fails()) {
             return response()->json($validator->messages(), 200);
-        }
-
-        if (!(ResetPasswordRequest::where("request_id", $request->request_id)->exists())) {
-            return response()->json([
-                'error' => 'request is not exist',
-            ], 200);
         }
 
         $resetPasswordRequest = ResetPasswordRequest::where("request_id", $request->request_id)->first();
@@ -163,7 +174,7 @@ class AuthController extends Controller
         $account->save();
 
         return response()->json([
-            'message' => 'Change password complete'
+            'message' => 'change password completed'
         ], 200);
     }
 
@@ -182,9 +193,6 @@ class AuthController extends Controller
             'user' => $user
         ], 200);
     }
-
-
-
 
     /**
      * ====================== Util function ======================

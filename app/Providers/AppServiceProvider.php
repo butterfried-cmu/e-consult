@@ -20,9 +20,10 @@ class AppServiceProvider extends ServiceProvider
             $image = base64_decode($value);
             $f = finfo_open();
             $result = finfo_buffer($f, $image, FILEINFO_MIME_TYPE);
-            echo $result;
+//            echo $result;
             return $result == 'image/png';
         });
+
     }
 
     /**

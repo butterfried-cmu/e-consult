@@ -125,9 +125,9 @@
                     <label class="uk-form-label"><h4>Date of Birth</h4></label>
                     <div class="uk-form-controls">
                         <datepicker v-model="date" v-bind:onclick="dob()" :inline="true"></datepicker>
-                        <div class="uk-alert-danger" v-if="error.date">
-                            <p v-if="error.date == 'required'">Required</p>
-                            <p v-if="error.date == 'not_date'">Something error</p>
+                        <div class="uk-alert-danger" v-if="error.date_of_birth">
+                            <p v-if="error.date_of_birth == 'required'">Required</p>
+                            <p v-if="error.date_of_birth == 'not_date'">Something error</p>
                         </div>
                     </div>
                 </div>

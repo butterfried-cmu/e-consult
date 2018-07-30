@@ -20,13 +20,21 @@ class ValidRole implements Rule
      * Determine if the validation rule passes.
      *
      * @param  string  $attribute
-     * @param  mixed  $value
+     * @param  mixed  $values
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, $values)
     {
-        if ( $value == 'ADMIN' || $value == 'DOCTOR' || $value == 'NURSE' ) return true;
-        return false;
+//        if ( $value == 'ADMIN' || $value == 'DOCTOR' || $value == 'NURSE' ) return true;
+//        return false;
+        try{
+            foreach ($values as $value) {
+                if ($value != 1 && $value != 2 && $value != 3) return false;
+            }
+            return true;
+        } catch (\Exception $e){
+            return false;
+        }
     }
 
     /**
