@@ -1,0 +1,43 @@
+<div class="login">
+    <div align="center" class="uk-container">
+        <div class="section" style="margin-top:10%;"></div>
+        <h1>LOGIN</h1>
+        <form>
+            <div class="uk-alert-danger" v-if="loginFail">
+                <p>Username or password is incorrect.</p>
+            </div>
+
+            <div class="uk-margin">
+                <div class="uk-inline">
+                    <span class="uk-form-icon"><vk-icon icon="user"></vk-icon></span>
+                    <input
+                            id="email"
+                            class="uk-input form-control"
+                            type="text"
+                            v-model="username"
+                            placeholder="Username"
+                            required>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-inline">
+                    <span class="uk-form-icon"><vk-icon icon="lock"></vk-icon></span>
+                    <input
+                            id="password"
+                            class="uk-input form-control"
+                            type="password"
+                            v-model="password"
+                            placeholder="Password"
+                            required>
+                </div>
+            </div>
+
+            <button @click="login" type="button" class="uk-button uk-button-default uk-button-small uk-button-primary">Login
+            </button>
+            <br/>
+            <a href="/#/forgetpassword" class="uk-position-bottom-center uk-margin-large-bottom">Forget Password</a>
+
+        </form>
+    </div>
+
+</div>
