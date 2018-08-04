@@ -12,7 +12,7 @@
         data() {
             return {
                 user: {
-                    role: '',
+                    role: [],
                     gender: '',
                     name_title: '',
                     image: '',
@@ -21,8 +21,8 @@
                 form: {
                     roles: [
                         {role: "ADMIN"},
-                        {role: "DOCTOR"},
-                        {role: "NURSE"},
+                        {role: "COUNSELOR"},
+                        {role: "CONSULTEE"},
                     ],
                     name_titles: [
                         {title: "Mr."},
@@ -80,9 +80,9 @@
                 console.log(payload);
                 this.$store.dispatch('addUser', payload)
                     .then(response => {
-                            if (!!response.data.message && response.data.message === "Successfully created user") {
-                                alert("Create success");
-                                console.log(response);
+                            if (!!response.data.message && response.data.message === "successfully added user") {
+                                alert("Succeeded");
+                                console.log('testtest');
                                 this.$router.push("/");
                             }else{
                                 this.error = response.data;

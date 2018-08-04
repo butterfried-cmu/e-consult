@@ -23,7 +23,11 @@
                 this.$router.push("login")
             },
             isRole(role) {
-                return role === this.$store.getters['userRole'];
+                for (var i = 0; i < this.$store.getters['userRole'].length; i++) {
+                    if (role == this.$store.getters['userRole'][i]) return true;
+                }
+                return false;
+                // return role === this.$store.getters['userRole'];
             }
         }
     }

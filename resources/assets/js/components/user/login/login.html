@@ -1,8 +1,12 @@
 <div class="login">
-    <div align="center">
+    <div align="center" class="uk-container">
         <div class="section" style="margin-top:10%;"></div>
         <h1>LOGIN</h1>
         <form>
+            <div class="uk-alert-danger" v-if="loginFail">
+                <p>Username or password is incorrect.</p>
+            </div>
+
             <div class="uk-margin">
                 <div class="uk-inline">
                     <span class="uk-form-icon"><vk-icon icon="user"></vk-icon></span>

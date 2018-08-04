@@ -16,7 +16,9 @@
                         <input v-model="user.username" class="uk-input" type="text" placeholder="Username">
                         <div class="uk-alert-danger" uk-alert v-if="error.username">
                             <p v-if="error.username == 'required'">Required</p>
-                            <p v-if="error.username == 'not_unique'">This username is already exists</p>
+                            <p v-if="error.username == 'min'">The username must have at least 4 characters</p>
+                            <p v-if="error.username == 'max'">The username must not over 30 characters</p>
+                            <p v-if="error.username == 'not_unique'">The username is already existing.</p>
                             <p v-if="error.username == 'not_alpha_num'">Username can be only alphabet and number</p>
                         </div>
                     </div>
@@ -29,6 +31,8 @@
                                id="password">
                         <div class="uk-alert-danger" v-if="error.password">
                             <p v-if="error.password == 'required'">Required</p>
+                            <p v-if="error.password == 'min'">The username must have at least 4 characters</p>
+                            <p v-if="error.password == 'max'">The username must not over 30 characters</p>
                         </div>
                     </div>
                 </div>
@@ -45,16 +49,15 @@
                     </div>
                 </div>
 
-                <div class="uk-margin uk-width-3-5@s">
+                <div class="uk-margin ">
                     <label class="uk-form-label"><h4>Role</h4></label>
                     <div class="uk-form-controls">
-                        <select v-model="user.role" class="uk-select">
-                            <option value="" disabled>Role</option>
-                            <option v-for="role in form.roles" :value="role.role">{{ role.role }}</option>
-                        </select>
+                        <label><input class="uk-checkbox" value="1" type="checkbox" v-model="user.role"> ADMIN</label>
+                        <label><input class="uk-checkbox" value="2" type="checkbox" v-model="user.role"> COUNSELOR</label>
+                        <label><input class="uk-checkbox" value="3" type="checkbox" v-model="user.role"> CONSULTEE</label>
                         <div class="uk-alert-danger" v-if="error.role">
                             <p v-if="error.role == 'required'">Required</p>
-                            <p v-if="error.role == 'not_alpha'">Something error</p>
+                            <p v-if="error.role == 'not_role'">Something error</p>
                         </div>
                     </div>
                 </div>
@@ -69,7 +72,7 @@
                             <option v-for="title in form.name_titles" :value="title.title">{{ title.title }}</option>
                         </select>
                         <div class="uk-alert-danger" v-if="error.name_title">
-                            <p v-if="error.name_title == 'required'">Required</p>
+                            <p v-if="error.name_title == 'required'">Please select name title.</p>
                         </div>
                     </div>
                 </div>
@@ -96,6 +99,17 @@
                     </div>
                 </div>
 
+                <div class="uk-margin">
+                    <label class="uk-form-label"><h4>Position</h4></label>
+                    <div class="uk-form-controls">
+                        <input v-model="user.position" class="uk-input" type="text" placeholder="Position">
+                        <div class="uk-alert-danger" v-if="error.position">
+                            <p v-if="error.last_name == 'required'">Required</p>
+                            <p v-if="error.last_name == 'not_alpha'">Only alphabets</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="uk-margin uk-width-3-5@s">
                     <label class="uk-form-label"><h4>Gender</h4></label>
                     <div class="uk-form-controls">
@@ -104,7 +118,7 @@
                             <option v-for="gender in form.genders" :value="gender.gender">{{ gender.gender }}</option>
                         </select>
                         <div class="uk-alert-danger" v-if="error.gender">
-                            <p v-if="error.gender == 'required'">Required</p>
+                            <p v-if="error.gender == 'required'">Please select gender.</p>
                             <p v-if="error.gender == 'not_alpha'">Something error</p>
                         </div>
                     </div>
@@ -113,10 +127,11 @@
                 <div class="uk-margin">
                     <label class="uk-form-label"><h4>Citizen ID</h4></label>
                     <div class="uk-form-controls">
-                        <input v-model="user.citizen_id" class="uk-input" type="number" placeholder="Citizen Id">
+                        <input v-model="user.citizen_id" class="uk-input" type="text" placeholder="Citizen Id">
                         <div class="uk-alert-danger" v-if="error.citizen_id">
                             <p v-if="error.citizen_id == 'required'">Required</p>
                             <p v-if="error.citizen_id == 'not_digits'">Citizen id must be 13 digits</p>
+                            <p v-if="error.citizen_id == 'not_unique'">This citizen id is not available.</p>
                         </div>
                     </div>
                 </div>
@@ -126,7 +141,7 @@
                     <div class="uk-form-controls">
                         <datepicker v-model="date" v-bind:onclick="dob()" :inline="true"></datepicker>
                         <div class="uk-alert-danger" v-if="error.date_of_birth">
-                            <p v-if="error.date_of_birth == 'required'">Required</p>
+                            <p v-if="error.date_of_birth == 'required'">Please select date of birth.</p>
                             <p v-if="error.date_of_birth == 'not_date'">Something error</p>
                         </div>
                     </div>
@@ -140,7 +155,8 @@
                         <input v-model="user.email" class="uk-input" type="email" placeholder="Email" id="email">
                         <div class="uk-alert-danger" v-if="error.email">
                             <p v-if="error.email == 'required'">Required</p>
-                            <p v-if="error.email == 'not_email'">The input E-mail is not in E-mail pattern</p>
+                            <p v-if="error.email == 'not_email'">The email pattern should be example@mail.com</p>
+                            <p v-if="error.email == 'not_unique'">This email is not available</p>
                         </div>
                     </div>
                 </div>
@@ -192,7 +208,7 @@
                         <input type="file" v-on:change="onImageChange">
                         <div class="uk-margin">
                             <div class="uk-alert-danger" v-if="error.image">
-                                <p v-if="error.image == 'not_image'">Only allow JPG and PNG file</p>
+                                <p v-if="error.image == 'not_image'">Only.PNG and .JPG(JPEG) files are allowed.</p>
                             </div>
                         </div>
                         <!--<input type="file" v-on:change="onImageChange" class="form-control">-->

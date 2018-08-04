@@ -26,6 +26,7 @@ class User extends Model
         'name_title',
         'first_name',
         'last_name',
+        'position',
         'gender',
         'citizen_id',
         'date_of_birth',

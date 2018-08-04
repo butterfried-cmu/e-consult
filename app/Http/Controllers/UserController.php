@@ -384,6 +384,19 @@ class UserController extends Controller
 
         $user->save();
 
+        $account = Account::where('user_id', $request->input('user_id'))->first();
+
+        $roles = $request->input('role');
+        DB::table('accounts_roles')->where('account_username', $account->username)->delete();
+
+        foreach ($roles as $role) {
+            DB::table('accounts_roles')->insert([
+                    'account_username' => $account->username,
+                    'role_id' => $role
+                ]
+            );
+        }
+
         return response()->json([
             'message' => 'successfully updated user'
         ], 201);

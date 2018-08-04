@@ -55,8 +55,7 @@
             };
         },
 
-        computed: {
-        },
+        computed: {},
 
         mounted() {
             this.edited_user = JSON.parse(JSON.stringify(this.$store.getters['currentUser']));
@@ -82,8 +81,8 @@
                 console.log(payload);
                 this.$store.dispatch('updateUser', payload)
                     .then(response => {
-                            if (!!response.data.message && response.data.message === "Successfully created user") {
-                                alert("Create success");
+                            if (!!response.data.message && response.data.message === "successfully updated user") {
+                                alert("The information has been updated.");
                                 console.log(response);
                                 this.$router.push("/");
                             } else {
@@ -105,6 +104,13 @@
                     vm.edited_user.image = e.target.result;
                 };
                 reader.readAsDataURL(file);
+            },
+            isRole(role) {
+                for (var i = 0; i < this.$store.getters['userRole'].length; i++) {
+                    if (role == this.$store.getters['userRole'][i]) return true;
+                }
+                return false;
+                // return role === this.$store.getters['userRole'];
             },
         }
     }

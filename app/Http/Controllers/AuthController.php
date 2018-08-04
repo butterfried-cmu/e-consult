@@ -188,6 +188,15 @@ class AuthController extends Controller
     {
         $currentUser = JWTAuth::parseToken()->toUser();
         $user = User::where('user_id', $currentUser->user_id)->first();
+
+        $query = "SELECT role_id FROM accounts_roles WHERE accounts_roles.account_username = '$currentUser->username'";
+        $role_array = DB::SELECT($query);
+        $role_list = [];
+        foreach ($role_array as $role){
+            array_push($role_list, $role->role_id);
+        }
+        $currentUser->role = $role_list;
+
         return response()->json([
             'account' => $currentUser,
             'user' => $user

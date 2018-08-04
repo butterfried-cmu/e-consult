@@ -10,16 +10,16 @@
                 <vk-grid class="uk-text-center">
                     <form class="uk-search uk-search-default uk-width-expand@s">
                         <!--<span class="uk-search-icon"><vk-icon icon="search"></vk-icon></span>-->
-                        <input class="uk-search-input" type="search" placeholder="Input keyword to search here">
+                        <input class="uk-search-input" type="search" v-model="keyword" placeholder="Input keyword to search here">
                     </form>
-                    <button class="uk-button uk-button-primary uk-width-auto@s">Search</button>
+                    <button class="uk-button uk-button-primary uk-width-auto@s" v-on:click="search()">Search</button>
                 </vk-grid>
                 <!--<div class="uk-text-center uk-width-1-1">-->
-                    <!--<form class="uk-search uk-search-default uk-width-expand@s">-->
-                        <!--<span class="uk-search-icon"><vk-icon icon="search"></vk-icon></span>-->
-                        <!--<input class="uk-search-input" type="search" placeholder="Search...">-->
-                    <!--</form>-->
-                    <!--<button class="uk-button uk-button-primary uk-width-auto@s">Search</button>-->
+                <!--<form class="uk-search uk-search-default uk-width-expand@s">-->
+                <!--<span class="uk-search-icon"><vk-icon icon="search"></vk-icon></span>-->
+                <!--<input class="uk-search-input" type="search" placeholder="Search...">-->
+                <!--</form>-->
+                <!--<button class="uk-button uk-button-primary uk-width-auto@s">Search</button>-->
                 <!--</div>-->
 
                 <br>
@@ -30,20 +30,28 @@
                     <li v-for="user in paginated('users')">
                         <vk-grid gutter="small" class="uk-child-width-expand@s" v-on:click="selectUser(user.user_id)">
                             <div class="uk-child-width-auto@s">
-                                <img class="uk-border-circle uk-child-width-1-5" :src="'images/users/' + user.user.image_name" v-if="user.user.image_name">
-                                <img class="uk-border-circle uk-child-width-1-5" src="user.png" v-if="!user.user.image_name">
+                                <img class="uk-border-circle uk-child-width-1-5"
+                                     :src="'images/users/' + user.user.image_name" v-if="user.user.image_name">
+                                <img class="uk-border-circle uk-child-width-1-5" src="user.png"
+                                     v-if="!user.user.image_name">
                             </div>
                             <div class="uk-child-width-expand@s">
-                                <span class="uk-text-large uk-text-bold">{{ user.user.name_title }} {{ user.user.first_name }} {{ user.user.last_name }}</span><br>
-                                <span class="uk-text">Citizen ID: {{ user.user.citizen_id }}</span><br>
-                                <span class="uk-text">Role: {{ user.role }}</span><br>
+                                <span class="uk-text-bold">{{ user.user.name_title }} {{ user.user.first_name }} {{ user.user.last_name }}</span><br>
+                                <span class="uk-text"><span class="uk-text-bold">Citizen ID:</span> {{ user.user.citizen_id }}</span><br>
+                                <span class="uk-text"><span class="uk-text-bold">Role:</span>
+                                    <span v-for="role in user.role">
+                                        <span v-if="role == '1'">ADMIN </span>
+                                        <span v-if="role == '2'">COUNSELOR </span>
+                                        <span v-if="role == '3'">CONSULTEE </span>
+                                    </span>
+                                </span><br>
                             </div>
                             <div class="uk-child-width-auto@s">
                                 <div class="uk-button-group uk-align-right">
-                                    <button v-on:click.stop="editUser(user.username)"
+                                    <button v-on:click.stop="editUser(user.user_id)"
                                             class="uk-button uk-button-secondary ">Edit
                                     </button>
-                                    <button v-on:click.stop="deleteUser(user.username)"
+                                    <button v-on:click.stop="deleteUser(user.user_id)"
                                             class="uk-button uk-button-default ">Delete
                                     </button>
                                 </div>

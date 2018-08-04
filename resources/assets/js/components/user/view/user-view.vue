@@ -11,15 +11,17 @@
 
             }
         },
+        mounted () {
+            let payload = this.$route.params.id;
+            this.$store.dispatch('getUser',payload).then(
+                response => {
+                    this.isLoading = true;
+                }
+            );
+        },
         computed: {
-            user(){
-                return this.$store.getters['currentUser'];
-            },
-            role(){
-                return this.$store.getters['userRole']
-            },
-            image_src(){
-                return "../../images/users/" + this.$store.getters['currentUser'].image_name;
+            currentViewUser(){
+                return this.$store.getters['currentViewUser'];
             }
         },
         methods: {

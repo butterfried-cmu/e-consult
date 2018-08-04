@@ -7,33 +7,48 @@
         template: require('./user-list.html'),
         data() {
             return {
-                isLoading: false,
                 paginate: ['users'],
-                shown: false
+                shown: false,
+                keyword: '',
             }
         },
         mounted () {
             this.$store.dispatch('getAllUsers').then(
                 response => {
-                    this.isLoading = true;
                 }
             );
         },
         methods: {
             selectUser(id) {
                 console.log('select ' + id);
-                // this.$router.push('/user/'+id);
+                this.$router.push('/users/'+id);
+            },
+            editUser(id) {
+                console.log('edit ' + id);
+                this.$router.push('/profile/edit/'+id);
             },
             deleteUser(id) {
-                console.log('delete ' + id);
+                var payload = id;
+                var r = confirm('Are you sure?');
+                if (r == true) {
+                    this.$store.dispatch('getDelete',payload).then(
+                        response => {
+                        }
+                    );
+                } else {
+                }
+
+            },
+            search(){
+                var payload = this.keyword;
+                this.$store.dispatch('getSearch',payload).then(
+                    response => {}
+                );
             }
         },
         computed: {
             users(){
                 return this.$store.getters['allUsers'];
-            },
-            isLoading(){
-                return this.isLoading;
             }
         }
     }

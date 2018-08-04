@@ -8,7 +8,23 @@
 
             <form autocomplete="off" class="uk-form-horizontal">
 
-                <!--<h2 class="uk-heading-line"><span>Account</span></h2>-->
+                <div v-if="isRole(1)">
+                    <h2 class="uk-heading-line"><span>Account</span></h2>
+
+                    <div class="uk-margin ">
+                        <label class="uk-form-label"><h4>Role</h4></label>
+                        <div class="uk-form-controls">
+                            <label><input class="uk-checkbox" value="1" type="checkbox" v-model="edited_user.role"> ADMIN</label>
+                            <label><input class="uk-checkbox" value="2" type="checkbox" v-model="edited_user.role"> COUNSELOR</label>
+                            <label><input class="uk-checkbox" value="3" type="checkbox" v-model="edited_user.role"> CONSULTEE</label>
+                            <div class="uk-alert-danger" v-if="error.role">
+                                <p v-if="error.role == 'required'">Required</p>
+                                <p v-if="error.role == 'not_role'">Something error</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
 
                 <!--<div class="uk-margin uk-width-3-5@s">-->
                     <!--<label class="uk-form-label"><h4>Role</h4></label>-->

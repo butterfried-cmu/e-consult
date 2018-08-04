@@ -4,10 +4,12 @@
     // import loginService from './adminService.js';
     export default {
         template: require('./login.html'),
-        data: {
-            username: '',
-            password: '',
-            errors: []
+        data() {
+            return {
+                username: '',
+                password: '',
+                loginFail: false
+            }
         },
         methods: {
             login() {
@@ -18,12 +20,12 @@
                 console.log('login.vue : login method');
                 this.$store.dispatch('login', payload)
                     .then(response => {
-                        console.log('login.vue : login passed');
+                            console.log('login.vue : login passed');
                             this.$router.push("/");
                         }, error => {
-                        console.log('login.vue : login failed');
+                            console.log('login.vue : login failed');
                             // console.log(error);
-                            // this.errors.push(error)
+                            this.loginFail = true;
                         }
                     );
             }

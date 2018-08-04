@@ -11,6 +11,7 @@ export const store = new Vuex.Store({
         user: null,
         account: null,
         allUsers: null,
+        currentViewUser: null,
     },
     getters: {
         isLoggedIn(state) {
@@ -25,6 +26,12 @@ export const store = new Vuex.Store({
         allUsers(state) {
             return state.allUsers;
         },
+        currentViewUser(state) {
+            return state.currentViewUser.user;
+        },
+        currentViewRole(state) {
+            return state.currentViewUser.role;
+        }
     },
     mutations: {
         initialiseStore(state) {
@@ -32,6 +39,7 @@ export const store = new Vuex.Store({
             state.user = {};
             state.account = {};
             state.allUsers = {};
+            state.currentViewUser = {};
             console.log("initialiseStore");
         },
         setUser(state, user) {
@@ -48,6 +56,9 @@ export const store = new Vuex.Store({
         },
         setAllUsers(state, users) {
             state.allUsers = users;
+        },
+        setCurrentViewUser(state, user) {
+            state.currentViewUser = user;
         }
     },
     actions: {
@@ -133,7 +144,7 @@ export const store = new Vuex.Store({
         addUser({commit}, user) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    axios.post("/user/add?token=" + localStorage.getItem('token'), user,
+                    axios.post("/users/add?token=" + localStorage.getItem('token'), user,
                         {
                             headers: {'Content-Type': 'application/json'}
                         }
@@ -156,7 +167,7 @@ export const store = new Vuex.Store({
         updateUser({commit}, user) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    axios.post("/user/update?token=" + localStorage.getItem('token'), user,
+                    axios.post("/users/update?token=" + localStorage.getItem('token'), user,
                         {
                             headers: {'Content-Type': 'application/json'}
                         }
@@ -200,5 +211,127 @@ export const store = new Vuex.Store({
                 });
             }
         },
-    }
+
+        getSearch({commit}, keyword) {
+            if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
+                console.log("No Token in localStorage");
+            } else {
+                console.log("Token in localStorage");
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        axios.post("/users/search?token=" + localStorage.getItem('token'), {
+                            'keyword': keyword
+                        })
+                            .then(
+                                response => {
+                                    console.log(response);
+                                    commit('setAllUsers', response.data.users);
+                                    console.log("All users GET");
+                                }
+                            ).catch(
+                            error => {
+                                console.log(error);
+                                resolve(error);
+                            }
+                        );
+                    }, 1000);
+                });
+            }
+        },
+
+        getUser({commit}, user_id) {
+            if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
+                console.log("No Token in localStorage");
+            } else {
+                console.log("Token in localStorage");
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        axios.get("/users/" + user_id + "?token=" + localStorage.getItem('token'))
+                            .then(
+                                response => {
+                                    console.log(response);
+                                    commit('setCurrentViewUser', response.data.user);
+                                    console.log("GET user by id");
+                                }
+                            ).catch(
+                            error => {
+                                console.log(error);
+                                resolve(error);
+                            }
+                        );
+                    }, 1000);
+                });
+            }
+        },
+
+        getDelete({commit}, user_id) {
+            if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
+                console.log("No Token in localStorage");
+            } else {
+                console.log("Token in localStorage");
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        axios.get("/users/delete/" + user_id + "?token=" + localStorage.getItem('token'))
+                            .then(
+                                response => {
+                                    console.log(response);
+                                    commit('setCurrentViewUser', response.data.user);
+                                    alert('Succeeded')
+                                }
+                            ).catch(
+                            error => {
+                                console.log(error);
+                                resolve(error);
+                            }
+                        );
+                    }, 1000);
+                });
+            }
+        },
+
+        sendRequest({commit}, email) {
+            console.log(email);
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.post("/auth/password/request", {'email': email})
+                        .then(
+                            response => {
+                                console.log(response);
+                                // commit('setCurrentViewUser', response.data.user);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
+        updatePassword({commit}, payload) {
+            // console.log(email);
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.post("/auth/password/update", payload)
+                        .then(
+                            response => {
+                                console.log(response);
+                                // commit('setCurrentViewUser', response.data.user);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
+
+
+    },
 });
