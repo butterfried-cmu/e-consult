@@ -19,8 +19,10 @@ import ResetPassword from './components/user/forgetpassword/Resetpassword.vue';
 import NotFoundComponent from './components/not-found-component/not-found-component.vue';
 import UserList from './components/user/list/user-list.vue';
 
+
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 
 import Vuikit from 'vuikit';
 import VuikitIcons from '@vuikit/icons';
