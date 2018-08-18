@@ -60,18 +60,127 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 20);
+/******/ 	return __webpack_require__(__webpack_require__.s = 21);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var bind = __webpack_require__(11);
-var isBuffer = __webpack_require__(25);
+var isBuffer = __webpack_require__(26);
 
 /*global toString:true*/
 
@@ -374,7 +483,7 @@ module.exports = {
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports) {
 
 /*
@@ -456,115 +565,6 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -584,7 +584,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
   ) }
 }
 
-var listToStyles = __webpack_require__(46)
+var listToStyles = __webpack_require__(47)
 
 /*
 type StyleObject = {
@@ -796,7 +796,7 @@ function applyToTag (styleElement, obj) {
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(24);
+module.exports = __webpack_require__(25);
 
 /***/ }),
 /* 5 */
@@ -1022,8 +1022,8 @@ process.umask = function() { return 0; };
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
-var utils = __webpack_require__(0);
-var normalizeHeaderName = __webpack_require__(27);
+var utils = __webpack_require__(1);
+var normalizeHeaderName = __webpack_require__(28);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -12462,7 +12462,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(22);
+__webpack_require__(23);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -12500,13 +12500,13 @@ module.exports = function bind(fn, thisArg) {
 "use strict";
 
 
-var utils = __webpack_require__(0);
-var settle = __webpack_require__(28);
-var buildURL = __webpack_require__(30);
-var parseHeaders = __webpack_require__(31);
-var isURLSameOrigin = __webpack_require__(32);
+var utils = __webpack_require__(1);
+var settle = __webpack_require__(29);
+var buildURL = __webpack_require__(31);
+var parseHeaders = __webpack_require__(32);
+var isURLSameOrigin = __webpack_require__(33);
 var createError = __webpack_require__(13);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(33);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(34);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -12603,7 +12603,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(34);
+      var cookies = __webpack_require__(35);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -12687,7 +12687,7 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(29);
+var enhanceError = __webpack_require__(30);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -13690,6 +13690,12 @@ var index_esm = {
 
 /***/ }),
 /* 17 */
+/***/ (function(module, exports) {
+
+module.exports = "/images/1.png?d3e72fd6511c103b1075815fc65665ab";
+
+/***/ }),
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15186,13 +15192,13 @@ var Datepicker = {render: function(){var _vm=this;var _h=_vm.$createElement;var 
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = "/images/user.png?065c1b76bda66d87c6c556e9afc4c356";
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = (function () {
@@ -15255,64 +15261,68 @@ module.exports = (function () {
 })();
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(21);
-module.exports = __webpack_require__(119);
+__webpack_require__(22);
+module.exports = __webpack_require__(126);
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_axios__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_axios__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_vue_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__App_App_vue__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__App_App_vue__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__App_App_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__App_App_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_es6_promise_auto__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_es6_promise_auto__ = __webpack_require__(55);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_es6_promise_auto___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_es6_promise_auto__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_vuex__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_index_Index_vue__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_index_Index_vue__ = __webpack_require__(57);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_index_Index_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__components_index_Index_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue__ = __webpack_require__(61);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue__ = __webpack_require__(65);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__vuex_store__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__components_user_profile_user_profile_vue__ = __webpack_require__(71);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__components_user_profile_user_profile_vue__ = __webpack_require__(75);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__components_user_profile_user_profile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11__components_user_profile_user_profile_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__components_user_view_user_view_vue__ = __webpack_require__(76);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__components_user_view_user_view_vue__ = __webpack_require__(80);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__components_user_view_user_view_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12__components_user_view_user_view_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__components_user_edit_user_edit_vue__ = __webpack_require__(81);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__components_user_edit_user_edit_vue__ = __webpack_require__(85);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__components_user_edit_user_edit_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13__components_user_edit_user_edit_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Forgetpassword_vue__ = __webpack_require__(86);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Forgetpassword_vue__ = __webpack_require__(90);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Forgetpassword_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Forgetpassword_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_user_forgetpassword_Resetpassword_vue__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_user_forgetpassword_Resetpassword_vue__ = __webpack_require__(95);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_user_forgetpassword_Resetpassword_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15__components_user_forgetpassword_Resetpassword_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_not_found_component_not_found_component_vue__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_not_found_component_not_found_component_vue__ = __webpack_require__(100);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_not_found_component_not_found_component_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_16__components_not_found_component_not_found_component_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue__ = __webpack_require__(101);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue__ = __webpack_require__(105);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18_vuikit__ = __webpack_require__(105);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__vuikit_icons__ = __webpack_require__(106);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__vuikit_theme__ = __webpack_require__(107);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__vuikit_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_20__vuikit_theme__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21_vue_paginate__ = __webpack_require__(111);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21_vue_paginate___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_21_vue_paginate__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue__ = __webpack_require__(109);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19_vuikit__ = __webpack_require__(112);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__vuikit_icons__ = __webpack_require__(113);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__vuikit_theme__ = __webpack_require__(114);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__vuikit_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_21__vuikit_theme__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22_vue_paginate__ = __webpack_require__(118);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22_vue_paginate___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_22_vue_paginate__);
 
 
 
 
 
 // import BootstrapVue from 'bootstrap-vue';
+
+
 
 
 
@@ -15337,10 +15347,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_21_vue_paginate___default.a);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_22_vue_paginate___default.a);
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_18_vuikit__["a" /* default */]);
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_19__vuikit_icons__["a" /* default */]);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_19_vuikit__["a" /* default */]);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_20__vuikit_icons__["a" /* default */]);
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]);
 // Vue.use(BootstrapVue);
@@ -15414,15 +15424,19 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
         path: '*',
         name: 'not-found-component',
         component: __WEBPACK_IMPORTED_MODULE_16__components_not_found_component_not_found_component_vue___default.a
+    }, {
+        path: '/consult-add',
+        name: 'consult-add',
+        component: __WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue___default.a
     }]
 });
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.router = router;
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__webpack_require__(112), {
-    auth: __webpack_require__(116),
-    http: __webpack_require__(117),
-    router: __webpack_require__(118)
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__webpack_require__(119), {
+    auth: __webpack_require__(123),
+    http: __webpack_require__(124),
+    router: __webpack_require__(125)
 });
 
 __WEBPACK_IMPORTED_MODULE_4__App_App_vue___default.a.router = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.router;
@@ -15436,7 +15450,7 @@ new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
 });
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -15629,7 +15643,7 @@ new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(6)))
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18259,15 +18273,15 @@ if (inBrowser && window.Vue) {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 var bind = __webpack_require__(11);
-var Axios = __webpack_require__(26);
+var Axios = __webpack_require__(27);
 var defaults = __webpack_require__(7);
 
 /**
@@ -18302,14 +18316,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(15);
-axios.CancelToken = __webpack_require__(40);
+axios.CancelToken = __webpack_require__(41);
 axios.isCancel = __webpack_require__(14);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(41);
+axios.spread = __webpack_require__(42);
 
 module.exports = axios;
 
@@ -18318,7 +18332,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 /*!
@@ -18345,16 +18359,16 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(7);
-var utils = __webpack_require__(0);
-var InterceptorManager = __webpack_require__(35);
-var dispatchRequest = __webpack_require__(36);
+var utils = __webpack_require__(1);
+var InterceptorManager = __webpack_require__(36);
+var dispatchRequest = __webpack_require__(37);
 
 /**
  * Create a new instance of Axios
@@ -18431,13 +18445,13 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 module.exports = function normalizeHeaderName(headers, normalizedName) {
   utils.forEach(headers, function processHeader(value, name) {
@@ -18450,7 +18464,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18483,7 +18497,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18511,13 +18525,13 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 function encode(val) {
   return encodeURIComponent(val).
@@ -18584,13 +18598,13 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 // Headers whose duplicates are ignored by node
 // c.f. https://nodejs.org/api/http.html#http_message_headers
@@ -18644,13 +18658,13 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -18719,7 +18733,7 @@ module.exports = (
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18762,13 +18776,13 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -18822,13 +18836,13 @@ module.exports = (
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 function InterceptorManager() {
   this.handlers = [];
@@ -18881,18 +18895,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(0);
-var transformData = __webpack_require__(37);
+var utils = __webpack_require__(1);
+var transformData = __webpack_require__(38);
 var isCancel = __webpack_require__(14);
 var defaults = __webpack_require__(7);
-var isAbsoluteURL = __webpack_require__(38);
-var combineURLs = __webpack_require__(39);
+var isAbsoluteURL = __webpack_require__(39);
+var combineURLs = __webpack_require__(40);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -18974,13 +18988,13 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(0);
+var utils = __webpack_require__(1);
 
 /**
  * Transform the data for a request or a response
@@ -19001,7 +19015,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19022,7 +19036,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19043,7 +19057,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19107,7 +19121,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19141,7 +19155,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19149,17 +19163,17 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof="fun
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):window.Vue&&window.axios&&Vue.use(o,window.axios)}();
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(44)
+  __webpack_require__(45)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(47)
+var __vue_script__ = __webpack_require__(48)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -19200,13 +19214,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(45);
+var content = __webpack_require__(46);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -19226,10 +19240,10 @@ if(false) {
 }
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -19240,7 +19254,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", 
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports) {
 
 /**
@@ -19273,12 +19287,12 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_navbar_NavBar_vue__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_navbar_NavBar_vue__ = __webpack_require__(49);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_navbar_NavBar_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_navbar_NavBar_vue__);
 
 // import axios from 'axios';
@@ -19289,7 +19303,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
-    template: __webpack_require__(53),
+    template: __webpack_require__(54),
     data: function data() {
         return {
             msg: 'Hello'
@@ -19306,17 +19320,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(49)
+  __webpack_require__(50)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(51)
+var __vue_script__ = __webpack_require__(52)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -19357,13 +19371,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(50);
+var content = __webpack_require__(51);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -19383,10 +19397,10 @@ if(false) {
 }
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -19397,7 +19411,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19409,7 +19423,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import { mapGetters } from 'vuex';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(52),
+    template: __webpack_require__(53),
     computed: {
         isLoggedIn: function isLoggedIn() {
             return this.$store.getters['isLoggedIn'];
@@ -19437,30 +19451,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports) {
 
 module.exports = "<div id=\"navbar\">\n    <vk-navbar v-if=\"isLoggedIn\">\n        <vk-navbar-nav>\n            <vk-navbar-nav-item icon=\"home\" title=\"MED E-CONSULTs\" :to=\"{ name: 'index' }\"></vk-navbar-nav-item>\n            <vk-navbar-item>\n                <router-link :to=\"{ name: 'add-user' }\" v-if=\"isRole(1)\">ADD USER</router-link>\n            </vk-navbar-item>\n            <vk-navbar-item>\n                <router-link :to=\"{ name: 'user-list' }\" v-if=\"isRole(1)\">USER LIST</router-link>\n            </vk-navbar-item>\n        </vk-navbar-nav>\n        <vk-navbar-nav slot=\"right\">\n            <vk-navbar-item>\n                <router-link :to=\"{ name: 'profile' }\" >{{ user.first_name.toUpperCase() }} {{user.last_name.toUpperCase()}}</router-link>\n            </vk-navbar-item>\n            <vk-navbar-nav-item title=\"logout\" v-on:click=\"logout\">\n            </vk-navbar-nav-item>\n            <vk-navbar-nav-item icon=\"cog\"></vk-navbar-nav-item>\n        </vk-navbar-nav>\n    </vk-navbar>\n</div>";
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports) {
 
 module.exports = "<div id=\"app\">\n\n  <nav-bar></nav-bar>\n\n  <div class=\"container\">\n    <div class=\"panel panel-default\">\n      <div class=\"panel-body\">\n        <router-view></router-view>\n      </div>\n    </div>\n  </div>\n\n</div>\n";
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 // This file can be required in Browserify and Node.js for automatic polyfill
 // To use it:  require('es6-promise/auto');
 
-module.exports = __webpack_require__(55).polyfill();
+module.exports = __webpack_require__(56).polyfill();
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process, global) {/*!
@@ -20646,17 +20660,17 @@ return Promise$1;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6), __webpack_require__(5)))
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(121)
+  __webpack_require__(58)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(59)
+var __vue_script__ = __webpack_require__(60)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -20697,9 +20711,47 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 57 */,
-/* 58 */,
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(59);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(3)("d1d1c95a", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5efe4b24\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Index.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5efe4b24\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Index.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
 /* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* Common style */\n.grid[data-v-5efe4b24] {\n\tmargin: 40px auto 120px;\n\tmax-width: 1000px;\n\twidth: 90%;\n}\n.grid a[data-v-5efe4b24] {\n\tfloat: left;\n\tmax-width: 250px;\n\twidth: 25%;\n\tcolor: #333;\n}\n.grid a[data-v-5efe4b24]:nth-child(odd) {\n\tmargin: 30px 0 -30px 0;\n}\n.grid figure[data-v-5efe4b24] {\n\tposition: relative;\n\toverflow: hidden;\n\tmargin: 5px;\n\tbackground: #333;\n}\n.grid figure img[data-v-5efe4b24] {\n\tposition: relative;\n\tdisplay: block;\n\twidth: 100%;\n\topacity: 0.7;\n\t-webkit-transition: opacity 0.3s;\n\ttransition: opacity 0.3s;\n}\n.grid figcaption[data-v-5efe4b24] {\n\tposition: absolute;\n\ttop: 0;\n\tz-index: 11;\n\tpadding: 10px;\n\twidth: 100%;\n\theight: 100%;\n\ttext-align: center;\n}\n.grid figcaption h2[data-v-5efe4b24] {\n\tmargin: 0 0 20px 0;\n\tcolor: #3498db;\n\ttext-transform: uppercase;\n\tletter-spacing: 1px;\n\tfont-weight: 300;\n\tfont-size: 130%;\n\t-webkit-transition: -webkit-transform 0.3s;\n\ttransition: -webkit-transform 0.3s;\n\ttransition: transform 0.3s;\n\ttransition: transform 0.3s, -webkit-transform 0.3s;\n}\n.grid figcaption p[data-v-5efe4b24] {\n\tpadding: 0 20px;\n\tcolor: #aaa;\n\tfont-weight: 300;\n\t-webkit-transition: opacity 0.3s, -webkit-transform 0.3s;\n\ttransition: opacity 0.3s, -webkit-transform 0.3s;\n\ttransition: opacity 0.3s, transform 0.3s;\n\ttransition: opacity 0.3s, transform 0.3s, -webkit-transform 0.3s;\n}\n.grid figcaption h2[data-v-5efe4b24],\n.grid figcaption p[data-v-5efe4b24] {\n\t-webkit-transform: translateY(50px);\n\ttransform: translateY(50px);\n}\n.grid figure button[data-v-5efe4b24] {\n\tposition: absolute;\n\tpadding: 4px 20px;\n\tborder: none;\n\ttext-transform: uppercase;\n\tletter-spacing: 1px;\n\tfont-weight: bold;\n\t-webkit-transition: opacity 0.3s, -webkit-transform 0.3s;\n\ttransition: opacity 0.3s, -webkit-transform 0.3s;\n\ttransition: opacity 0.3s, transform 0.3s;\n\ttransition: opacity 0.3s, transform 0.3s, -webkit-transform 0.3s;\n}\n.grid figcaption[data-v-5efe4b24],\n.grid figcaption h2[data-v-5efe4b24],\n.grid figcaption p[data-v-5efe4b24],\n.grid figure button[data-v-5efe4b24] {\n\t-webkit-backface-visibility: hidden;\n\tbackface-visibility: hidden;\n}\n\n/* Style for SVG */\n.grid svg[data-v-5efe4b24] {\n\tposition: absolute;\n\ttop: -1px; /* fixes rendering issue in FF */\n\tz-index: 10;\n\twidth: 100%;\n\theight: 100%;\n}\n.grid svg path[data-v-5efe4b24] {\n\tfill: #fff;\n}\n\n/* Hover effects */\n.grid a:hover figure img[data-v-5efe4b24] {\n\topacity: 1;\n}\n.grid a:hover figcaption h2[data-v-5efe4b24],\n.grid a:hover figcaption p[data-v-5efe4b24] {\n\t-webkit-transform: translateY(0);\n\ttransform: translateY(0);\n}\n.grid a:hover figcaption p[data-v-5efe4b24] {\n\topacity: 0;\n}\n\n/* Individual styles */\n.demo-1 body[data-v-5efe4b24] {\n\tbackground: #3498db;\n}\n.demo-1 .grid figure button[data-v-5efe4b24],\n.demo-3 .grid figure button[data-v-5efe4b24] {\n\ttop: 50%;\n\tleft: 50%;\n\tborder: 3px solid #fff;\n\tbackground: transparent;\n\tcolor: #fff;\n\topacity: 0;\n\t-webkit-transform: translateY(-50%) translateX(-50%) scale(0.25);\n\ttransform: translateY(-50%) translateX(-50%) scale(0.25);\n}\n.demo-1 .grid a:hover figure button[data-v-5efe4b24],\n.demo-3 .grid a:hover figure button[data-v-5efe4b24] {\n\topacity: 1;\n\t-webkit-transform: translateY(-50%) translateX(-50%) scale(1);\n\ttransform: translateY(-50%) translateX(-50%) scale(1);\n}\n.demo-2 body[data-v-5efe4b24] {\n\tbackground: #e74c3c;\n}\n.demo-2 .grid figcaption h2[data-v-5efe4b24] {\n\tcolor: #e74c3c;\n}\n.demo-2 .grid figcaption p[data-v-5efe4b24] {\n\t-webkit-transition-delay: 0.05s;\n\ttransition-delay: 0.05s;\n}\n.demo-2 .grid figure button[data-v-5efe4b24] {\n\tbottom: 0;\n\tleft: 0;\n\tpadding: 15px;\n\twidth: 100%;\n\tbackground: #fff;\n\tcolor: #333;\n\tfont-weight: 300;\n\t-webkit-transform: translateY(100%);\n\ttransform: translateY(100%);\n}\n.demo-2 .grid a:hover figure button[data-v-5efe4b24] {\n\t-webkit-transition-timing-function: ease-out;\n\ttransition-timing-function: ease-out;\n\t-webkit-transform: translateY(0);\n\ttransform: translateY(0);\n}\n.demo-2 .grid figcaption h2[data-v-5efe4b24], \n.demo-2 .grid figcaption p[data-v-5efe4b24],\n.demo-3 .grid figcaption h2[data-v-5efe4b24],\n.demo-3 .grid figcaption p[data-v-5efe4b24] {\n\t-webkit-transition-timing-function: cubic-bezier(0.250, 0.250, 0.115, 1); /* older webkit */\n\t-webkit-transition-timing-function: cubic-bezier(0.250, 0.250, 0.115, 1.445);\n\ttiming-function: cubic-bezier(0.250, 0.250, 0.115, 1.445);\n}\n.demo-2 .grid a:hover figcaption p[data-v-5efe4b24],\n.demo-3 .grid a:hover figcaption p[data-v-5efe4b24] {\n\t-webkit-transition-delay: 0s;\n\ttransition-delay: 0s;\n\t-webkit-transition-duration: 0.1s;\n\ttransition-duration: 0.1s;\n}\n.demo-3 body[data-v-5efe4b24] {\n\tbackground: #52be7f;\n}\n.demo-3 .grid figcaption h2[data-v-5efe4b24] {\n\tcolor: #52be7f;\n}\n.demo-3 .grid a:hover figcaption h2[data-v-5efe4b24] {\n\t-webkit-transform: translateY(5px);\n\ttransform: translateY(5px);\n}\n\n/* Media Queries */\n/* Let's redefine the width of each anchor and the margins */\n@media screen and (max-width: 58em) {\n.grid a[data-v-5efe4b24] {\n\t\twidth: 33.333%;\n}\n.grid a[data-v-5efe4b24]:nth-child(odd) {\n\t\tmargin: 0;\n}\n.grid a[data-v-5efe4b24]:nth-child(3n-1) {\n\t\tmargin: 30px 0 -30px 0;\n}\n}\n@media screen and (max-width: 45em) {\n.grid[data-v-5efe4b24] {\n\t\tmax-width: 500px;\n}\n.grid a[data-v-5efe4b24] {\n\t\twidth: 50%;\n}\n.grid a[data-v-5efe4b24]:nth-child(3n-1) {\n\t\tmargin: 0;\n}\n.grid a[data-v-5efe4b24]:nth-child(even) {\n\t\tmargin: 30px 0 -30px 0;\n}\n.grid figcaption h2[data-v-5efe4b24] {\n\t\tmargin-bottom: 0px;\n\t\t-webkit-transform: translateY(30px);\n\t\ttransform: translateY(30px);\n}\n.grid figcaption p[data-v-5efe4b24] {\n\t\tmargin: 0;\n\t\tpadding: 0 10px;\n}\n}\n@media screen and (max-width: 27em) {\n.grid[data-v-5efe4b24] {\n\t\tmax-width: 250px;\n}\n.grid a[data-v-5efe4b24] {\n\t\twidth: 100%;\n}\n.grid a[data-v-5efe4b24]:nth-child(even) {\n\t\tmargin: 0;\n}\n}\n*[data-v-5efe4b24], *[data-v-5efe4b24]:after, *[data-v-5efe4b24]:before { -webkit-box-sizing: border-box; box-sizing: border-box;\n}\nbody[data-v-5efe4b24] {\n\tbackground: #333;\n\tcolor: #fff;\n\tfont-weight: 400;\n\tfont-size: 1em;\n\tfont-family: 'Lato', Arial, sans-serif;\n}\na[data-v-5efe4b24], button[data-v-5efe4b24] {\n\toutline: none;\n}\na[data-v-5efe4b24] {\n\tcolor: #f0f0f0;\n\ttext-decoration: none;\n}\na[data-v-5efe4b24]:hover, a[data-v-5efe4b24]:focus {\n\tcolor: #333;\n}\n.clearfix[data-v-5efe4b24]:before,\n.clearfix[data-v-5efe4b24]:after {\n\tcontent: \" \";\n\tdisplay: table;\n}\n.clearfix[data-v-5efe4b24]:after {\n\tclear: both;\n}\n.codrops-header[data-v-5efe4b24] {\n\tmargin: 0 auto;\n\tpadding: 2em;\n\ttext-align: center;\n}\n.codrops-header h1[data-v-5efe4b24] {\n\tmargin: 0;\n\tfont-weight: 300;\n\tfont-size: 2.5em;\n\tline-height: 1.3;\n}\n.codrops-header h1 span[data-v-5efe4b24] {\n\tdisplay: block;\n\tpadding: 0 0 0.6em 0.1em;\n\tfont-size: 60%;\n\topacity: 0.7;\n}\n\n/* To Navigation Style */\n.codrops-top[data-v-5efe4b24] {\n\twidth: 100%;\n\ttext-transform: uppercase;\n\tfont-weight: 700;\n\tfont-size: 0.69em;\n\tline-height: 2.2;\n}\n.codrops-top a[data-v-5efe4b24] {\n\tdisplay: inline-block;\n\tpadding: 0 1em;\n\ttext-decoration: none;\n\tletter-spacing: 1px;\n}\n.codrops-top span.right[data-v-5efe4b24] {\n\tfloat: right;\n}\n.codrops-top span.right a[data-v-5efe4b24] {\n\tdisplay: block;\n\tfloat: left;\n}\n.codrops-icon[data-v-5efe4b24]:before {\n\tmargin: 0 4px;\n\ttext-transform: none;\n\tfont-weight: normal;\n\tfont-style: normal;\n\tfont-variant: normal;\n\tfont-family: 'codropsicons';\n\tline-height: 1;\n\tspeak: none;\n\t-webkit-font-smoothing: antialiased;\n}\n.codrops-icon-drop[data-v-5efe4b24]:before {\n\tcontent: \"\\E001\";\n}\n.codrops-icon-prev[data-v-5efe4b24]:before {\n\tcontent: \"\\E004\";\n}\n\n/* Demo Buttons Style */\n.codrops-demos[data-v-5efe4b24] {\n\tpadding-top: 1em;\n\tfont-size: 0.8em;\n}\n.codrops-demos a[data-v-5efe4b24] {\n\tdisplay: inline-block;\n\tmargin: 0.5em;\n\tpadding: 0.7em 1.1em;\n\toutline: none;\n\tborder: 2px solid #fff;\n\tcolor: #fff;\n\ttext-decoration: none;\n\ttext-transform: uppercase;\n\tletter-spacing: 1px;\n\tfont-weight: 700;\n}\n.codrops-demos a[data-v-5efe4b24]:hover,\n.codrops-demos a.current-demo[data-v-5efe4b24],\n.codrops-demos a.current-demo[data-v-5efe4b24]:hover {\n\tborder-color: #333;\n\tcolor: #333;\n}\n.related[data-v-5efe4b24] {\n\ttext-align: center;\n\tfont-size: 1.5em;\n}\n@media screen and (max-width: 25em) {\n.codrops-icon span[data-v-5efe4b24] {\n\t\tdisplay: none;\n}\n}\narticle[data-v-5efe4b24],aside[data-v-5efe4b24],details[data-v-5efe4b24],figcaption[data-v-5efe4b24],figure[data-v-5efe4b24],footer[data-v-5efe4b24],header[data-v-5efe4b24],hgroup[data-v-5efe4b24],main[data-v-5efe4b24],nav[data-v-5efe4b24],section[data-v-5efe4b24],summary[data-v-5efe4b24]{display:block;\n}\naudio[data-v-5efe4b24],canvas[data-v-5efe4b24],video[data-v-5efe4b24]{display:inline-block;\n}\naudio[data-v-5efe4b24]:not([controls]){display:none;height:0;\n}\n[hidden][data-v-5efe4b24]{display:none;\n}\nhtml[data-v-5efe4b24]{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;\n}\nbody[data-v-5efe4b24]{margin:0;\n}\na[data-v-5efe4b24]:focus{outline:thin dotted;\n}\na[data-v-5efe4b24]:active,a[data-v-5efe4b24]:hover{outline:0;\n}\nh1[data-v-5efe4b24]{font-size:2em;margin:0.67em 0;\n}\nabbr[title][data-v-5efe4b24]{border-bottom:1px dotted;\n}\nb[data-v-5efe4b24],strong[data-v-5efe4b24]{font-weight:bold;\n}\ndfn[data-v-5efe4b24]{font-style:italic;\n}\nhr[data-v-5efe4b24]{-webkit-box-sizing:content-box;box-sizing:content-box;height:0;\n}\nmark[data-v-5efe4b24]{background:#ff0;color:#000;\n}\ncode[data-v-5efe4b24],kbd[data-v-5efe4b24],pre[data-v-5efe4b24],samp[data-v-5efe4b24]{font-family:monospace,serif;font-size:1em;\n}\npre[data-v-5efe4b24]{white-space:pre-wrap;\n}\nq[data-v-5efe4b24]{quotes:\"\\201C\" \"\\201D\" \"\\2018\" \"\\2019\";\n}\nsmall[data-v-5efe4b24]{font-size:80%;\n}\nsub[data-v-5efe4b24],sup[data-v-5efe4b24]{font-size:75%;line-height:0;position:relative;vertical-align:baseline;\n}\nsup[data-v-5efe4b24]{top:-0.5em;\n}\nsub[data-v-5efe4b24]{bottom:-0.25em;\n}\nimg[data-v-5efe4b24]{border:0;\n}\nsvg[data-v-5efe4b24]:not(:root){overflow:hidden;\n}\nfigure[data-v-5efe4b24]{margin:0;\n}\nfieldset[data-v-5efe4b24]{border:1px solid #c0c0c0;margin:0 2px;padding:0.35em 0.625em 0.75em;\n}\nlegend[data-v-5efe4b24]{border:0;padding:0;\n}\nbutton[data-v-5efe4b24],input[data-v-5efe4b24],select[data-v-5efe4b24],textarea[data-v-5efe4b24]{font-family:inherit;font-size:100%;margin:0;\n}\nbutton[data-v-5efe4b24],input[data-v-5efe4b24]{line-height:normal;\n}\nbutton[data-v-5efe4b24],select[data-v-5efe4b24]{text-transform:none;\n}\nbutton[data-v-5efe4b24],html input[type=\"button\"][data-v-5efe4b24],input[type=\"reset\"][data-v-5efe4b24],input[type=\"submit\"][data-v-5efe4b24]{-webkit-appearance:button;cursor:pointer;\n}\nbutton[disabled][data-v-5efe4b24],html input[disabled][data-v-5efe4b24]{cursor:default;\n}\ninput[type=\"checkbox\"][data-v-5efe4b24],input[type=\"radio\"][data-v-5efe4b24]{-webkit-box-sizing:border-box;box-sizing:border-box;padding:0;\n}\ninput[type=\"search\"][data-v-5efe4b24]{-webkit-appearance:textfield;-webkit-box-sizing:content-box;box-sizing:content-box;\n}\ninput[type=\"search\"][data-v-5efe4b24]::-webkit-search-cancel-button,input[type=\"search\"][data-v-5efe4b24]::-webkit-search-decoration{-webkit-appearance:none;\n}\nbutton[data-v-5efe4b24]::-moz-focus-inner,input[data-v-5efe4b24]::-moz-focus-inner{border:0;padding:0;\n}\ntextarea[data-v-5efe4b24]{overflow:auto;vertical-align:top;\n}\ntable[data-v-5efe4b24]{border-collapse:collapse;border-spacing:0;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 60 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20709,11 +20761,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import {APIENDPOINT} from  '../../http-common.js';
 // import loginService from './adminService.js';
 
-// import hover from './hover.js';
-// import script_min from './script-min.js';
-
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(60),
+    template: __webpack_require__(61),
     data: function data() {
         return {
             user: {}
@@ -20725,27 +20774,53 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return this.$store.getters['currentUser'];
         }
     },
-    methods: {}
+    methods: {
+        isRole: function isRole(role) {
+            for (var i = 0; i < this.$store.getters['userRole'].length; i++) {
+                if (role == this.$store.getters['userRole'][i]) return true;
+            }
+            return false;
+            // return role === this.$store.getters['userRole'];
+        }
+    }
 });
-
-/***/ }),
-/* 60 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = "<div id=\"index\">\n\n  <header>\n    <br/>\n    <h1 class=\"uk-text-center\">Welcome to MED E-CONSULTS</h1>\n  </header>\n\n  <section id=\"grid\" class=\"grid clearfix\">\n    <a href=\"#\" data-path-hover=\"m 180,34.57627 -180,0 L 0,0 180,0 z\">\n      <figure>\n        <img src=\"" + __webpack_require__(131) + "\" />\n        <svg viewBox=\"0 0 180 320\" preserveAspectRatio=\"none\"><path d=\"M 180,160 0,218 0,0 180,0 z\"/></svg>\n        <figcaption>\n          <h2>Create Case</h2>\n          <p>Create new medical consult case</p>\n          <button>CLICK</button>\n        </figcaption>\n      </figure>\n    </a>\n\n    <a href=\"#\" data-path-hover=\"m 180,34.57627 -180,0 L 0,0 180,0 z\">\n      <figure>\n        <img src=\"" + __webpack_require__(132) + "\" />\n        <svg viewBox=\"0 0 180 320\" preserveAspectRatio=\"none\"><path d=\"M 180,160 0,218 0,0 180,0 z\"/></svg>\n        <figcaption>\n          <h2>Cases Status</h2>\n          <p>Check the created cases status</p>\n          <button>CLICK</button>\n        </figcaption>\n      </figure>\n    </a>\n\n    <a href=\"#\" data-path-hover=\"m 180,34.57627 -180,0 L 0,0 180,0 z\">\n      <figure>\n        <img src=\"" + __webpack_require__(133) + "\" />\n        <svg viewBox=\"0 0 180 320\" preserveAspectRatio=\"none\"><path d=\"M 180,160 0,218 0,0 180,0 z\"/></svg>\n        <figcaption>\n          <h2>History</h2>\n          <p>View closed cases history</p>\n          <button>CLICK</button>\n        </figcaption>\n      </figure>\n    </a>\n\n    <a href=\"#\" data-path-hover=\"m 180,34.57627 -180,0 L 0,0 180,0 z\">\n      <figure>\n        <img src=\"" + __webpack_require__(134) + "\" />\n        <svg viewBox=\"0 0 180 320\" preserveAspectRatio=\"none\"><path d=\"M 180,160 0,218 0,0 180,0 z\"/></svg>\n        <figcaption>\n          <h2>Analyze</h2>\n          <p>See the cases analysis summary</p>\n          <button>CLICK</button>\n        </figcaption>\n      </figure>\n    </a>\n  </section>\n  \n</div>\n";
 
 /***/ }),
 /* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
+module.exports = "<div id=\"index\">\n\n  <header>\n    <br/>\n    <h1 class=\"uk-text-center\">Welcome to MED E-CONSULTS</h1>\n  </header>\n\n  <section id=\"grid\" class=\"grid clearfix\">\n    <!-- for Admin -->\n    <div v-if=\"isRole(1)\">\n      <div>\n        <a href=\"#\" data-path-hover=\"m 180,34.57627 -180,0 L 0,0 180,0 z\">\n          <figure>\n            <img src=\"" + __webpack_require__(17) + "\" />\n            <svg viewBox=\"0 0 180 320\" preserveAspectRatio=\"none\"><path d=\"M 180,160 0,218 0,0 180,0 z\"/></svg>\n            <figcaption>\n              <h2>Add User</h2>\n              <p>Click here to create new user account</p>\n            </figcaption>\n          </figure>\n        </a>\n      </div>\n      <div v-if=\"isRole(1)\">\n        <a href=\"#\" data-path-hover=\"m 180,34.57627 -180,0 L 0,0 180,0 z\">\n          <figure>\n            <img src=\"" + __webpack_require__(17) + "\" />\n            <svg viewBox=\"0 0 180 320\" preserveAspectRatio=\"none\"><path d=\"M 180,160 0,218 0,0 180,0 z\"/></svg>\n            <figcaption>\n              <h2>User List</h2>\n              <p>Click here to see the users in the system</p>\n            </figcaption>\n          </figure>\n        </a>\n      </div>\n    </div>\n    <!-- Close for Admin-->\n    <div v-if=\"isRole(3)\">\n      <a href=\"#\" data-path-hover=\"m 180,34.57627 -180,0 L 0,0 180,0 z\">\n        <figure>\n          <img src=\"" + __webpack_require__(17) + "\" />\n          <svg viewBox=\"0 0 180 320\" preserveAspectRatio=\"none\"><path d=\"M 180,160 0,218 0,0 180,0 z\"/></svg>\n          <figcaption>\n            <h2>Create Case</h2>\n            <p>Click here to create new medical consult case</p>\n          </figcaption>\n        </figure>\n      </a>\n    </div>\n\n    <div v-if=\"isRole(2) || isRole(3)\">\n      <a href=\"#\" data-path-hover=\"m 180,34.57627 -180,0 L 0,0 180,0 z\">\n        <figure>\n          <img src=\"" + __webpack_require__(62) + "\" />\n          <svg viewBox=\"0 0 180 320\" preserveAspectRatio=\"none\"><path d=\"M 180,160 0,218 0,0 180,0 z\"/></svg>\n          <figcaption>\n            <h2>Cases Status</h2>\n            <p>Click here to check the created cases status</p>\n          </figcaption>\n        </figure>\n      </a>\n    </div>\n\n    <div v-if=\"isRole(1) || isRole(2) || isRole(3)\">\n      <a href=\"#\" data-path-hover=\"m 180,34.57627 -180,0 L 0,0 180,0 z\">\n        <figure>\n          <img src=\"" + __webpack_require__(63) + "\" />\n          <svg viewBox=\"0 0 180 320\" preserveAspectRatio=\"none\"><path d=\"M 180,160 0,218 0,0 180,0 z\"/></svg>\n          <figcaption>\n            <h2>History</h2>\n            <p>Click here to view closed cases history</p>\n          </figcaption>\n        </figure>\n      </a>\n    </div>\n\n    <div v-if=\"isRole(1) || isRole(2) || isRole(3)\">\n      <a href=\"#\" data-path-hover=\"m 180,34.57627 -180,0 L 0,0 180,0 z\">\n        <figure>\n          <img src=\"" + __webpack_require__(64) + "\" />\n          <svg viewBox=\"0 0 180 320\" preserveAspectRatio=\"none\"><path d=\"M 180,160 0,218 0,0 180,0 z\"/></svg>\n          <figcaption>\n            <h2>Analyze</h2>\n            <p>Click here to see the cases analysis summary</p>\n          </figcaption>\n        </figure>\n      </a>\n    </div>\n  </section>\n  \n</div>\n";
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports) {
+
+module.exports = "/images/2.png?993d0854ae60a97fc360f5f834e82e63";
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports) {
+
+module.exports = "/images/3.png?efdbb8b0e39661a84b7c451659df4a22";
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports) {
+
+module.exports = "/images/4.png?7d699fd1affcf47ead7266f626263128";
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(62)
+  __webpack_require__(66)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(64)
+var __vue_script__ = __webpack_require__(68)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -20786,13 +20861,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 62 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(63);
+var content = __webpack_require__(67);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -20812,10 +20887,10 @@ if(false) {
 }
 
 /***/ }),
-/* 63 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -20826,21 +20901,21 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 64 */
+/* 68 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuejs_datepicker__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuejs_datepicker__ = __webpack_require__(18);
 
 
 
 // import {APIENDPOINT} from  '../../http-common.js';
 // import loginService from './adminService.js';
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(65),
+    template: __webpack_require__(69),
     components: {
         Datepicker: __WEBPACK_IMPORTED_MODULE_1_vuejs_datepicker__["a" /* default */]
     },
@@ -20937,23 +21012,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 65 */
+/* 69 */
 /***/ (function(module, exports) {
 
 module.exports = "<div id=\"register\">\n\n    <div class=\"uk-container uk-section\">\n\n        <div class=\"uk-width-3-5@m uk-align-center\">\n\n            <h1 class=\"uk-heading-primary\">Add User Account</h1>\n\n            <form autocomplete=\"off\" class=\"uk-form-horizontal\">\n\n                <h2 class=\"uk-heading-line\"><span>Account</span></h2>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Username</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.username\" class=\"uk-input\" type=\"text\" placeholder=\"Username\">\n                        <div class=\"uk-alert-danger\" uk-alert v-if=\"error.username\">\n                            <p v-if=\"error.username == 'required'\">Required</p>\n                            <p v-if=\"error.username == 'min'\">The username must have at least 4 characters</p>\n                            <p v-if=\"error.username == 'max'\">The username must not over 30 characters</p>\n                            <p v-if=\"error.username == 'not_unique'\">The username is already existing.</p>\n                            <p v-if=\"error.username == 'not_alpha_num'\">Username can be only alphabet and number</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Password</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.password\" class=\"uk-input\" type=\"password\" placeholder=\"Password\"\n                               id=\"password\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.password\">\n                            <p v-if=\"error.password == 'required'\">Required</p>\n                            <p v-if=\"error.password == 'min'\">The username must have at least 4 characters</p>\n                            <p v-if=\"error.password == 'max'\">The username must not over 30 characters</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Confirm Password</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.password_confirmation\" class=\"uk-input\" type=\"password\"\n                               placeholder=\"Confirm Password\"\n                               id=\"cpassword\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.password\">\n                            <p v-if=\"error.password == 'not_confirmed'\">The confirm password is not match</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin \">\n                    <label class=\"uk-form-label\"><h4>Role</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <label><input class=\"uk-checkbox\" value=\"1\" type=\"checkbox\" v-model=\"user.role\"> ADMIN</label>\n                        <label><input class=\"uk-checkbox\" value=\"2\" type=\"checkbox\" v-model=\"user.role\"> COUNSELOR</label>\n                        <label><input class=\"uk-checkbox\" value=\"3\" type=\"checkbox\" v-model=\"user.role\"> CONSULTEE</label>\n                        <div class=\"uk-alert-danger\" v-if=\"error.role\">\n                            <p v-if=\"error.role == 'required'\">Required</p>\n                            <p v-if=\"error.role == 'not_role'\">Something error</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>Personal Information</span></h2>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Name Title</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <select v-model=\"user.name_title\" class=\"uk-select\">\n                            <option value=\"\" disabled>Name Title</option>\n                            <option v-for=\"title in form.name_titles\" :value=\"title.title\">{{ title.title }}</option>\n                        </select>\n                        <div class=\"uk-alert-danger\" v-if=\"error.name_title\">\n                            <p v-if=\"error.name_title == 'required'\">Please select name title.</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>First Name</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.first_name\">\n                            <p v-if=\"error.first_name == 'required'\">Required</p>\n                            <p v-if=\"error.first_name == 'not_alpha'\">Only alphabets</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Last Name</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.last_name\">\n                            <p v-if=\"error.last_name == 'required'\">Required</p>\n                            <p v-if=\"error.last_name == 'not_alpha'\">Only alphabets</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Position</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.position\" class=\"uk-input\" type=\"text\" placeholder=\"Position\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.position\">\n                            <p v-if=\"error.last_name == 'required'\">Required</p>\n                            <p v-if=\"error.last_name == 'not_alpha'\">Only alphabets</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Gender</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <select v-model=\"user.gender\" class=\"uk-select\" placeholder=\"gender\">\n                            <option value=\"\" disabled>Gender</option>\n                            <option v-for=\"gender in form.genders\" :value=\"gender.gender\">{{ gender.gender }}</option>\n                        </select>\n                        <div class=\"uk-alert-danger\" v-if=\"error.gender\">\n                            <p v-if=\"error.gender == 'required'\">Please select gender.</p>\n                            <p v-if=\"error.gender == 'not_alpha'\">Something error</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Citizen ID</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.citizen_id\" class=\"uk-input\" type=\"text\" placeholder=\"Citizen Id\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.citizen_id\">\n                            <p v-if=\"error.citizen_id == 'required'\">Required</p>\n                            <p v-if=\"error.citizen_id == 'not_digits'\">Citizen id must be 13 digits</p>\n                            <p v-if=\"error.citizen_id == 'not_unique'\">This citizen id is not available.</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Date of Birth</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\"></datepicker>\n                        <div class=\"uk-alert-danger\" v-if=\"error.date_of_birth\">\n                            <p v-if=\"error.date_of_birth == 'required'\">Please select date of birth.</p>\n                            <p v-if=\"error.date_of_birth == 'not_date'\">Something error</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>Contact Information</span></h2>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>E-mail</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.email\">\n                            <p v-if=\"error.email == 'required'\">Required</p>\n                            <p v-if=\"error.email == 'not_email'\">The email pattern should be example@mail.com</p>\n                            <p v-if=\"error.email == 'not_unique'\">This email is not available</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Telephone Number</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.contact_number\" class=\"uk-input\" type=\"text\"\n                               placeholder=\"Telephone Number\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.contact_number\">\n                            <p v-if=\"error.contact_number == 'required'\">Required</p>\n                            <p v-if=\"error.contact_number == 'The contact number format is invalid.'\">\n                                The contact number format is invalid.</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Address</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.address\">\n                            <p v-if=\"error.address == 'required'\">Required</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>Workplace</span></h2>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Workplace</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.workplace\">\n                            <p v-if=\"error.workplace == 'required'\">Required</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>User Image (Optional)</span></h2>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Image</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <div class=\"uk-margin\" v-if=\"user.image\">\n                            <img :src=\"user.image\" width=\"1800\" height=\"1200\" alt=\"\" uk-img>\n                            <!--<img :src=\"user.image\" class=\"\" height=\"\" width=\"\">-->\n                        </div>\n                        <input type=\"file\" v-on:change=\"onImageChange\">\n                        <div class=\"uk-margin\">\n                            <div class=\"uk-alert-danger\" v-if=\"error.image\">\n                                <p v-if=\"error.image == 'not_image'\">Only.PNG and .JPG(JPEG) files are allowed.</p>\n                            </div>\n                        </div>\n                        <!--<input type=\"file\" v-on:change=\"onImageChange\" class=\"form-control\">-->\n                    </div>\n                </div>\n\n                <p uk-margin class=\"uk-margin-bottom uk-text-center\">\n                    <button @click=\"addUser\" type=\"button\" class=\"uk-button uk-button-primary\">Add</button>\n                    <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\n                </p>\n            </form>\n        </div>\n    </div>\n</div>\n";
 
 /***/ }),
-/* 66 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(67)
+  __webpack_require__(71)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(69)
+var __vue_script__ = __webpack_require__(73)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -20994,13 +21069,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 67 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(68);
+var content = __webpack_require__(72);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -21020,10 +21095,10 @@ if(false) {
 }
 
 /***/ }),
-/* 68 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -21034,7 +21109,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 69 */
+/* 73 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21046,7 +21121,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import {APIENDPOINT} from  '../../http-common.js';
 // import loginService from './adminService.js';
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(70),
+    template: __webpack_require__(74),
     data: function data() {
         return {
             username: '',
@@ -21078,23 +21153,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 70 */
+/* 74 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"login\">\n    <div align=\"center\" class=\"uk-container\">\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\n        <h1>LOGIN</h1>\n        <form>\n            <div class=\"uk-alert-danger\" v-if=\"loginFail\">\n                <p>Username or password is incorrect.</p>\n            </div>\n\n            <div class=\"uk-margin\">\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"user\"></vk-icon></span>\n                    <input\n                            id=\"email\"\n                            class=\"uk-input form-control\"\n                            type=\"text\"\n                            v-model=\"username\"\n                            placeholder=\"Username\"\n                            required>\n                </div>\n            </div>\n            <div class=\"uk-margin\">\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\n                    <input\n                            id=\"password\"\n                            class=\"uk-input form-control\"\n                            type=\"password\"\n                            v-model=\"password\"\n                            placeholder=\"Password\"\n                            required>\n                </div>\n            </div>\n\n            <button @click=\"login\" type=\"button\" class=\"uk-button uk-button-default uk-button-small uk-button-primary\">Login\n            </button>\n            <br/>\n            <a href=\"/#/forgetpassword\" class=\"uk-position-bottom-center uk-margin-large-bottom\">Forget Password</a>\n\n        </form>\n    </div>\n\n</div>\n";
 
 /***/ }),
-/* 71 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(72)
+  __webpack_require__(76)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(74)
+var __vue_script__ = __webpack_require__(78)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -21135,13 +21210,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 72 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(73);
+var content = __webpack_require__(77);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -21161,10 +21236,10 @@ if(false) {
 }
 
 /***/ }),
-/* 73 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -21175,7 +21250,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 74 */
+/* 78 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21188,7 +21263,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(75),
+    template: __webpack_require__(79),
     data: function data() {
         return {};
     },
@@ -21212,23 +21287,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 75 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<div id=\"profile\">\n    <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\n        <!-- left column -->\n        <div>\n            <vk-grid class=\"uk-padding\">\n                <div>\n                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\n                    <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"user.image_name\">\n                    <img src=\"" + __webpack_require__(18) + "\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!user.image_name\">\n                </div>\n            </vk-grid>\n\n        </div>\n\n        <!-- center column -->\n        <div class=\"uk-width-1-2@s uk-align-left@s\">\n            <br/> <br/>\n            <div>\n                <ul style=\"list-style-type: none;\">\n                    <li><h1><span class=\"uk-text-bold\">{{ user.name_title.name_title }} {{ user.first_name.toUpperCase() }} {{\n                        user.last_name.toUpperCase() }}</span></h1>\n                    </li>\n                    <button v-on:click.stop=\"editUser(user.user_id)\" class=\"uk-button uk-button-default\">Edit Profile</button>\n                    <h4>\n                        <li id=\"citizen_id\"><span class=\"uk-text-bold\">Citizen ID:</span> {{ user.citizen_id }}</li>\n                        <li id=\"role\"><span class=\"uk-text-bold\">Role:</span>\n                            <span v-for=\"list in role\">\n                                <span v-if=\"list == '1'\">ADMIN </span><span v-if=\"list == '2'\">COUNSELOR </span><span v-if=\"list == '3'\">CONSULTEE </span>\n                            </span>\n                        </li>\n                        <li id=\"gender\"><span class=\"uk-text-bold\">Gender:</span> {{ user.gender }}</li>\n                        <li id=\"date_of_birth\"><span class=\"uk-text-bold\">Date of Birth:</span> {{ user.date_of_birth }}</li>\n\n                        <hr class=\"uk-description-list-divider\">\n                        <li><h4><span class=\"uk-text-bold\">WORKPLACE</span></h4></li>\n                        <li id=\"unit\">{{ user.workplace }}</li>\n                    </h4>\n                    <hr class=\"uk-description-list-divider\">\n                </ul>\n            </div>\n            <vk-grid>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4><span class=\"uk-text-bold\">CONTACT INFORMATION</span></h4></li>\n                        <h4>\n                            <li><span class=\"uk-text-bold\">Telephone</span></li>\n                            <li><span class=\"uk-text-bold\">Email</span></li>\n                            <li><span class=\"uk-text-bold\">Address</span></li>\n                        </h4>\n                    </ul>\n                </div>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4>&nbsp;</h4></li>\n                        <h4>\n                            <li id=\"contact_number\">{{ user.contact_number }}</li>\n                            <li id=\"email\">{{ user.email }}</li>\n                            <li id=\"address\">{{ user.address }}</li>\n                        </h4>\n                    </ul>\n                </div>\n            </vk-grid>\n        </div>\n\n        <!-- right column -->\n        <div class=\"uk-align-center@s\">\n            <vk-grid class=\"uk-padding-large\">\n            </vk-grid>\n        </div>\n\n    </vk-grid>\n</div>\n";
+module.exports = "<div id=\"profile\">\n    <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\n        <!-- left column -->\n        <div>\n            <vk-grid class=\"uk-padding\">\n                <div>\n                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\n                    <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"user.image_name\">\n                    <img src=\"" + __webpack_require__(19) + "\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!user.image_name\">\n                </div>\n            </vk-grid>\n\n        </div>\n\n        <!-- center column -->\n        <div class=\"uk-width-1-2@s uk-align-left@s\">\n            <br/> <br/>\n            <div>\n                <ul style=\"list-style-type: none;\">\n                    <li><h1><span class=\"uk-text-bold\">{{ user.name_title.name_title }} {{ user.first_name.toUpperCase() }} {{\n                        user.last_name.toUpperCase() }}</span></h1>\n                    </li>\n                    <button v-on:click.stop=\"editUser(user.user_id)\" class=\"uk-button uk-button-default\">Edit Profile</button>\n                    <h4>\n                        <li id=\"citizen_id\"><span class=\"uk-text-bold\">Citizen ID:</span> {{ user.citizen_id }}</li>\n                        <li id=\"role\"><span class=\"uk-text-bold\">Role:</span>\n                            <span v-for=\"list in role\">\n                                <span v-if=\"list == '1'\">ADMIN </span><span v-if=\"list == '2'\">COUNSELOR </span><span v-if=\"list == '3'\">CONSULTEE </span>\n                            </span>\n                        </li>\n                        <li id=\"gender\"><span class=\"uk-text-bold\">Gender:</span> {{ user.gender }}</li>\n                        <li id=\"date_of_birth\"><span class=\"uk-text-bold\">Date of Birth:</span> {{ user.date_of_birth }}</li>\n\n                        <hr class=\"uk-description-list-divider\">\n                        <li><h4><span class=\"uk-text-bold\">WORKPLACE</span></h4></li>\n                        <li id=\"unit\">{{ user.workplace }}</li>\n                    </h4>\n                    <hr class=\"uk-description-list-divider\">\n                </ul>\n            </div>\n            <vk-grid>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4><span class=\"uk-text-bold\">CONTACT INFORMATION</span></h4></li>\n                        <h4>\n                            <li><span class=\"uk-text-bold\">Telephone</span></li>\n                            <li><span class=\"uk-text-bold\">Email</span></li>\n                            <li><span class=\"uk-text-bold\">Address</span></li>\n                        </h4>\n                    </ul>\n                </div>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4>&nbsp;</h4></li>\n                        <h4>\n                            <li id=\"contact_number\">{{ user.contact_number }}</li>\n                            <li id=\"email\">{{ user.email }}</li>\n                            <li id=\"address\">{{ user.address }}</li>\n                        </h4>\n                    </ul>\n                </div>\n            </vk-grid>\n        </div>\n\n        <!-- right column -->\n        <div class=\"uk-align-center@s\">\n            <vk-grid class=\"uk-padding-large\">\n            </vk-grid>\n        </div>\n\n    </vk-grid>\n</div>\n";
 
 /***/ }),
-/* 76 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(77)
+  __webpack_require__(81)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(79)
+var __vue_script__ = __webpack_require__(83)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -21269,13 +21344,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 77 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(78);
+var content = __webpack_require__(82);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -21295,10 +21370,10 @@ if(false) {
 }
 
 /***/ }),
-/* 78 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -21309,7 +21384,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 79 */
+/* 83 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21322,7 +21397,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(80),
+    template: __webpack_require__(84),
     data: function data() {
         return {};
     },
@@ -21344,23 +21419,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 80 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<div id=\"profile\">\n    <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\n        <!-- left column -->\n        <div>\n            <vk-grid class=\"uk-padding\">\n                <div>\n                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\n                    <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"currentViewUser.user.image_name\">\n                    <img src=\"" + __webpack_require__(18) + "\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!currentViewUser.user.image_name\">\n                    <button v-on:click.stop=\"editUser(currentViewUser.user.username)\"\n                            class=\"uk-button uk-button-default uk-align-center\">Edit Profile\n                    </button>\n                </div>\n            </vk-grid>\n\n        </div>\n\n        <!-- center column -->\n        <div class=\"uk-width-1-2@s uk-align-left@s\">\n            <br/> <br/>\n            <div>\n                <ul style=\"list-style-type: none;\">\n                    <li><h1>{{ currentViewUser.user.name_title.name_title }} {{ currentViewUser.user.first_name.toUpperCase() }} {{\n                        currentViewUser.user.last_name.toUpperCase() }}</h1></li>\n                    <h4>\n                        <li id=\"citizen_id\">{{ currentViewUser.user.citizen_id }}</li>\n                        <li id=\"role\">{{ role }}</li>\n                        <li id=\"gender\">{{ currentViewUser.user.gender }}</li>\n                        <li id=\"date_of_birth\">Date of Birth {{ currentViewUser.user.date_of_birth }}</li>\n\n                        <hr class=\"uk-description-list-divider\">\n                        <li><h4>WORK</h4></li>\n                        <li id=\"unit\">{{ currentViewUser.user.workplace }}</li>\n                    </h4>\n                    <hr class=\"uk-description-list-divider\">\n                </ul>\n            </div>\n            <vk-grid>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4>CONTACT INFORMATION</h4></li>\n                        <h4>\n                            <li>Telephone</li>\n                            <li>Email</li>\n                            <li>Address</li>\n                        </h4>\n                    </ul>\n                </div>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4>&nbsp;</h4></li>\n                        <h4>\n                            <li id=\"contact_number\">{{ currentViewUser.user.contact_number }}</li>\n                            <li id=\"email\">{{ currentViewUser.user.email }}</li>\n                            <li id=\"address\">{{ currentViewUser.user.address }}</li>\n                        </h4>\n                    </ul>\n                </div>\n            </vk-grid>\n        </div>\n\n        <!-- right column -->\n        <div class=\"uk-align-center@s\">\n            <vk-grid class=\"uk-padding-large\">\n            </vk-grid>\n        </div>\n\n    </vk-grid>\n</div>\n";
+module.exports = "<div id=\"profile\">\n    <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\n        <!-- left column -->\n        <div>\n            <vk-grid class=\"uk-padding\">\n                <div>\n                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\n                    <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"currentViewUser.user.image_name\">\n                    <img src=\"" + __webpack_require__(19) + "\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!currentViewUser.user.image_name\">\n                    <button v-on:click.stop=\"editUser(currentViewUser.user.username)\"\n                            class=\"uk-button uk-button-default uk-align-center\">Edit Profile\n                    </button>\n                </div>\n            </vk-grid>\n\n        </div>\n\n        <!-- center column -->\n        <div class=\"uk-width-1-2@s uk-align-left@s\">\n            <br/> <br/>\n            <div>\n                <ul style=\"list-style-type: none;\">\n                    <li><h1>{{ currentViewUser.user.name_title.name_title }} {{ currentViewUser.user.first_name.toUpperCase() }} {{\n                        currentViewUser.user.last_name.toUpperCase() }}</h1></li>\n                    <h4>\n                        <li id=\"citizen_id\">{{ currentViewUser.user.citizen_id }}</li>\n                        <li id=\"role\">{{ role }}</li>\n                        <li id=\"gender\">{{ currentViewUser.user.gender }}</li>\n                        <li id=\"date_of_birth\">Date of Birth {{ currentViewUser.user.date_of_birth }}</li>\n\n                        <hr class=\"uk-description-list-divider\">\n                        <li><h4>WORK</h4></li>\n                        <li id=\"unit\">{{ currentViewUser.user.workplace }}</li>\n                    </h4>\n                    <hr class=\"uk-description-list-divider\">\n                </ul>\n            </div>\n            <vk-grid>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4>CONTACT INFORMATION</h4></li>\n                        <h4>\n                            <li>Telephone</li>\n                            <li>Email</li>\n                            <li>Address</li>\n                        </h4>\n                    </ul>\n                </div>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4>&nbsp;</h4></li>\n                        <h4>\n                            <li id=\"contact_number\">{{ currentViewUser.user.contact_number }}</li>\n                            <li id=\"email\">{{ currentViewUser.user.email }}</li>\n                            <li id=\"address\">{{ currentViewUser.user.address }}</li>\n                        </h4>\n                    </ul>\n                </div>\n            </vk-grid>\n        </div>\n\n        <!-- right column -->\n        <div class=\"uk-align-center@s\">\n            <vk-grid class=\"uk-padding-large\">\n            </vk-grid>\n        </div>\n\n    </vk-grid>\n</div>\n";
 
 /***/ }),
-/* 81 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(82)
+  __webpack_require__(86)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(84)
+var __vue_script__ = __webpack_require__(88)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -21401,13 +21476,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 82 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(83);
+var content = __webpack_require__(87);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -21427,10 +21502,10 @@ if(false) {
 }
 
 /***/ }),
-/* 83 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -21441,12 +21516,12 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 84 */
+/* 88 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuejs_datepicker__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuejs_datepicker__ = __webpack_require__(18);
 
 // import axios from 'axios';
 // import {APIENDPOINT} from  '../../http-common.js';
@@ -21454,7 +21529,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(85),
+    template: __webpack_require__(89),
     components: {
         Datepicker: __WEBPACK_IMPORTED_MODULE_0_vuejs_datepicker__["a" /* default */]
     },
@@ -21552,23 +21627,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 85 */
+/* 89 */
 /***/ (function(module, exports) {
 
 module.exports = "<div id=\"edit\">\n\n    <div class=\"uk-container uk-section\">\n\n        <div class=\"uk-width-3-5@m uk-align-center\">\n\n            <h1 class=\"uk-heading-primary\">Edit Profile</h1>\n\n            <form autocomplete=\"off\" class=\"uk-form-horizontal\">\n\n                <div v-if=\"isRole(1)\">\n                    <h2 class=\"uk-heading-line\"><span>Account</span></h2>\n\n                    <div class=\"uk-margin \">\n                        <label class=\"uk-form-label\"><h4>Role</h4></label>\n                        <div class=\"uk-form-controls\">\n                            <label><input class=\"uk-checkbox\" value=\"1\" type=\"checkbox\" v-model=\"edited_user.role\"> ADMIN</label>\n                            <label><input class=\"uk-checkbox\" value=\"2\" type=\"checkbox\" v-model=\"edited_user.role\"> COUNSELOR</label>\n                            <label><input class=\"uk-checkbox\" value=\"3\" type=\"checkbox\" v-model=\"edited_user.role\"> CONSULTEE</label>\n                            <div class=\"uk-alert-danger\" v-if=\"error.role\">\n                                <p v-if=\"error.role == 'required'\">Required</p>\n                                <p v-if=\"error.role == 'not_role'\">Something error</p>\n                            </div>\n                        </div>\n                    </div>\n\n                </div>\n\n                <!--<div class=\"uk-margin uk-width-3-5@s\">-->\n                    <!--<label class=\"uk-form-label\"><h4>Role</h4></label>-->\n                    <!--<div class=\"uk-form-controls\">-->\n                        <!--<select v-model=\"user.role\" class=\"uk-select\" >-->\n                            <!--<option value=\"\" disabled selected>Role</option>-->\n                            <!--<option v-for=\"role in form.roles\" :value=\"role.role\">{{ role.role }}</option>-->\n                        <!--</select>-->\n                        <!--<div class=\"uk-alert-danger\" v-if=\"error.role\">-->\n                            <!--<p v-if=\"error.role == 'required'\">Required</p>-->\n                            <!--<p v-if=\"error.role == 'alpha'\">Something error</p>-->\n                        <!--</div>-->\n                    <!--</div>-->\n                <!--</div>-->\n\n                <h2 class=\"uk-heading-line\"><span>Personal Information</span></h2>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Name Title</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <select v-model=\"edited_user.name_title\" class=\"uk-select\">\n                            <option value=\"\" disabled>Name Title</option>\n                            <option v-for=\"title in form.name_titles\" :value=\"title.title\" :selected=\"edited_user.name_title == title.title ? true : false\">{{ title.title }}</option>\n                        </select>\n                        <div class=\"uk-alert-danger\" v-if=\"error.name_title\">\n                            <p v-if=\"error.name_title == 'required'\">Required</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>First Name</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.first_name\">\n                            <p v-if=\"error.first_name == 'required'\">Required</p>\n                            <p v-if=\"error.first_name == 'not_alpha'\">Only alphabets</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Last Name</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.last_name\">\n                            <p v-if=\"error.last_name == 'required'\">Required</p>\n                            <p v-if=\"error.last_name == 'not_alpha'\">Only alphabets</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Gender</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <select v-model=\"edited_user.gender\" class=\"uk-select\" placeholder=\"gender\">\n                            <option value=\"\" disabled>Gender</option>\n                            <option v-for=\"gender in form.genders\" :value=\"gender.gender\">{{ gender.gender }}</option>\n                        </select>\n                        <div class=\"uk-alert-danger\" v-if=\"error.gender\">\n                            <p v-if=\"error.gender == 'required'\">Required</p>\n                            <p v-if=\"error.gender == 'not_alpha'\">Something error</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Citizen ID</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.citizen_id\" class=\"uk-input\" type=\"number\" placeholder=\"Citizen Id\" disabled>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Date of Birth</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\" :value=\"edited_user.date_of_birth\"></datepicker>\n                        <div class=\"uk-alert-danger\" v-if=\"error.date\">\n                            <p v-if=\"error.date == 'required'\">Required</p>\n                            <p v-if=\"error.date == 'not_date'\">Something error</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>Contact Information</span></h2>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>E-mail</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.email\">\n                            <p v-if=\"error.email == 'required'\">Required</p>\n                            <p v-if=\"error.email == 'not_email'\">The input E-mail is not in E-mail pattern</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Telephone Number</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.contact_number\" class=\"uk-input\" type=\"text\"\n                               placeholder=\"Telephone Number\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.contact_number\">\n                            <p v-if=\"error.contact_number == 'required'\">Required</p>\n                            <p v-if=\"error.contact_number == 'The contact number format is invalid.'\">\n                                The contact number format is invalid.</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Address</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.address\">\n                            <p v-if=\"error.address == 'required'\">Required</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>Workplace</span></h2>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Workplace</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.workplace\">\n                            <p v-if=\"error.workplace == 'required'\">Required</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>User Image (Optional)</span></h2>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Image</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <div class=\"uk-margin\" v-if=\"edited_user.image\">\n                            <img :src=\"edited_user.image\" width=\"1800\" height=\"1200\" alt=\"\" uk-img>\n                            <!--<img :src=\"user.image\" class=\"\" height=\"\" width=\"\">-->\n                        </div>\n                        <input type=\"file\" v-on:change=\"onImageChange\">\n                        <div class=\"uk-margin\">\n                            <div class=\"uk-alert-danger\" v-if=\"error.image\">\n                                <p v-if=\"error.image == 'not_image'\">Only allow JPG and PNG file</p>\n                            </div>\n                        </div>\n                        <!--<input type=\"file\" v-on:change=\"onImageChange\" class=\"form-control\">-->\n                    </div>\n                </div>\n\n                <p uk-margin class=\"uk-margin-bottom uk-text-center\">\n                    <button @click=\"updateUser\" type=\"button\" class=\"uk-button uk-button-primary\">Update</button>\n                    <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\n                </p>\n            </form>\n        </div>\n    </div>\n</div>\n";
 
 /***/ }),
-/* 86 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(87)
+  __webpack_require__(91)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(89)
+var __vue_script__ = __webpack_require__(93)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -21609,13 +21684,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 87 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(88);
+var content = __webpack_require__(92);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -21635,10 +21710,10 @@ if(false) {
 }
 
 /***/ }),
-/* 88 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -21649,7 +21724,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 89 */
+/* 93 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21659,7 +21734,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import {APIENDPOINT} from  '../../http-common.js';
 // import loginService from './adminService.js';
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(90),
+    template: __webpack_require__(94),
     data: function data() {
         return {
             email: '',
@@ -21690,23 +21765,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 90 */
+/* 94 */
 /***/ (function(module, exports) {
 
 module.exports = "<div id=forgetpassword>\n    <div align=\"center\">\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\n        <h1>Forget Password</h1>\n        <form autocomplete=\"off\">\n\n            <div class=\"uk-margin\">\n                <div class=\"uk-alert-danger\" v-if=\"error.email\">\n                    <p v-if=\"error.email == 'required'\">Required</p>\n                    <p v-if=\"error.email == 'not_exist'\">This email is not registered.</p>\n                    <p v-if=\"error.email == 'not_email'\">The email pattern should be example@mail.com</p>\n                </div>\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"mail\"></vk-icon></span>\n                    <input id=\"email\" class=\"uk-input form-control\" type=\"email\" placeholder=\"example@mail.com\"\n                           v-model=\"email\" required>\n                </div>\n            </div>\n            <button class=\"uk-button uk-button-default uk-button-small uk-button-primary\"\n                    v-on:click=\"sendRequest()\">Submit\n            </button>\n            <br/>\n\n        </form>\n    </div>\n</div>";
 
 /***/ }),
-/* 91 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(92)
+  __webpack_require__(96)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(94)
+var __vue_script__ = __webpack_require__(98)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -21747,13 +21822,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 92 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(93);
+var content = __webpack_require__(97);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -21773,10 +21848,10 @@ if(false) {
 }
 
 /***/ }),
-/* 93 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -21787,7 +21862,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 94 */
+/* 98 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21797,7 +21872,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import {APIENDPOINT} from  '../../http-common.js';
 // import loginService from './adminService.js';
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(95),
+    template: __webpack_require__(99),
     data: function data() {
         return {
             requestId: this.$route.query.test,
@@ -21838,23 +21913,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 95 */
+/* 99 */
 /***/ (function(module, exports) {
 
 module.exports = "<div id=resetpassword>\n    <div align=\"center\">\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\n        <h1>Reset Password</h1>\n        <form autocomplete=\"off\">\n\n            <div class=\"uk-margin\">\n                <div class=\"uk-alert-danger\" v-if=\"error.password\">\n                    <p v-if=\"error.password == 'required'\">Required</p>\n                    <p v-if=\"error.password == 'not_confirmed'\">Password confirmation does not match</p>\n                </div>\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\n                    <input id=\"password\" class=\"uk-input form-control\" type=\"password\" placeholder=\"New Password\" v-model=\"password\" required>\n                </div>\n            </div>\n            <div class=\"uk-margin\">\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\n                    <input id=\"confirmed_password\" class=\"uk-input form-control\" type=\"password\" placeholder=\"Confirm New Password\" v-model=\"password_confirmation\" required>\n                </div>\n            </div>\n            <button class=\"uk-button uk-button-default uk-button-small uk-button-primary\" v-on:click=\"updatePassword()\">Submit</button>\n            <br/>\n        </form>\n    </div>\n</div>";
 
 /***/ }),
-/* 96 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(97)
+  __webpack_require__(101)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(99)
+var __vue_script__ = __webpack_require__(103)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -21895,13 +21970,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 97 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(98);
+var content = __webpack_require__(102);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -21921,10 +21996,10 @@ if(false) {
 }
 
 /***/ }),
-/* 98 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -21935,7 +22010,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 99 */
+/* 103 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21947,23 +22022,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import { mapGetters } from 'vuex';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(100)
+    template: __webpack_require__(104)
 });
 
 /***/ }),
-/* 100 */
+/* 104 */
 /***/ (function(module, exports) {
 
 module.exports = "<div id=\"not-found-conpinent\">\n    404 - page not found\n    <br>\n    <router-link to=\"login\">>>LOGIN<<</router-link>\n</div>";
 
 /***/ }),
-/* 101 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(0)
 /* script */
-var __vue_script__ = __webpack_require__(102)
+var __vue_script__ = __webpack_require__(106)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -22004,7 +22079,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 102 */
+/* 106 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -22017,7 +22092,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import loginService from './adminService.js';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(103),
+    template: __webpack_require__(107),
     data: function data() {
         return {
             paginate: ['users'],
@@ -22058,19 +22133,101 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 103 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<div id=\"user-list\">\n\n    <div class=\"uk-container uk-section\">\n\n        <div class=\"uk-width-3-5@m uk-align-center\">\n\n            <h1 class=\"uk-heading-primary\">User List</h1>\n\n            <div>\n                <vk-grid class=\"uk-text-center\">\n                    <form class=\"uk-search uk-search-default uk-width-expand@s\">\n                        <!--<span class=\"uk-search-icon\"><vk-icon icon=\"search\"></vk-icon></span>-->\n                        <input class=\"uk-search-input\" type=\"search\" v-model=\"keyword\" placeholder=\"Input keyword to search here\">\n                    </form>\n                    <button class=\"uk-button uk-button-primary uk-width-auto@s\" v-on:click=\"search()\">Search</button>\n                </vk-grid>\n                <!--<div class=\"uk-text-center uk-width-1-1\">-->\n                <!--<form class=\"uk-search uk-search-default uk-width-expand@s\">-->\n                <!--<span class=\"uk-search-icon\"><vk-icon icon=\"search\"></vk-icon></span>-->\n                <!--<input class=\"uk-search-input\" type=\"search\" placeholder=\"Search...\">-->\n                <!--</form>-->\n                <!--<button class=\"uk-button uk-button-primary uk-width-auto@s\">Search</button>-->\n                <!--</div>-->\n\n                <br>\n\n                <paginate name=\"users\" :list=\"users\" :per=\"10\"\n                          class=\"uk-list uk-list-large uk-list-divider uk-width-1-1\">\n                    <!--<ul class=\"uk-list uk-list-large uk-list-divider uk-width-1-1\">-->\n                    <li v-for=\"user in paginated('users')\">\n                        <vk-grid gutter=\"small\" class=\"uk-child-width-expand@s\" v-on:click=\"selectUser(user.user_id)\">\n                            <div class=\"uk-child-width-auto@s\">\n                                <img class=\"uk-border-circle uk-child-width-1-5\"\n                                     :src=\"'images/users/' + user.user.image_name\" v-if=\"user.user.image_name\">\n                                <img class=\"uk-border-circle uk-child-width-1-5\" src=\"" + __webpack_require__(104) + "\"\n                                     v-if=\"!user.user.image_name\">\n                            </div>\n                            <div class=\"uk-child-width-expand@s\">\n                                <span class=\"uk-text-bold\">{{ user.user.name_title }} {{ user.user.first_name }} {{ user.user.last_name }}</span><br>\n                                <span class=\"uk-text\"><span class=\"uk-text-bold\">Citizen ID:</span> {{ user.user.citizen_id }}</span><br>\n                                <span class=\"uk-text\"><span class=\"uk-text-bold\">Role:</span>\n                                    <span v-for=\"role in user.role\">\n                                        <span v-if=\"role == '1'\">ADMIN </span>\n                                        <span v-if=\"role == '2'\">COUNSELOR </span>\n                                        <span v-if=\"role == '3'\">CONSULTEE </span>\n                                    </span>\n                                </span><br>\n                            </div>\n                            <div class=\"uk-child-width-auto@s\">\n                                <div class=\"uk-button-group uk-align-right\">\n                                    <button v-on:click.stop=\"editUser(user.user_id)\"\n                                            class=\"uk-button uk-button-secondary \">Edit\n                                    </button>\n                                    <button v-on:click.stop=\"deleteUser(user.user_id)\"\n                                            class=\"uk-button uk-button-default \">Delete\n                                    </button>\n                                </div>\n                            </div>\n                        </vk-grid>\n                    </li>\n                    <!--</ul>-->\n                </paginate>\n            </div>\n        </div>\n    </div>\n</div>\n<!--<ul class=\"uk-pagination uk-flex-center\" uk-margin>-->\n<!--<li><a href=\"uk-active\"><span uk-pagination-previous></span></a></li>-->\n<!--<li><a href=\"#\">1</a></li>-->\n<!--<li class=\"uk-disabled\"><span>...</span></li>-->\n<!--<li><a href=\"#\">5</a></li>-->\n<!--<li><a href=\"#\">6</a></li>-->\n<!--<li class=\"#\"><span>7</span></li>-->\n<!--<li><a href=\"#\">8</a></li>-->\n<!--<li><a href=\"#\"><span uk-pagination-next></span></a></li>-->\n<!--</ul>-->\n\n<!--<paginate name=\"users\" :list=\"users\" :per=\"10\">-->\n<!--<div v-for=\"user in paginated('users')\">-->\n<!--<router-link :to=\"{ name: 'user', params: { id: user.user_id }}\">-->\n<!--<div class=\"uk-width-auto\">-->\n<!--<img class=\"uk-border-circle\" width=\"40\" height=\"40\" src=\"user.png\">-->\n<!--<span class=\"uk-text-large\">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>-->\n<!--<span class=\"uk-text-muted\">&nbsp;&nbsp;&nbsp;Doctor</span>-->\n<!--</div>-->\n<!--</router-link>-->\n<!--</div>-->\n<!--</paginate>-->\n<paginate-links for=\"users\" :show-step-links=\"true\" :hide-single-page=\"true\" :limit=\"10\"></paginate-links>\n\n</div>";
+module.exports = "<div id=\"user-list\">\n\n    <div class=\"uk-container uk-section\">\n\n        <div class=\"uk-width-3-5@m uk-align-center\">\n\n            <h1 class=\"uk-heading-primary\">User List</h1>\n\n            <div>\n                <vk-grid class=\"uk-text-center\">\n                    <form class=\"uk-search uk-search-default uk-width-expand@s\">\n                        <!--<span class=\"uk-search-icon\"><vk-icon icon=\"search\"></vk-icon></span>-->\n                        <input class=\"uk-search-input\" type=\"search\" v-model=\"keyword\" placeholder=\"Input keyword to search here\">\n                    </form>\n                    <button class=\"uk-button uk-button-primary uk-width-auto@s\" v-on:click=\"search()\">Search</button>\n                </vk-grid>\n                <!--<div class=\"uk-text-center uk-width-1-1\">-->\n                <!--<form class=\"uk-search uk-search-default uk-width-expand@s\">-->\n                <!--<span class=\"uk-search-icon\"><vk-icon icon=\"search\"></vk-icon></span>-->\n                <!--<input class=\"uk-search-input\" type=\"search\" placeholder=\"Search...\">-->\n                <!--</form>-->\n                <!--<button class=\"uk-button uk-button-primary uk-width-auto@s\">Search</button>-->\n                <!--</div>-->\n\n                <br>\n\n                <paginate name=\"users\" :list=\"users\" :per=\"10\"\n                          class=\"uk-list uk-list-large uk-list-divider uk-width-1-1\">\n                    <!--<ul class=\"uk-list uk-list-large uk-list-divider uk-width-1-1\">-->\n                    <li v-for=\"user in paginated('users')\">\n                        <vk-grid gutter=\"small\" class=\"uk-child-width-expand@s\" v-on:click=\"selectUser(user.user_id)\">\n                            <div class=\"uk-child-width-auto@s\">\n                                <img class=\"uk-border-circle uk-child-width-1-5\"\n                                     :src=\"'images/users/' + user.user.image_name\" v-if=\"user.user.image_name\">\n                                <img class=\"uk-border-circle uk-child-width-1-5\" src=\"" + __webpack_require__(108) + "\"\n                                     v-if=\"!user.user.image_name\">\n                            </div>\n                            <div class=\"uk-child-width-expand@s\">\n                                <span class=\"uk-text-bold\">{{ user.user.name_title }} {{ user.user.first_name }} {{ user.user.last_name }}</span><br>\n                                <span class=\"uk-text\"><span class=\"uk-text-bold\">Citizen ID:</span> {{ user.user.citizen_id }}</span><br>\n                                <span class=\"uk-text\"><span class=\"uk-text-bold\">Role:</span>\n                                    <span v-for=\"role in user.role\">\n                                        <span v-if=\"role == '1'\">ADMIN </span>\n                                        <span v-if=\"role == '2'\">COUNSELOR </span>\n                                        <span v-if=\"role == '3'\">CONSULTEE </span>\n                                    </span>\n                                </span><br>\n                            </div>\n                            <div class=\"uk-child-width-auto@s\">\n                                <div class=\"uk-button-group uk-align-right\">\n                                    <button v-on:click.stop=\"editUser(user.user_id)\"\n                                            class=\"uk-button uk-button-secondary \">Edit\n                                    </button>\n                                    <button v-on:click.stop=\"deleteUser(user.user_id)\"\n                                            class=\"uk-button uk-button-default \">Delete\n                                    </button>\n                                </div>\n                            </div>\n                        </vk-grid>\n                    </li>\n                    <!--</ul>-->\n                </paginate>\n            </div>\n        </div>\n    </div>\n</div>\n<!--<ul class=\"uk-pagination uk-flex-center\" uk-margin>-->\n<!--<li><a href=\"uk-active\"><span uk-pagination-previous></span></a></li>-->\n<!--<li><a href=\"#\">1</a></li>-->\n<!--<li class=\"uk-disabled\"><span>...</span></li>-->\n<!--<li><a href=\"#\">5</a></li>-->\n<!--<li><a href=\"#\">6</a></li>-->\n<!--<li class=\"#\"><span>7</span></li>-->\n<!--<li><a href=\"#\">8</a></li>-->\n<!--<li><a href=\"#\"><span uk-pagination-next></span></a></li>-->\n<!--</ul>-->\n\n<!--<paginate name=\"users\" :list=\"users\" :per=\"10\">-->\n<!--<div v-for=\"user in paginated('users')\">-->\n<!--<router-link :to=\"{ name: 'user', params: { id: user.user_id }}\">-->\n<!--<div class=\"uk-width-auto\">-->\n<!--<img class=\"uk-border-circle\" width=\"40\" height=\"40\" src=\"user.png\">-->\n<!--<span class=\"uk-text-large\">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>-->\n<!--<span class=\"uk-text-muted\">&nbsp;&nbsp;&nbsp;Doctor</span>-->\n<!--</div>-->\n<!--</router-link>-->\n<!--</div>-->\n<!--</paginate>-->\n<paginate-links for=\"users\" :show-step-links=\"true\" :hide-single-page=\"true\" :limit=\"10\"></paginate-links>\n\n</div>";
 
 /***/ }),
-/* 104 */
+/* 108 */
 /***/ (function(module, exports) {
 
 module.exports = "/images/user.png?065c1b76bda66d87c6c556e9afc4c356";
 
 /***/ }),
-/* 105 */
+/* 109 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(130)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(110)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-cebafd30"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/consult/add/consult-add.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-cebafd30", Component.options)
+  } else {
+    hotAPI.reload("data-v-cebafd30", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 110 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuejs_datepicker__ = __webpack_require__(18);
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    template: __webpack_require__(111),
+
+    data: function data() {
+        return {
+            form: {
+                name_titles: [{ title: "Mr." }, { title: "Mrs." }, { title: "Miss" }]
+            }
+        };
+    }
+});
+
+/***/ }),
+/* 111 */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=\"consult-add\">\n        <div class=\"uk-container\">\n            <vk-grid class=\"uk-grid-small\">\n            <div class=\"uk-width-1-5@m\">\n\n            </div>\n\n            <div class=\"uk-width-expand@m\">\n            <form class=\"uk-margin-large\">\n            <br/>\n            <div class=\"\" id=\"personalinfo\">\n                    <label class=\"uk-text-uppercase uk-text-large\" for=\"\">Patient's Information</label>\n                <hr/>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Create Date</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"Last name\">\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                            <div class=\"uk-form-controls\">\n                                <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Address\"></textarea>\n                            </div>\n                        </div>\n                </div>\n            </div>\n                <!-- Medical Information -->\n                <br/>\n                <div class=\"\" id=\"medicalinfo\">\n                    <label class=\"uk-text-uppercase uk-text-large\" for=\"form-horizontal-text\">Medical Record</label>\n                    <hr/>\n                <div class=\"uk-form-horizontal\">\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"kg\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"C\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"Cr\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                </div>\n                </div>\n                \n                <!-- Record -->\n                <div id=\"recordinfo\">\n                    <br/>\n                    <label class=\"uk-text-uppercase uk-text-large\" for=\"form-horizontal-text\">DIAGNOSE HISTORIES</label>\n                    <hr/>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diaganose</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\">\n                                    </div>\n                            </div>\n                    </div>\n\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Create Date</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\">\n                                    </div>\n                            </div>\n                    </div>\n                </div>\n    \n                <!-- Consult Request -->\n                <br/>\n                <label class=\"uk-text-uppercase uk-text-large\" for=\"form-horizontal-text\">Consult Request</label><hr/>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Chief Complain\"></textarea>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Medical</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Medical\"></textarea>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Order</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Order\"></textarea>\n                                </div>\n                        </div>\n                </div>\n            </form>\n            </div>\n            <div class=\"uk-width-1-5@m\">\n                \n                </div>\n        </vk-grid>\n        <br/><br/>\n        <p uk-margin class=\"uk-margin-bottom uk-text-center\">\n                <button @click=\"addUser\" type=\"button\" class=\"uk-button uk-button-primary uk-width-small\">Add</button>\n                <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Cancel</a>\n        </p>\n        <br/>\n        </div>\n    </div>";
+
+/***/ }),
+/* 112 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -29626,7 +29783,7 @@ var Vuikit = {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(10).setImmediate))
 
 /***/ }),
-/* 106 */
+/* 113 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -32856,11 +33013,11 @@ function each (obj, cb) {
 
 
 /***/ }),
-/* 107 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(108);
+var content = __webpack_require__(115);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -32874,7 +33031,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(109)(content, options);
+var update = __webpack_require__(116)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -32906,10 +33063,10 @@ if(false) {
 }
 
 /***/ }),
-/* 108 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
@@ -32920,7 +33077,7 @@ exports.push([module.i, "/**\n * Vuikit - @vuikit/theme 0.8.0\n * (c) 2018 Milja
 
 
 /***/ }),
-/* 109 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -32986,7 +33143,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(110);
+var	fixUrls = __webpack_require__(117);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -33306,7 +33463,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 110 */
+/* 117 */
 /***/ (function(module, exports) {
 
 
@@ -33401,7 +33558,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 111 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -34001,10 +34158,10 @@ module.exports = function (css) {
 }));
 
 /***/ }),
-/* 112 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Auth = __webpack_require__(113)();
+var Auth = __webpack_require__(120)();
 
 module.exports = (function () {
 
@@ -34045,12 +34202,12 @@ module.exports = (function () {
 })();
 
 /***/ }),
-/* 113 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __utils  = __webpack_require__(114),
-    __token  = __webpack_require__(115),
-    __cookie = __webpack_require__(19)
+var __utils  = __webpack_require__(121),
+    __token  = __webpack_require__(122),
+    __cookie = __webpack_require__(20)
 
 module.exports = function () {
 
@@ -34759,7 +34916,7 @@ module.exports = function () {
 
 
 /***/ }),
-/* 114 */
+/* 121 */
 /***/ (function(module, exports) {
 
 module.exports = (function (){
@@ -34841,10 +34998,10 @@ module.exports = (function (){
 
 
 /***/ }),
-/* 115 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __cookie = __webpack_require__(19);
+var __cookie = __webpack_require__(20);
 
 module.exports = (function () {
 
@@ -34921,7 +35078,7 @@ module.exports = (function () {
 })();
 
 /***/ }),
-/* 116 */
+/* 123 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -34943,7 +35100,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 117 */
+/* 124 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -35009,7 +35166,7 @@ module.exports = {
 
 
 /***/ }),
-/* 118 */
+/* 125 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -35077,30 +35234,32 @@ module.exports = {
 };
 
 /***/ }),
-/* 119 */
+/* 126 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 120 */,
-/* 121 */
+/* 127 */,
+/* 128 */,
+/* 129 */,
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(122);
+var content = __webpack_require__(131);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(3)("d1d1c95a", content, false, {});
+var update = __webpack_require__(3)("5efef5a9", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5efe4b24\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Index.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5efe4b24\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Index.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-cebafd30\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-add.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-cebafd30\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-add.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -35110,50 +35269,18 @@ if(false) {
 }
 
 /***/ }),
-/* 122 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(2)(false);
 // imports
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* Common style */\n.grid[data-v-5efe4b24] {\n\tmargin: 40px auto 120px;\n\tmax-width: 1000px;\n\twidth: 90%;\n}\n.grid a[data-v-5efe4b24] {\n\tfloat: left;\n\tmax-width: 250px;\n\twidth: 25%;\n\tcolor: #333;\n}\n.grid a[data-v-5efe4b24]:nth-child(odd) {\n\tmargin: 30px 0 -30px 0;\n}\n.grid figure[data-v-5efe4b24] {\n\tposition: relative;\n\toverflow: hidden;\n\tmargin: 5px;\n\tbackground: #333;\n}\n.grid figure img[data-v-5efe4b24] {\n\tposition: relative;\n\tdisplay: block;\n\twidth: 100%;\n\topacity: 0.7;\n\t-webkit-transition: opacity 0.3s;\n\ttransition: opacity 0.3s;\n}\n.grid figcaption[data-v-5efe4b24] {\n\tposition: absolute;\n\ttop: 0;\n\tz-index: 11;\n\tpadding: 10px;\n\twidth: 100%;\n\theight: 100%;\n\ttext-align: center;\n}\n.grid figcaption h2[data-v-5efe4b24] {\n\tmargin: 0 0 20px 0;\n\tcolor: #3498db;\n\ttext-transform: uppercase;\n\tletter-spacing: 1px;\n\tfont-weight: 300;\n\tfont-size: 130%;\n\t-webkit-transition: -webkit-transform 0.3s;\n\ttransition: -webkit-transform 0.3s;\n\ttransition: transform 0.3s;\n\ttransition: transform 0.3s, -webkit-transform 0.3s;\n}\n.grid figcaption p[data-v-5efe4b24] {\n\tpadding: 0 20px;\n\tcolor: #aaa;\n\tfont-weight: 300;\n\t-webkit-transition: opacity 0.3s, -webkit-transform 0.3s;\n\ttransition: opacity 0.3s, -webkit-transform 0.3s;\n\ttransition: opacity 0.3s, transform 0.3s;\n\ttransition: opacity 0.3s, transform 0.3s, -webkit-transform 0.3s;\n}\n.grid figcaption h2[data-v-5efe4b24],\n.grid figcaption p[data-v-5efe4b24] {\n\t-webkit-transform: translateY(50px);\n\ttransform: translateY(50px);\n}\n.grid figure button[data-v-5efe4b24] {\n\tposition: absolute;\n\tpadding: 4px 20px;\n\tborder: none;\n\ttext-transform: uppercase;\n\tletter-spacing: 1px;\n\tfont-weight: bold;\n\t-webkit-transition: opacity 0.3s, -webkit-transform 0.3s;\n\ttransition: opacity 0.3s, -webkit-transform 0.3s;\n\ttransition: opacity 0.3s, transform 0.3s;\n\ttransition: opacity 0.3s, transform 0.3s, -webkit-transform 0.3s;\n}\n.grid figcaption[data-v-5efe4b24],\n.grid figcaption h2[data-v-5efe4b24],\n.grid figcaption p[data-v-5efe4b24],\n.grid figure button[data-v-5efe4b24] {\n\t-webkit-backface-visibility: hidden;\n\tbackface-visibility: hidden;\n}\n\n/* Style for SVG */\n.grid svg[data-v-5efe4b24] {\n\tposition: absolute;\n\ttop: -1px; /* fixes rendering issue in FF */\n\tz-index: 10;\n\twidth: 100%;\n\theight: 100%;\n}\n.grid svg path[data-v-5efe4b24] {\n\tfill: #fff;\n}\n\n/* Hover effects */\n.grid a:hover figure img[data-v-5efe4b24] {\n\topacity: 1;\n}\n.grid a:hover figcaption h2[data-v-5efe4b24],\n.grid a:hover figcaption p[data-v-5efe4b24] {\n\t-webkit-transform: translateY(0);\n\ttransform: translateY(0);\n}\n.grid a:hover figcaption p[data-v-5efe4b24] {\n\topacity: 0;\n}\n\n/* Individual styles */\n.demo-1 body[data-v-5efe4b24] {\n\tbackground: #3498db;\n}\n.demo-1 .grid figure button[data-v-5efe4b24],\n.demo-3 .grid figure button[data-v-5efe4b24] {\n\ttop: 50%;\n\tleft: 50%;\n\tborder: 3px solid #fff;\n\tbackground: transparent;\n\tcolor: #fff;\n\topacity: 0;\n\t-webkit-transform: translateY(-50%) translateX(-50%) scale(0.25);\n\ttransform: translateY(-50%) translateX(-50%) scale(0.25);\n}\n.demo-1 .grid a:hover figure button[data-v-5efe4b24],\n.demo-3 .grid a:hover figure button[data-v-5efe4b24] {\n\topacity: 1;\n\t-webkit-transform: translateY(-50%) translateX(-50%) scale(1);\n\ttransform: translateY(-50%) translateX(-50%) scale(1);\n}\n.demo-2 body[data-v-5efe4b24] {\n\tbackground: #e74c3c;\n}\n.demo-2 .grid figcaption h2[data-v-5efe4b24] {\n\tcolor: #e74c3c;\n}\n.demo-2 .grid figcaption p[data-v-5efe4b24] {\n\t-webkit-transition-delay: 0.05s;\n\ttransition-delay: 0.05s;\n}\n.demo-2 .grid figure button[data-v-5efe4b24] {\n\tbottom: 0;\n\tleft: 0;\n\tpadding: 15px;\n\twidth: 100%;\n\tbackground: #fff;\n\tcolor: #333;\n\tfont-weight: 300;\n\t-webkit-transform: translateY(100%);\n\ttransform: translateY(100%);\n}\n.demo-2 .grid a:hover figure button[data-v-5efe4b24] {\n\t-webkit-transition-timing-function: ease-out;\n\ttransition-timing-function: ease-out;\n\t-webkit-transform: translateY(0);\n\ttransform: translateY(0);\n}\n.demo-2 .grid figcaption h2[data-v-5efe4b24], \n.demo-2 .grid figcaption p[data-v-5efe4b24],\n.demo-3 .grid figcaption h2[data-v-5efe4b24],\n.demo-3 .grid figcaption p[data-v-5efe4b24] {\n\t-webkit-transition-timing-function: cubic-bezier(0.250, 0.250, 0.115, 1); /* older webkit */\n\t-webkit-transition-timing-function: cubic-bezier(0.250, 0.250, 0.115, 1.445);\n\ttiming-function: cubic-bezier(0.250, 0.250, 0.115, 1.445);\n}\n.demo-2 .grid a:hover figcaption p[data-v-5efe4b24],\n.demo-3 .grid a:hover figcaption p[data-v-5efe4b24] {\n\t-webkit-transition-delay: 0s;\n\ttransition-delay: 0s;\n\t-webkit-transition-duration: 0.1s;\n\ttransition-duration: 0.1s;\n}\n.demo-3 body[data-v-5efe4b24] {\n\tbackground: #52be7f;\n}\n.demo-3 .grid figcaption h2[data-v-5efe4b24] {\n\tcolor: #52be7f;\n}\n.demo-3 .grid a:hover figcaption h2[data-v-5efe4b24] {\n\t-webkit-transform: translateY(5px);\n\ttransform: translateY(5px);\n}\n\n/* Media Queries */\n/* Let's redefine the width of each anchor and the margins */\n@media screen and (max-width: 58em) {\n.grid a[data-v-5efe4b24] {\n\t\twidth: 33.333%;\n}\n.grid a[data-v-5efe4b24]:nth-child(odd) {\n\t\tmargin: 0;\n}\n.grid a[data-v-5efe4b24]:nth-child(3n-1) {\n\t\tmargin: 30px 0 -30px 0;\n}\n}\n@media screen and (max-width: 45em) {\n.grid[data-v-5efe4b24] {\n\t\tmax-width: 500px;\n}\n.grid a[data-v-5efe4b24] {\n\t\twidth: 50%;\n}\n.grid a[data-v-5efe4b24]:nth-child(3n-1) {\n\t\tmargin: 0;\n}\n.grid a[data-v-5efe4b24]:nth-child(even) {\n\t\tmargin: 30px 0 -30px 0;\n}\n.grid figcaption h2[data-v-5efe4b24] {\n\t\tmargin-bottom: 0px;\n\t\t-webkit-transform: translateY(30px);\n\t\ttransform: translateY(30px);\n}\n.grid figcaption p[data-v-5efe4b24] {\n\t\tmargin: 0;\n\t\tpadding: 0 10px;\n}\n}\n@media screen and (max-width: 27em) {\n.grid[data-v-5efe4b24] {\n\t\tmax-width: 250px;\n}\n.grid a[data-v-5efe4b24] {\n\t\twidth: 100%;\n}\n.grid a[data-v-5efe4b24]:nth-child(even) {\n\t\tmargin: 0;\n}\n}\n*[data-v-5efe4b24], *[data-v-5efe4b24]:after, *[data-v-5efe4b24]:before { -webkit-box-sizing: border-box; box-sizing: border-box;\n}\nbody[data-v-5efe4b24] {\n\tbackground: #333;\n\tcolor: #fff;\n\tfont-weight: 400;\n\tfont-size: 1em;\n\tfont-family: 'Lato', Arial, sans-serif;\n}\na[data-v-5efe4b24], button[data-v-5efe4b24] {\n\toutline: none;\n}\na[data-v-5efe4b24] {\n\tcolor: #f0f0f0;\n\ttext-decoration: none;\n}\na[data-v-5efe4b24]:hover, a[data-v-5efe4b24]:focus {\n\tcolor: #333;\n}\n.clearfix[data-v-5efe4b24]:before,\n.clearfix[data-v-5efe4b24]:after {\n\tcontent: \" \";\n\tdisplay: table;\n}\n.clearfix[data-v-5efe4b24]:after {\n\tclear: both;\n}\n.codrops-header[data-v-5efe4b24] {\n\tmargin: 0 auto;\n\tpadding: 2em;\n\ttext-align: center;\n}\n.codrops-header h1[data-v-5efe4b24] {\n\tmargin: 0;\n\tfont-weight: 300;\n\tfont-size: 2.5em;\n\tline-height: 1.3;\n}\n.codrops-header h1 span[data-v-5efe4b24] {\n\tdisplay: block;\n\tpadding: 0 0 0.6em 0.1em;\n\tfont-size: 60%;\n\topacity: 0.7;\n}\n\n/* To Navigation Style */\n.codrops-top[data-v-5efe4b24] {\n\twidth: 100%;\n\ttext-transform: uppercase;\n\tfont-weight: 700;\n\tfont-size: 0.69em;\n\tline-height: 2.2;\n}\n.codrops-top a[data-v-5efe4b24] {\n\tdisplay: inline-block;\n\tpadding: 0 1em;\n\ttext-decoration: none;\n\tletter-spacing: 1px;\n}\n.codrops-top span.right[data-v-5efe4b24] {\n\tfloat: right;\n}\n.codrops-top span.right a[data-v-5efe4b24] {\n\tdisplay: block;\n\tfloat: left;\n}\n.codrops-icon[data-v-5efe4b24]:before {\n\tmargin: 0 4px;\n\ttext-transform: none;\n\tfont-weight: normal;\n\tfont-style: normal;\n\tfont-variant: normal;\n\tfont-family: 'codropsicons';\n\tline-height: 1;\n\tspeak: none;\n\t-webkit-font-smoothing: antialiased;\n}\n.codrops-icon-drop[data-v-5efe4b24]:before {\n\tcontent: \"\\E001\";\n}\n.codrops-icon-prev[data-v-5efe4b24]:before {\n\tcontent: \"\\E004\";\n}\n\n/* Demo Buttons Style */\n.codrops-demos[data-v-5efe4b24] {\n\tpadding-top: 1em;\n\tfont-size: 0.8em;\n}\n.codrops-demos a[data-v-5efe4b24] {\n\tdisplay: inline-block;\n\tmargin: 0.5em;\n\tpadding: 0.7em 1.1em;\n\toutline: none;\n\tborder: 2px solid #fff;\n\tcolor: #fff;\n\ttext-decoration: none;\n\ttext-transform: uppercase;\n\tletter-spacing: 1px;\n\tfont-weight: 700;\n}\n.codrops-demos a[data-v-5efe4b24]:hover,\n.codrops-demos a.current-demo[data-v-5efe4b24],\n.codrops-demos a.current-demo[data-v-5efe4b24]:hover {\n\tborder-color: #333;\n\tcolor: #333;\n}\n.related[data-v-5efe4b24] {\n\ttext-align: center;\n\tfont-size: 1.5em;\n}\n@media screen and (max-width: 25em) {\n.codrops-icon span[data-v-5efe4b24] {\n\t\tdisplay: none;\n}\n}\narticle[data-v-5efe4b24],aside[data-v-5efe4b24],details[data-v-5efe4b24],figcaption[data-v-5efe4b24],figure[data-v-5efe4b24],footer[data-v-5efe4b24],header[data-v-5efe4b24],hgroup[data-v-5efe4b24],main[data-v-5efe4b24],nav[data-v-5efe4b24],section[data-v-5efe4b24],summary[data-v-5efe4b24]{display:block;\n}\naudio[data-v-5efe4b24],canvas[data-v-5efe4b24],video[data-v-5efe4b24]{display:inline-block;\n}\naudio[data-v-5efe4b24]:not([controls]){display:none;height:0;\n}\n[hidden][data-v-5efe4b24]{display:none;\n}\nhtml[data-v-5efe4b24]{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;\n}\nbody[data-v-5efe4b24]{margin:0;\n}\na[data-v-5efe4b24]:focus{outline:thin dotted;\n}\na[data-v-5efe4b24]:active,a[data-v-5efe4b24]:hover{outline:0;\n}\nh1[data-v-5efe4b24]{font-size:2em;margin:0.67em 0;\n}\nabbr[title][data-v-5efe4b24]{border-bottom:1px dotted;\n}\nb[data-v-5efe4b24],strong[data-v-5efe4b24]{font-weight:bold;\n}\ndfn[data-v-5efe4b24]{font-style:italic;\n}\nhr[data-v-5efe4b24]{-webkit-box-sizing:content-box;box-sizing:content-box;height:0;\n}\nmark[data-v-5efe4b24]{background:#ff0;color:#000;\n}\ncode[data-v-5efe4b24],kbd[data-v-5efe4b24],pre[data-v-5efe4b24],samp[data-v-5efe4b24]{font-family:monospace,serif;font-size:1em;\n}\npre[data-v-5efe4b24]{white-space:pre-wrap;\n}\nq[data-v-5efe4b24]{quotes:\"\\201C\" \"\\201D\" \"\\2018\" \"\\2019\";\n}\nsmall[data-v-5efe4b24]{font-size:80%;\n}\nsub[data-v-5efe4b24],sup[data-v-5efe4b24]{font-size:75%;line-height:0;position:relative;vertical-align:baseline;\n}\nsup[data-v-5efe4b24]{top:-0.5em;\n}\nsub[data-v-5efe4b24]{bottom:-0.25em;\n}\nimg[data-v-5efe4b24]{border:0;\n}\nsvg[data-v-5efe4b24]:not(:root){overflow:hidden;\n}\nfigure[data-v-5efe4b24]{margin:0;\n}\nfieldset[data-v-5efe4b24]{border:1px solid #c0c0c0;margin:0 2px;padding:0.35em 0.625em 0.75em;\n}\nlegend[data-v-5efe4b24]{border:0;padding:0;\n}\nbutton[data-v-5efe4b24],input[data-v-5efe4b24],select[data-v-5efe4b24],textarea[data-v-5efe4b24]{font-family:inherit;font-size:100%;margin:0;\n}\nbutton[data-v-5efe4b24],input[data-v-5efe4b24]{line-height:normal;\n}\nbutton[data-v-5efe4b24],select[data-v-5efe4b24]{text-transform:none;\n}\nbutton[data-v-5efe4b24],html input[type=\"button\"][data-v-5efe4b24],input[type=\"reset\"][data-v-5efe4b24],input[type=\"submit\"][data-v-5efe4b24]{-webkit-appearance:button;cursor:pointer;\n}\nbutton[disabled][data-v-5efe4b24],html input[disabled][data-v-5efe4b24]{cursor:default;\n}\ninput[type=\"checkbox\"][data-v-5efe4b24],input[type=\"radio\"][data-v-5efe4b24]{-webkit-box-sizing:border-box;box-sizing:border-box;padding:0;\n}\ninput[type=\"search\"][data-v-5efe4b24]{-webkit-appearance:textfield;-webkit-box-sizing:content-box;box-sizing:content-box;\n}\ninput[type=\"search\"][data-v-5efe4b24]::-webkit-search-cancel-button,input[type=\"search\"][data-v-5efe4b24]::-webkit-search-decoration{-webkit-appearance:none;\n}\nbutton[data-v-5efe4b24]::-moz-focus-inner,input[data-v-5efe4b24]::-moz-focus-inner{border:0;padding:0;\n}\ntextarea[data-v-5efe4b24]{overflow:auto;vertical-align:top;\n}\ntable[data-v-5efe4b24]{border-collapse:collapse;border-spacing:0;\n}\n", ""]);
+exports.push([module.i, "\n.unit input[data-v-cebafd30]::-webkit-input-placeholder {\n  /* WebKit browsers */\n  text-align: right;\n}\n.unit input[data-v-cebafd30]:-ms-input-placeholder {\n  /* Internet Explorer 10 */\n  text-align: right;\n}\n.unit input[data-v-cebafd30]::-ms-input-placeholder {\n  text-align: right;\n}\n.unit input[data-v-cebafd30]::placeholder {\n  text-align: right;\n}\n.divider[data-v-cebafd30] {\n    background-color: #fafafa;\n    padding: 1%;\n}\n", ""]);
 
 // exports
 
-
-/***/ }),
-/* 123 */,
-/* 124 */,
-/* 125 */,
-/* 126 */,
-/* 127 */,
-/* 128 */,
-/* 129 */,
-/* 130 */,
-/* 131 */
-/***/ (function(module, exports) {
-
-module.exports = "/images/3.png?d3e72fd6511c103b1075815fc65665ab";
-
-/***/ }),
-/* 132 */
-/***/ (function(module, exports) {
-
-module.exports = "/images/1.png?993d0854ae60a97fc360f5f834e82e63";
-
-/***/ }),
-/* 133 */
-/***/ (function(module, exports) {
-
-module.exports = "/images/4.png?efdbb8b0e39661a84b7c451659df4a22";
-
-/***/ }),
-/* 134 */
-/***/ (function(module, exports) {
-
-module.exports = "/images/2.png?7d699fd1affcf47ead7266f626263128";
 
 /***/ })
 /******/ ]);

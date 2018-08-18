@@ -3,9 +3,6 @@
     // import {APIENDPOINT} from  '../../http-common.js';
 	// import loginService from './adminService.js';
 
-	// import hover from './hover.js';
-	// import script_min from './script-min.js';
-
     export default {
 		template: require('./index.html'),
         data(){
@@ -18,10 +15,17 @@
                 return this.$store.getters['currentUser'];
             }
         },
-		methods: {},
+		methods: {
+			isRole(role) {
+                for (var i = 0; i < this.$store.getters['userRole'].length; i++) {
+                    if (role == this.$store.getters['userRole'][i]) return true;
+                }
+                return false;
+                // return role === this.$store.getters['userRole'];
+            }
+		}
 	}
 	
-    
 </script>
 
 <style scoped>

@@ -6,53 +6,85 @@
   </header>
 
   <section id="grid" class="grid clearfix">
-    <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
-      <figure>
-        <img src="../images/3.png" />
-        <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
-        <figcaption>
-          <h2>Create Case</h2>
-          <p>Create new medical consult case</p>
-          <button>CLICK</button>
-        </figcaption>
-      </figure>
-    </a>
+    <!-- for Admin -->
+    <div v-if="isRole(1)">
+      <div>
+        <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
+          <figure>
+            <img src="../images/1.png" />
+            <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
+            <figcaption>
+              <h2>Add User</h2>
+              <p>Click here to create new user account</p>
+            </figcaption>
+          </figure>
+        </a>
+      </div>
+      <div v-if="isRole(1)">
+        <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
+          <figure>
+            <img src="../images/1.png" />
+            <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
+            <figcaption>
+              <h2>User List</h2>
+              <p>Click here to see the users in the system</p>
+            </figcaption>
+          </figure>
+        </a>
+      </div>
+    </div>
+    <!-- Close for Admin-->
+    <div v-if="isRole(3)">
+      <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
+        <figure>
+          <img src="../images/1.png" />
+          <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
+          <figcaption>
+            <h2>Create Case</h2>
+            <p>Click here to create new medical consult case</p>
+          </figcaption>
+        </figure>
+      </a>
+    </div>
 
-    <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
-      <figure>
-        <img src="../images/1.png" />
-        <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
-        <figcaption>
-          <h2>Cases Status</h2>
-          <p>Check the created cases status</p>
-          <button>CLICK</button>
-        </figcaption>
-      </figure>
-    </a>
+    <div v-if="isRole(2) || isRole(3)">
+      <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
+        <figure>
+          <img src="../images/2.png" />
+          <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
+          <figcaption>
+            <h2>Cases Status</h2>
+            <p>Click here to check the created cases status</p>
+          </figcaption>
+        </figure>
+      </a>
+    </div>
 
-    <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
-      <figure>
-        <img src="../images/4.png" />
-        <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
-        <figcaption>
-          <h2>History</h2>
-          <p>View closed cases history</p>
-          <button>CLICK</button>
-        </figcaption>
-      </figure>
-    </a>
+    <div v-if="isRole(1) || isRole(2) || isRole(3)">
+      <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
+        <figure>
+          <img src="../images/3.png" />
+          <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
+          <figcaption>
+            <h2>History</h2>
+            <p>Click here to view closed cases history</p>
+          </figcaption>
+        </figure>
+      </a>
+    </div>
 
-    <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
-      <figure>
-        <img src="../images/2.png" />
-        <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
-        <figcaption>
-          <h2>Analyze</h2>
-          <p>See the cases analysis summary</p>
-          <button>CLICK</button>
-        </figcaption>
-      </figure>
-    </a>
+    <div v-if="isRole(1) || isRole(2) || isRole(3)">
+      <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
+        <figure>
+          <img src="../images/4.png" />
+          <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
+          <figcaption>
+            <h2>Analyze</h2>
+            <p>Click here to see the cases analysis summary</p>
+          </figcaption>
+        </figure>
+      </a>
+    </div>
   </section>
   
 </div>
