@@ -1,62 +1,69 @@
 <div id="profile">
-  <vk-grid class="uk-child-width-expand@s" uk-grid>
-    <!-- left column -->
-    <div>
-      <vk-grid class="uk-padding">
+    <vk-grid class="uk-child-width-expand@s" uk-grid>
+        <!-- left column -->
         <div>
-          <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->
-          <img v-bind:src="image_src" width="300" height="400" alt="" v-if="user.image_name">
-            <img src="../../images/user.png" width="300" height="400" alt="" v-if="!user.image_name">
+            <vk-grid class="uk-padding">
+                <div>
+                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->
+                    <img v-bind:src="image_src" width="300" height="400" alt="" v-if="currentViewUser.user.image_name">
+                    <img src="../../images/user.png" width="300" height="400" alt="" v-if="!currentViewUser.user.image_name">
+                    <button v-on:click.stop="editUser(currentViewUser.user.username)"
+                            class="uk-button uk-button-default uk-align-center">Edit Profile
+                    </button>
+                </div>
+            </vk-grid>
+
         </div>
-        <a class="uk-align-center" href="/#/editprofile"><h5><u>Edit Profile</u></h5></a>
-      </vk-grid>
 
-    </div>
-
-    <!-- center column -->
-    <div class="uk-width-1-2@s uk-align-left@s">
-      <br/> <br/>
-        <div>
-            <ul style="list-style-type: none;">
-                <li><h1>{{ user.name_title }} {{ user.first_name.toUpperCase() }} {{ user.last_name.toUpperCase() }}</h1></li>
-                <h4>
-                  <li id="citizen_id">{{ user.citizen_id }}</li>
-                  <li id="role">{{ role }}</li>
-                  <li id="gender">{{ user.gender }}</li>
-                  <li id="date_of_birth">Date of Birth {{ user.date_of_birth }}</li>
-
-                <hr class="uk-description-list-divider">
-                  <li><h4>WORK</h4></li>
-                  <li id="unit">{{ user.workplace }}</li>
-            </h4>
-            <hr class="uk-description-list-divider">
-            </ul>
-        </div>
-        <vk-grid>
+        <!-- center column -->
+        <div class="uk-width-1-2@s uk-align-left@s">
+            <br/> <br/>
             <div>
                 <ul style="list-style-type: none;">
-                    <li><h4>CONTACT INFORMATION</h4></li>
-                    <h4><li>Telephone</li>
-                      <li>Email</li>
-                      <li>Address</li></h4>
+                    <li><h1>{{ currentViewUser.user.name_title.name_title }} {{ currentViewUser.user.first_name.toUpperCase() }} {{
+                        currentViewUser.user.last_name.toUpperCase() }}</h1></li>
+                    <h4>
+                        <li id="citizen_id">{{ currentViewUser.user.citizen_id }}</li>
+                        <li id="role">{{ role }}</li>
+                        <li id="gender">{{ currentViewUser.user.gender }}</li>
+                        <li id="date_of_birth">Date of Birth {{ currentViewUser.user.date_of_birth }}</li>
+
+                        <hr class="uk-description-list-divider">
+                        <li><h4>WORK</h4></li>
+                        <li id="unit">{{ currentViewUser.user.workplace }}</li>
+                    </h4>
+                    <hr class="uk-description-list-divider">
                 </ul>
             </div>
-            <div>
-                <ul style="list-style-type: none;">
-                    <li><h4>&nbsp;</h4></li>
-                    <h4><li id="contact_number">{{ user.contact_number }}</li>
-                      <li id="email">{{ user.email }}</li>
-                      <li id="address">{{ user.address }}</li></h4>
-                </ul>
-            </div>
-        </vk-grid>
-    </div>
+            <vk-grid>
+                <div>
+                    <ul style="list-style-type: none;">
+                        <li><h4>CONTACT INFORMATION</h4></li>
+                        <h4>
+                            <li>Telephone</li>
+                            <li>Email</li>
+                            <li>Address</li>
+                        </h4>
+                    </ul>
+                </div>
+                <div>
+                    <ul style="list-style-type: none;">
+                        <li><h4>&nbsp;</h4></li>
+                        <h4>
+                            <li id="contact_number">{{ currentViewUser.user.contact_number }}</li>
+                            <li id="email">{{ currentViewUser.user.email }}</li>
+                            <li id="address">{{ currentViewUser.user.address }}</li>
+                        </h4>
+                    </ul>
+                </div>
+            </vk-grid>
+        </div>
 
-    <!-- right column -->
-    <div class="uk-align-center@s">
-        <vk-grid class="uk-padding-large">
-        </vk-grid>
-    </div>
+        <!-- right column -->
+        <div class="uk-align-center@s">
+            <vk-grid class="uk-padding-large">
+            </vk-grid>
+        </div>
 
-  </vk-grid>
+    </vk-grid>
 </div>

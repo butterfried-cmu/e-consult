@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,6 +16,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
 //        Schema::defaultStringLength(191);
+        Validator::extend('is_png',function($attribute, $value, $params, $validator) {
+            $image = base64_decode($value);
+            $f = finfo_open();
+            $result = finfo_buffer($f, $image, FILEINFO_MIME_TYPE);
+//            echo $result;
+            return $result == 'image/png';
+        });
+
     }
 
     /**

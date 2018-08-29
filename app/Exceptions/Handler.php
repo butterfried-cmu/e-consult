@@ -52,9 +52,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if ($exception instanceof QueryException) {
-            return Response::json(['error' => 'Error connecting to database'], 500);
-        } else if ($exception instanceof TokenExpiredException) {
+//        if ($exception instanceof QueryException) {
+//            return Response::json(['error' => 'Error connecting to database'], 500);
+//        } else
+            if ($exception instanceof TokenExpiredException) {
             return Response::json(['error' => 'Token Expired'],
                 $exception->getStatusCode());
         } else if ($exception instanceof TokenInvalidException) {

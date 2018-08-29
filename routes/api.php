@@ -21,12 +21,12 @@ Route::post('/auth/login', [
     'uses' => 'authcontroller@login',
 ]);
 
-Route::post('/auth/logout', [
+Route::any('/auth/logout', [
     'uses' => 'authcontroller@logout'
 ]);
-
-Route::get('/auth/user', [
-    'uses' => 'authcontroller@getUser'
+Route::get('/auth/refresh', [
+    'uses' => 'authcontroller@onRefresh',
+//    'middleware' => ['auth.jwt']
 ]);
 Route::post('/auth/password/request', [
     'uses' => 'authcontroller@requestForResettingPassword',
@@ -38,22 +38,27 @@ Route::post('/auth/password/reset', [
 ]);
 
 
-Route::get('/user', [
-    'uses' => 'usercontroller@getUser',
+Route::get('/users', [
+    'uses' => 'usercontroller@getUserList',
 //    'middleware' => ['auth.jwt', 'role:ADMIN']
 ]);
-Route::post('/user/add', [
-    'uses' => 'usercontroller@addUser',
-    'middleware' => 'auth.jwt'
+Route::get('/users/{user_id}', [
+    'uses' => 'usercontroller@getUserById',
+//    'middleware' => ['auth.jwt', 'role:ADMIN']
 ]);
-Route::get('/user/delete', [
+Route::post('/users/add', [
+    'uses' => 'usercontroller@addUser',
+//    'middleware' => ['auth.jwt', 'role:ADMIN']
+]);
+Route::get('/users/delete/{user_id}', [
     'uses' => 'usercontroller@deleteUser',
 //    'middleware' => ['auth.jwt', 'role:ADMIN']
 ]);
-Route::post('/user/update', [
+Route::post('/users/update', [
     'uses' => 'usercontroller@updateUser',
 //    'middleware' => ['auth.jwt', 'role:ADMIN']
 ]);
-Route::get('/user/form', [
-    'uses' => 'usercontroller@getformdata'
+Route::post('/users/search/', [
+    'uses' => 'usercontroller@getUsersByKeyword',
+//    'middleware' => ['auth.jwt']
 ]);

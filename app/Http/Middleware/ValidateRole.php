@@ -14,18 +14,18 @@ class ValidateRole
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \Closure $next
-     * @param array $roles
      * @return mixed
+     * @throws \Tymon\JWTAuth\Exceptions\JWTException
      */
     public function handle($request, Closure $next, ... $roles)
     {
         $currentUser = JWTAuth::parseToken()->toUser();
-        $userRole = Role::where('role', $currentUser->role)
-            ->first();
+
+        $userRole =  $currentUser->role;
 
         foreach ($roles as $role) {
             // Check if user has the role This check will depend on how your roles are set up
-            if ($userRole->role == $role)
+            if ($userRole == $role)
                 return $next($request);
         }
 
