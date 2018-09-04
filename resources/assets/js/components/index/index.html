@@ -5,86 +5,125 @@
     <h1 class="uk-text-center">Welcome to MED E-CONSULTS</h1>
   </header>
 
-  <section id="grid" class="grid clearfix">
-    <!-- for Admin -->
-    <div v-if="isRole(1)">
+  <section class="uk-container">
+      <div class="uk-margin">
+          <form class="uk-search uk-search-default uk-align-center">
+              <span uk-search-icon></span>
+              <input class="uk-search-input uk-width-large@s" type="search" placeholder="Search...">
+          </form>
+      </div>
+  </section>
+
+  <section class="uk-container">
+    <vk-grid class="uk-child-width-expand@s">
       <div>
-        <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
-          <figure>
-            <img src="../images/1.png" />
-            <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
-            <figcaption>
-              <h2>Add User</h2>
-              <p>Click here to create new user account</p>
-            </figcaption>
-          </figure>
-        </a>
+        <vk-tabs-vertical align="left">
+          <vk-tabs-item title="Draft">
+              <div class="uk-overflow-auto">
+                  <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
+                      <thead>
+                          <tr>
+                              <th class="uk-width-small">Consult Id</th>
+                              <th>Patient</th>
+                              <th>Creator</th>
+                              <th>Date of Create</th>
+                              <th>Status</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td>6121150001</td>
+                              <td>Firstname Lastname</td>
+                              <td>Nursename NurseLastname</td>
+                              <td>13/06/2018</td>
+                              <td>Draft</td>
+                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                              <td><button class="uk-button uk-button-danger" type="button">Delete</button></td>
+                          </tr>
+                          <tr>
+                              <td>6121150002</td>
+                              <td>Firstname2 Lastname2</td>
+                              <td>Nursename NurseLastname</td>
+                              <td>14/06/2018</td>
+                              <td>Draft</td>
+                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                              <td><button class="uk-button uk-button-danger" type="button">Delete</button></td
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </vk-tabs-item>
+
+          <vk-tabs-item title="Pending">
+              <div class="uk-overflow-auto">
+                  <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
+                      <thead>
+                          <tr>
+                              <th class="uk-width-small">Consult Id</th>
+                              <th>Patient</th>
+                              <th>Creator</th>
+                              <th>Date of Create</th>
+                              <th>Status</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td>6121150003</td>
+                              <td>Firstname Lastname</td>
+                              <td>Nursename NurseLastname</td>
+                              <td>13/06/2018</td>
+                              <td>Pending</td>
+                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                          </tr>
+                          <tr>
+                              <td>6121150004</td>
+                              <td>Firstname2 Lastname2</td>
+                              <td>Surasung NurseLastname</td>
+                              <td>14/06/2018</td>
+                              <td>Pending</td>
+                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </vk-tabs-item>
+
+          <vk-tabs-item title="Done">
+              <div class="uk-overflow-auto">
+                  <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
+                      <thead>
+                          <tr>
+                              <th class="uk-width-small">Consult Id</th>
+                              <th>Patient</th>
+                              <th>Creator</th>
+                              <th>Date of Create</th>
+                              <th>Status</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td>6121150003</td>
+                              <td>Firstname Lastname</td>
+                              <td>Test NurseLastname</td>
+                              <td>13/06/2018</td>
+                              <td>Done</td>
+                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                          </tr>
+                          <tr>
+                              <td>6121150004</td>
+                              <td>Firstname2 Lastname2</td>
+                              <td>Surasung NurseLastname</td>
+                              <td>14/06/2018</td>
+                              <td>Pending</td>
+                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </vk-tabs-item>
+        </vk-tabs-vertical>
       </div>
-      <div v-if="isRole(1)">
-        <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
-          <figure>
-            <img src="../images/1.png" />
-            <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
-            <figcaption>
-              <h2>User List</h2>
-              <p>Click here to see the users in the system</p>
-            </figcaption>
-          </figure>
-        </a>
-      </div>
-    </div>
-    <!-- Close for Admin-->
-    <div v-if="isRole(3)">
-      <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
-        <figure>
-          <img src="../images/1.png" />
-          <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
-          <figcaption>
-            <h2>Create Case</h2>
-            <p>Click here to create new medical consult case</p>
-          </figcaption>
-        </figure>
-      </a>
-    </div>
-
-    <div v-if="isRole(2) || isRole(3)">
-      <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
-        <figure>
-          <img src="../images/2.png" />
-          <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
-          <figcaption>
-            <h2>Case Status</h2>
-            <p>Click here to check the created case status</p>
-          </figcaption>
-        </figure>
-      </a>
-    </div>
-
-    <div v-if="isRole(1) || isRole(2) || isRole(3)">
-      <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
-        <figure>
-          <img src="../images/3.png" />
-          <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
-          <figcaption>
-            <h2>History</h2>
-            <p>Click here to view closed cases history</p>
-          </figcaption>
-        </figure>
-      </a>
-    </div>
-
-    <div v-if="isRole(1) || isRole(2) || isRole(3)">
-      <a href="#" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
-        <figure>
-          <img src="../images/4.png" />
-          <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
-          <figcaption>
-            <h2>Analyze</h2>
-            <p>Click here to see the cases analysis summary</p>
-          </figcaption>
-        </figure>
-      </a>
-    </div>
+    </vk-grid>
   </section>
   
 </div>

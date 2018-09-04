@@ -2,17 +2,17 @@
         <div class="uk-container">
             <vk-grid class="uk-grid-small">
             <div class="uk-width-1-5@m">
-
+                <br/>
+                <h1 class="uk-heading-primary sticky">Create Consult Form</h1>
             </div>
 
             <div class="uk-width-expand@m">
             <form class="uk-margin-large">
             <br/>
-            <div class="uk-background-muted" id="personalinfo">
-                    <div class="uk-text-center">
-                        <label class="uk-text-uppercase uk-text-large " for="">Patient's Information</label>
+            <div id="personalinfo">
+                    <div class="uk-text-left">
+                        <h2 class="uk-heading-line"><span>Patient's Information</span></h2>
                     </div>
-                <hr/>
                 <div class="uk-form-horizontal">
                         <!-- <div class="uk-margin">
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Create Date</label>
@@ -28,20 +28,39 @@
                             </div>
                         </div>
                         <div class="uk-margin">
+                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of Birth</label>
+                                <div class="uk-form-controls">
+                                    <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
+                                </div>
+                        </div>
+                        <div class="uk-margin">
+                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Gender</label>               
+                            <div class="uk-form-controls">
+                                    <label><input class="uk-radio" type="radio" name="radio2" checked> Male</label>
+                                    <label><input class="uk-radio" type="radio" name="radio2"> Female</label>
+                            </div>
+                        </div>
+                        <div class="uk-margin">
                             <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Address</label>
                             <div class="uk-form-controls">
                                 <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Address"></textarea>
                             </div>
                         </div>
+                        <div class="uk-margin">
+                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Primary Doctor</label>
+                                <div class="uk-form-controls">
+                                    <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="text" placeholder="First name">
+                                    <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="text" placeholder="Last name">
+                                </div>
+                        </div>
                 </div>
             </div>
                 <!-- Medical Information -->
                 <br/>
-                <div class="uk-background-muted" id="medicalinfo">
-                    <div class="uk-text-center">
-                        <label class="uk-text-uppercase uk-text-large" for="form-horizontal-text">Physical examination</label>
+                <div id="medicalinfo">
+                    <div class="uk-text-left">
+                        <h2 class="uk-heading-line"><span>Physical examination</span></h2>
                     </div>
-                    <hr/>
                 <div class="uk-form-horizontal">
                     <div class="uk-margin">
                             <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">HN</label>
@@ -101,11 +120,10 @@
                 </div>
                 <br/>
                 <!-- Record -->
-                <div class="uk-background-muted" id="recordinfo">
-                    <div class="uk-text-center">
-                        <label class="uk-text-uppercase uk-text-large uk-text-center" for="form-horizontal-text">HISTORIES</label>
+                <div id="recordinfo">
+                    <div class="uk-text-left">
+                        <h2 class="uk-heading-line"><span>Record</span></h2>
                     </div>
-                    <hr/>
                     <div class="uk-margin">
                             <label class="uk-form-label uk-text-lead" for="form-horizontal-text">Hx : OLD RECORD 1</label>
                     </div>
@@ -181,11 +199,10 @@
     
                 <!-- Consult Request -->
                 <br/>
-                <div class="uk-background-muted" id="consultinfo">
-                    <div class="uk-text-center">
-                        <label class="uk-text-uppercase uk-text-large uk-text-center" for="form-horizontal-text">Consult Request</label>
+                <div id="consultinfo">
+                    <div class="uk-text-left">
+                        <h2 class="uk-heading-line"><span>Consult Request</span></h2>
                     </div>
-                    <hr/>
                     <div class="uk-form-horizontal">
                         <div class="uk-margin">
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Chief Complain</label>
@@ -197,12 +214,6 @@
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Assessment and plan</label>
                                 <div class="uk-form-controls">
                                     <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Assessment and Plan"></textarea>
-                                </div>
-                        </div>
-                        <div class="uk-margin">
-                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Order(s)</label>
-                                <div class="uk-form-controls">
-                                    <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Order(s)"></textarea>
                                 </div>
                         </div>
                         <div class="uk-margin">
@@ -222,11 +233,9 @@
         </vk-grid>
         <br/><br/>
         <div class="uk-margin-bottom uk-text-center">
-                <button type="button" class="uk-button uk-button-primary uk-width-small">Draft</button>
-                <a class="uk-button uk-button-danger uk-width-small" href="../..#/">Cancel</a>
-        </div>
-        <div class="uk-margin-bottom uk-text-center">
+                <button type="button" class="uk-button uk-button-secondary uk-width-small">Draft</button>
                 <button type="button" class="uk-button uk-button-primary uk-width-small">Send</button>
+                <a class="uk-button uk-button-danger uk-width-small" href="../..#/">Cancel</a>
         </div>
         <br/>
         </div>

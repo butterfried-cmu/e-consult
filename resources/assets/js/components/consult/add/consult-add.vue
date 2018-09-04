@@ -42,9 +42,10 @@ export default {
   text-align: right;
 }
 
-.divider {
-    background-color: #fafafa;
-    padding: 1%;
+.sticky {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
 }
 </style>
 
