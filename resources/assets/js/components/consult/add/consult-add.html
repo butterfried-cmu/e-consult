@@ -8,16 +8,18 @@
             <div class="uk-width-expand@m">
             <form class="uk-margin-large">
             <br/>
-            <div class="" id="personalinfo">
-                    <label class="uk-text-uppercase uk-text-large" for="">Patient's Information</label>
+            <div class="uk-background-muted" id="personalinfo">
+                    <div class="uk-text-center">
+                        <label class="uk-text-uppercase uk-text-large " for="">Patient's Information</label>
+                    </div>
                 <hr/>
                 <div class="uk-form-horizontal">
-                        <div class="uk-margin">
+                        <!-- <div class="uk-margin">
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Create Date</label>
                                 <div class="uk-form-controls">
                                     <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
                                 </div>
-                        </div>
+                        </div> -->
                         <div class="uk-margin">
                             <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Patient's name</label>
                             <div class="uk-form-controls">
@@ -35,8 +37,10 @@
             </div>
                 <!-- Medical Information -->
                 <br/>
-                <div class="" id="medicalinfo">
-                    <label class="uk-text-uppercase uk-text-large" for="form-horizontal-text">Medical Record</label>
+                <div class="uk-background-muted" id="medicalinfo">
+                    <div class="uk-text-center">
+                        <label class="uk-text-uppercase uk-text-large" for="form-horizontal-text">Physical examination</label>
+                    </div>
                     <hr/>
                 <div class="uk-form-horizontal">
                     <div class="uk-margin">
@@ -66,7 +70,7 @@
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">T</label>
                             <div class="uk-form-controls unit">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="C">
+                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="°C">
                             </div>
                     </div>
                     <div class="uk-margin">
@@ -95,18 +99,19 @@
                     </div>
                 </div>
                 </div>
-                
+                <br/>
                 <!-- Record -->
-                <div id="recordinfo">
-                    <br/>
-                    <label class="uk-text-uppercase uk-text-large" for="form-horizontal-text">DIAGNOSE HISTORIES</label>
+                <div class="uk-background-muted" id="recordinfo">
+                    <div class="uk-text-center">
+                        <label class="uk-text-uppercase uk-text-large uk-text-center" for="form-horizontal-text">HISTORIES</label>
+                    </div>
                     <hr/>
                     <div class="uk-margin">
                             <label class="uk-form-label uk-text-lead" for="form-horizontal-text">Hx : OLD RECORD 1</label>
                     </div>
                     <div class="uk-form-horizontal unit">
                             <div class="uk-margin">
-                                    <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of Diaganose</label>
+                                    <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of Diagnosis</label>
                                     <div class="uk-form-controls ">
                                         <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
                                     </div>
@@ -142,7 +147,7 @@
                     </div>
                     <div class="uk-form-horizontal unit">
                             <div class="uk-margin">
-                                    <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Create Date</label>
+                                    <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of Diagnosis</label>
                                     <div class="uk-form-controls ">
                                         <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
                                     </div>
@@ -176,8 +181,12 @@
     
                 <!-- Consult Request -->
                 <br/>
-                <label class="uk-text-uppercase uk-text-large" for="form-horizontal-text">Consult Request</label><hr/>
-                <div class="uk-form-horizontal">
+                <div class="uk-background-muted" id="consultinfo">
+                    <div class="uk-text-center">
+                        <label class="uk-text-uppercase uk-text-large uk-text-center" for="form-horizontal-text">Consult Request</label>
+                    </div>
+                    <hr/>
+                    <div class="uk-form-horizontal">
                         <div class="uk-margin">
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Chief Complain</label>
                                 <div class="uk-form-controls">
@@ -185,17 +194,25 @@
                                 </div>
                         </div>
                         <div class="uk-margin">
-                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Medical</label>
+                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Assessment and plan</label>
                                 <div class="uk-form-controls">
-                                    <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Medical"></textarea>
+                                    <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Assessment and Plan"></textarea>
                                 </div>
                         </div>
                         <div class="uk-margin">
-                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Order</label>
+                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Order(s)</label>
                                 <div class="uk-form-controls">
-                                    <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Order"></textarea>
+                                    <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Order(s)"></textarea>
                                 </div>
                         </div>
+                        <div class="uk-margin">
+                            <!-- Not Require -->
+                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Progress notes</label>
+                            <div class="uk-form-controls">
+                                <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Progress notes"></textarea>
+                            </div>
+                    </div>
+                </div>
                 </div>
             </form>
             </div>
@@ -204,10 +221,13 @@
                 </div>
         </vk-grid>
         <br/><br/>
-        <p uk-margin class="uk-margin-bottom uk-text-center">
-                <button @click="addUser" type="button" class="uk-button uk-button-primary uk-width-small">Add</button>
+        <div class="uk-margin-bottom uk-text-center">
+                <button type="button" class="uk-button uk-button-primary uk-width-small">Draft</button>
                 <a class="uk-button uk-button-danger uk-width-small" href="../..#/">Cancel</a>
-        </p>
+        </div>
+        <div class="uk-margin-bottom uk-text-center">
+                <button type="button" class="uk-button uk-button-primary uk-width-small">Send</button>
+        </div>
         <br/>
         </div>
     </div>

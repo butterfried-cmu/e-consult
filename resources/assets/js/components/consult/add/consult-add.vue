@@ -19,6 +19,9 @@ export default {
 }
 </script>
 <style scoped>
+#personalinfo,#medicalinfo,#recordinfo,#consultinfo {
+    padding: 2%;
+}
 .unit input::-webkit-input-placeholder {
   /* WebKit browsers */
   text-align: right;
