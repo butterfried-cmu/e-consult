@@ -20,7 +20,7 @@ import NotFoundComponent from './components/not-found-component/not-found-compon
 import UserList from './components/user/list/user-list.vue';
 
 import ConsultAdd from './components/consult/add/consult-add.vue';
-
+import Message from './components/message/message.vue';
 
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -124,6 +124,11 @@ const router = new VueRouter({
             path: '/consult-add',
             name: 'consult-add',
             component: ConsultAdd
+        },
+        {
+            path: '/message',
+            name: 'message',
+            component: Message
         }
     ]
 });

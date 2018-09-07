@@ -33,5 +33,12 @@
 	margin-left: 3%;
 	margin-right: 3%;
 }
+.badge-bg-success {
+	background-color: #5cb85c;
+}
+
+.badge-bg-warning {
+	background-color: #ffae42;
+}
 </style>
 
