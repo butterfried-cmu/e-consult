@@ -322,27 +322,19 @@ class UserController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-//            'username' => 'required|unique:accounts|alpha_num',
-//            'password' => 'required|confirmed',
             'user_id' => 'required|exists:users',
-
             'role' => ['required', new ValidRole()],
-
             'email' => 'required|email',
             'name_title' => ['required', new ValidNameTitle()],
             'first_name' => 'required|alpha',
             'last_name' => 'required|alpha',
             'position' => 'required',
             'gender' => ['required', new ValidGender()],
-//            'citizen_id' => 'required|digits:13|unique:users',
             'date_of_birth' => 'required|date',
             'contact_number' => 'required|regex:/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/',
             'address' => 'required',
             'workplace' => 'required',
-
-//            'image' => 'is_png',
             'image' => [new ValidImage],
-//            'image' => array('regex:/^data:image\/(?:gif|png|jpeg|bmp|webp)(?:;charset=utf-8)?;base64,(?:[A-Za-z0-9]|[+/])+={0,2}/'),
         ], $messages);
 
         if ($validator->fails()) {
@@ -359,11 +351,12 @@ class UserController extends Controller
             ], 200);
         }
 
+        $name = '';
         if ($request->get('image')) {
             // echo $request->get('image');
             $image = $request->get('image');
             $name = time() . '.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
-            \Image::make($request->get('image'))->save(public_path('images/') . $name);
+            \Image::make($request->get('image'))->save(public_path('images/users/') . $name);
         }
 
         $user = User::find($request->input('user_id'));
@@ -374,12 +367,10 @@ class UserController extends Controller
         $user->last_name = $request->input('last_name');
         $user->position = $request->input('position');
         $user->gender = $request->input('gender');
-//        $user->citizen_id = $request->input('citizen_id');
-//        $user->date_of_birth = $request->input('date_of_birth');
         $user->contact_number = $request->input('contact_number');
         $user->address = $request->input('address');
         $user->workplace = $request->input('workplace');
-        $user->image_name = $request->input('image_name');
+        $user->image_name = $name;
         $user->email = $request->input('email');
 
         $user->save();
