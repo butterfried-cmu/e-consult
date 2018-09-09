@@ -21,6 +21,7 @@ import UserList from './components/user/list/user-list.vue';
 
 import ConsultAdd from './components/consult/add/consult-add.vue';
 import ConsultView from './components/consult/view/consult-view.vue';
+import ConsultList from './components/consult/list/consult-list.vue';
 import Message from './components/message/message.vue';
 
 // import 'bootstrap/dist/css/bootstrap.css'
@@ -135,6 +136,11 @@ const router = new VueRouter({
             path: '/consult-view',
             name: 'consult-view',
             component: ConsultView
+        },
+        {
+            path: '/consult-list',
+            name: 'consult-list',
+            component: ConsultList
         }
     ]
 });
