@@ -18,7 +18,7 @@
     <vk-grid class="uk-child-width-expand@s">
       <div>
         <vk-tabs-vertical align="left">
-          <vk-tabs-item title="Draft" v-if="isRole(1)">
+          <vk-tabs-item title="Draft" v-if="isRole(3)">
               <div class="uk-overflow-auto">
                   <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
                       <thead>
@@ -33,8 +33,8 @@
                       <tbody>
                           <tr>
                               <td>6121150001</td>
-                              <td>Firstname Lastname</td>
-                              <td>Nursename NurseLastname</td>
+                              <td>Sammy Read</td>
+                              <td>Nurse Three</td>
                               <td>13/06/2018</td>
                               <td><span class="uk-label uk-label-warning">Draft</span></td>
                               <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
@@ -44,7 +44,7 @@
                           <tr>
                               <td>6121150002</td>
                               <td>Firstname2 Lastname2</td>
-                              <td>Nursename NurseLastname</td>
+                              <td>Nurse Three</td>
                               <td>14/06/2018</td>
                               <td><span class="uk-label uk-label-warning">Draft</span></td>
                               <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
@@ -56,7 +56,7 @@
               </div>
           </vk-tabs-item>
 
-          <vk-tabs-item title="Pending">
+          <vk-tabs-item title="Pending" v-if="isRole(2)|isRole(3)">
               <div class="uk-overflow-auto">
                   <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
                       <thead>
@@ -76,7 +76,7 @@
                               <td>13/06/2018</td>
                               <td><span class="uk-label">Pending</span></td>
                               <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
-                              <td><router-link to="/consult-view" class="uk-button uk-button-primary">Reply</router-link></td>
+                              <td><router-link to="/reply" class="uk-button uk-button-primary" v-if="isRole(2)">Reply</router-link></td>
                           </tr>
                           <tr>
                               <td>6121150004</td>
@@ -85,14 +85,14 @@
                               <td>14/06/2018</td>
                               <td><span class="uk-label">Pending</span></td>
                               <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
-                              <td><router-link to="/consult-view" class="uk-button uk-button-primary">Reply</router-link></td>
+                              <td><router-link to="/reply" class="uk-button uk-button-primary" v-if="isRole(2)">Reply</router-link></td>
                           </tr>
                       </tbody>
                   </table>
               </div>
           </vk-tabs-item>
 
-          <vk-tabs-item title="Done">
+          <vk-tabs-item title="Done" v-if="isRole(2)|isRole(3)">
               <div class="uk-overflow-auto">
                   <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
                       <thead>
