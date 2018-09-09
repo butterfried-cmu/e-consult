@@ -13,8 +13,11 @@ class CreateMessageAttachmentTable extends Migration
      */
     public function up()
     {
-        Schema::create('message_attachment', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('attachments', function (Blueprint $table) {
+            $table->string('attachment_id');
+            $table->string('consult_id');
+            $table->string('type');
+            $table->string('file_name');
         });
     }
 

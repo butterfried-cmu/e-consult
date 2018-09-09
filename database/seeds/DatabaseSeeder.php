@@ -18,5 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersTableSeeder::class);
         $this->call(AccountsTableSeeder::class);
         $this->call(ResetPasswordRequestSeeder::class);
+        $this->call(ConsultSeeder::class);
     }
 }
