@@ -6,11 +6,14 @@
                 <router-link :to="{ name: 'add-user' }" v-if="isRole(1)">ADD USER</router-link>
             </vk-navbar-item>
             <vk-navbar-item>
+                    <router-link :to="{ name: 'consult-add' }" v-if="isRole(3)">CREATE CONSULT</router-link>
+            </vk-navbar-item>
+            <vk-navbar-item>
                 <router-link :to="{ name: 'user-list' }" v-if="isRole(1)">USER LIST</router-link>
             </vk-navbar-item>
             <vk-navbar-item>
                     <router-link :to="{ name: 'consult-list' }" v-if="isRole(1)|isRole(2)|isRole(3)">CONSULT LIST</router-link>
-                </vk-navbar-item>
+            </vk-navbar-item>
         </vk-navbar-nav>
         <vk-navbar-nav slot="right">
             <vk-navbar-item>

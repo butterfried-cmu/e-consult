@@ -18,7 +18,7 @@
     <vk-grid class="uk-child-width-expand@s">
       <div>
         <vk-tabs-vertical align="left">
-          <vk-tabs-item title="Draft">
+          <vk-tabs-item title="Draft" v-if="isRole(1)">
               <div class="uk-overflow-auto">
                   <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
                       <thead>
@@ -76,6 +76,7 @@
                               <td>13/06/2018</td>
                               <td><span class="uk-label">Pending</span></td>
                               <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
+                              <td><router-link to="/consult-view" class="uk-button uk-button-primary">Reply</router-link></td>
                           </tr>
                           <tr>
                               <td>6121150004</td>
@@ -84,6 +85,7 @@
                               <td>14/06/2018</td>
                               <td><span class="uk-label">Pending</span></td>
                               <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
+                              <td><router-link to="/consult-view" class="uk-button uk-button-primary">Reply</router-link></td>
                           </tr>
                       </tbody>
                   </table>

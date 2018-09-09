@@ -22,7 +22,9 @@ import UserList from './components/user/list/user-list.vue';
 import ConsultAdd from './components/consult/add/consult-add.vue';
 import ConsultView from './components/consult/view/consult-view.vue';
 import ConsultList from './components/consult/list/consult-list.vue';
-import Message from './components/message/message.vue';
+import ConsultEdit from './components/consult/edit/consult-edit.vue';
+import Message from './components/message/send/message.vue';
+import Reply from './components/message/order/reply.vue';
 
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -141,6 +143,16 @@ const router = new VueRouter({
             path: '/consult-list',
             name: 'consult-list',
             component: ConsultList
+        },
+        {
+            path: '/consult-edit',
+            name: 'consult-edit',
+            component: ConsultEdit
+        },
+        {
+            path: '/reply',
+            name: 'reply',
+            component: Reply
         }
     ]
 });
