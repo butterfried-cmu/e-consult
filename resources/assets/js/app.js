@@ -19,8 +19,12 @@ import ResetPassword from './components/user/forgetpassword/Resetpassword.vue';
 import NotFoundComponent from './components/not-found-component/not-found-component.vue';
 import UserList from './components/user/list/user-list.vue';
 
+import ConsultAdd from './components/consult/add/consult-add.vue';
+import Message from './components/message/message.vue';
+
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 
 import Vuikit from 'vuikit';
 import VuikitIcons from '@vuikit/icons';
@@ -116,6 +120,16 @@ const router = new VueRouter({
             name: 'not-found-component',
             component: NotFoundComponent
         },
+        {
+            path: '/consult-add',
+            name: 'consult-add',
+            component: ConsultAdd
+        },
+        {
+            path: '/message',
+            name: 'message',
+            component: Message
+        }
     ]
 });
 
