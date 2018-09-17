@@ -67,88 +67,6 @@
 /* 0 */
 /***/ (function(module, exports) {
 
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
 /* globals __VUE_SSR_CONTEXT__ */
 
 // IMPORTANT: Do NOT use ES2015 features in this file.
@@ -251,6 +169,88 @@ module.exports = function normalizeComponent (
     exports: scriptExports,
     options: options
   }
+}
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
 }
 
 
@@ -826,8 +826,18 @@ module.exports = g;
 
 
 /***/ }),
-/* 6 */,
-/* 7 */,
+/* 6 */
+/***/ (function(module, exports) {
+
+module.exports = "/images/other.jpg?07d3deb8e855a3abd2df504eb5713672";
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = "/images/self.jpg?58848faa0771170a9f3897a4da14b9c4";
+
+/***/ }),
 /* 8 */
 /***/ (function(module, exports) {
 
@@ -15261,7 +15271,7 @@ module.exports = (function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(23);
-module.exports = __webpack_require__(131);
+module.exports = __webpack_require__(147);
 
 
 /***/ }),
@@ -15305,21 +15315,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue__ = __webpack_require__(107);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__components_consult_view_consult_view_vue__ = __webpack_require__(133);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__components_consult_view_consult_view_vue__ = __webpack_require__(112);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__components_consult_view_consult_view_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_19__components_consult_view_consult_view_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__components_consult_list_consult_list_vue__ = __webpack_require__(138);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__components_consult_list_consult_list_vue__ = __webpack_require__(117);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__components_consult_list_consult_list_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_20__components_consult_list_consult_list_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__components_consult_edit_consult_edit_vue__ = __webpack_require__(141);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__components_consult_edit_consult_edit_vue__ = __webpack_require__(120);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__components_consult_edit_consult_edit_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_21__components_consult_edit_consult_edit_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__components_message_send_message_vue__ = __webpack_require__(144);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__components_message_send_message_vue__ = __webpack_require__(123);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__components_message_send_message_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_22__components_message_send_message_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue__ = __webpack_require__(156);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue__ = __webpack_require__(128);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24_vuikit__ = __webpack_require__(117);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__vuikit_icons__ = __webpack_require__(118);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__vuikit_theme__ = __webpack_require__(119);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24_vuikit__ = __webpack_require__(133);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__vuikit_icons__ = __webpack_require__(134);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__vuikit_theme__ = __webpack_require__(135);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__vuikit_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_26__vuikit_theme__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27_vue_paginate__ = __webpack_require__(123);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27_vue_paginate__ = __webpack_require__(139);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_27_vue_paginate___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_27_vue_paginate__);
 
 
@@ -15464,10 +15474,10 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.router = router;
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__webpack_require__(124), {
-    auth: __webpack_require__(128),
-    http: __webpack_require__(129),
-    router: __webpack_require__(130)
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__webpack_require__(140), {
+    auth: __webpack_require__(144),
+    http: __webpack_require__(145),
+    router: __webpack_require__(146)
 });
 
 __WEBPACK_IMPORTED_MODULE_4__App_App_vue___default.a.router = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.router;
@@ -19202,7 +19212,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(46)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(49)
 /* template */
@@ -19274,7 +19284,7 @@ if(false) {
 /* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -19359,7 +19369,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(51)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(53)
 /* template */
@@ -19431,7 +19441,7 @@ if(false) {
 /* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -20699,7 +20709,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(59)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(61)
 /* template */
@@ -20771,7 +20781,7 @@ if(false) {
 /* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -20831,7 +20841,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(64)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(66)
 /* template */
@@ -20903,7 +20913,7 @@ if(false) {
 /* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -21039,7 +21049,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(69)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(71)
 /* template */
@@ -21111,7 +21121,7 @@ if(false) {
 /* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -21180,7 +21190,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(74)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(76)
 /* template */
@@ -21252,7 +21262,7 @@ if(false) {
 /* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -21314,7 +21324,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(79)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(81)
 /* template */
@@ -21386,7 +21396,7 @@ if(false) {
 /* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -21446,7 +21456,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(84)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(86)
 /* template */
@@ -21518,7 +21528,7 @@ if(false) {
 /* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -21654,7 +21664,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(89)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(91)
 /* template */
@@ -21726,7 +21736,7 @@ if(false) {
 /* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -21792,7 +21802,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(94)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(96)
 /* template */
@@ -21864,7 +21874,7 @@ if(false) {
 /* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -21940,7 +21950,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(99)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(101)
 /* template */
@@ -22012,7 +22022,7 @@ if(false) {
 /* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -22049,7 +22059,7 @@ module.exports = "<div id=\"not-found-conpinent\">\n    404 - page not found\n  
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(104)
 /* template */
@@ -22166,7 +22176,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(108)
 }
-var normalizeComponent = __webpack_require__(1)
+var normalizeComponent = __webpack_require__(0)
 /* script */
 var __vue_script__ = __webpack_require__(110)
 /* template */
@@ -22238,7 +22248,7 @@ if(false) {
 /* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -22280,12 +22290,459 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 module.exports = "<div id=\"consult-add\">\n        <div class=\"uk-container\">\n            <vk-grid class=\"uk-grid-small\">\n            <div class=\"uk-width-1-5@m\">\n                <br/>\n                <h1 class=\"uk-heading-primary sticky\">Create Consult Form</h1>\n            </div>\n\n            <div class=\"uk-width-expand@m\">\n            <form class=\"uk-margin-large\">\n            <br/>\n            <div id=\"personalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <!-- <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Create Date</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                </div>\n                        </div> -->\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"Last name\">\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \n                            <div class=\"uk-form-controls\">\n                                    <label><input class=\"uk-radio\" type=\"radio\" name=\"radio2\" checked> Male</label>\n                                    <label><input class=\"uk-radio\" type=\"radio\" name=\"radio2\"> Female</label>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                            <div class=\"uk-form-controls\">\n                                <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Address\"></textarea>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"Last name\">\n                                </div>\n                        </div>\n                </div>\n            </div>\n                <!-- Medical Information -->\n                <br/>\n                <div id=\"medicalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                                </div>\n                        </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"kg\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"°C\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"Cr\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                </div>\n                </div>\n                <br/>\n                <!-- Record -->\n                <div id=\"recordinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\">\n                                    </div>\n                            </div>\n                    </div>\n\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\">\n                                    </div>\n                            </div>\n                    </div>\n                </div>\n    \n                <!-- Consult Request -->\n                <br/>\n                <div id=\"consultinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                    </div>\n                    <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Chief Complain\"></textarea>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Assessment and Plan\"></textarea>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <!-- Not Require -->\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>\n                            <div class=\"uk-form-controls\">\n                                <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Progress notes\"></textarea>\n                            </div>\n                    </div>\n                </div>\n                </div>\n            </form>\n            </div>\n            <div class=\"uk-width-1-5@m\">\n                \n            </div>\n        </vk-grid>\n        <br/><br/>\n        <div class=\"uk-margin-bottom uk-text-center\">\n                <button type=\"button\" class=\"uk-button uk-button-secondary uk-width-small\">Draft</button>\n                <button type=\"button\" class=\"uk-button uk-button-primary uk-width-small\">Send</button>\n                <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Cancel</a>\n        </div>\n        <br/>\n        </div>\n    </div>";
 
 /***/ }),
-/* 112 */,
-/* 113 */,
-/* 114 */,
-/* 115 */,
-/* 116 */,
+/* 112 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(113)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(115)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-9b73e9b4"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/consult/view/consult-view.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-9b73e9b4", Component.options)
+  } else {
+    hotAPI.reload("data-v-9b73e9b4", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 113 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(114);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("e6f6a014", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-9b73e9b4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-view.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-9b73e9b4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-view.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 114 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 115 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    template: __webpack_require__(116)
+});
+
+/***/ }),
+/* 116 */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=\"consult-view\">\n        <div class=\"uk-container\">\n            <vk-grid class=\"uk-grid-small\">\n            <div class=\"uk-width-1-5@m\">\n                <br/>\n                <p><h1 class=\"uk-heading-primary sticky\">Consult</h1></p>\n                <p><h2 class=\"sticky\">ID 6121150001</h2></p>\n            </div>\n\n            <div class=\"uk-width-expand@m\">\n            <form class=\"uk-margin-large\">\n            <br/>\n            <div id=\"personalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                            <div class=\"uk-form-controls\">\n                                <p>Sammy Read</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>13/12/1995</p>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \n                            <div class=\"uk-form-controls\">\n                                    <p>Male</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                            <div class=\"uk-form-controls\">\n                                <p>\n                                    123/6 moo3 Banndu Mueang Lampang 57100\n                                </p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>Mr. John Ruper</p>\n                                </div>\n                        </div>\n                </div>\n            </div>\n                <!-- Medical Information -->\n                <br/>\n                <div id=\"medicalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\n                                <div class=\"uk-form-controls\">\n                                   <p>High Blood Pressure</p>\n                                </div>\n                        </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                            <div class=\"uk-form-controls\">\n                                <p>61223</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                            <div class=\"uk-form-controls\">\n                               <p>DM</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                            <div class=\"uk-form-controls\">\n                               <p>65 kg</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>26.6</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>37 °C</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>100 mg%</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>0.43 Cr</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                            <div class=\"uk-form-controls\">\n                                <p>122.1</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                            <div class=\"uk-form-controls\">\n                                <p>1</p>\n                            </div>\n                    </div>\n                </div>\n                </div>\n                <br/>\n                <!-- Record -->\n                <div id=\"recordinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <p>14/04/2018</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <p>100 mg%</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>200/90 mmHg</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>110/90 mmHg</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>120 /min</p>\n                                    </div>\n                            </div>\n                    </div>\n\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <p>12/06/2018</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <p>100 mg%</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>115/89 mmHg</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>110/90 mmHg</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>80 /min</p>\n                                    </div>\n                            </div>\n                    </div>\n                </div>\n    \n                <!-- Consult Request -->\n                <br/>\n                <div id=\"consultinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                    </div>\n                    <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>FBS >= 130 mg% 2 visit</p>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>MFM 1x2 0pc, Slmvas 1209 ½ x ns</p>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <!-- Not Require -->\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>\n                            <div class=\"uk-form-controls\">\n                                <p>-</p>\n                            </div>\n                    </div>\n                </div>\n                </div>\n            </form>\n            </div>\n            <div class=\"uk-width-1-5@m\">\n                \n            </div>\n        </vk-grid>\n        <br/><br/>\n        <div class=\"uk-margin-bottom uk-text-center\">\n            <!-- Draft Status : Edit btn avaliable ,else disable -->\n                <router-link to=\"/consult-edit\" class=\"uk-button uk-button-secondary\">Edit</router-link></td>\n                <button type=\"button\" class=\"uk-button uk-button-primary uk-width-small\">Send</button>\n                <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Cancel</a>\n        </div>\n        <br/>\n        </div>\n</div>";
+
+/***/ }),
 /* 117 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(118)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/consult/list/consult-list.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2ed5f7c6", Component.options)
+  } else {
+    hotAPI.reload("data-v-2ed5f7c6", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 118 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    template: __webpack_require__(119)
+});
+
+/***/ }),
+/* 119 */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=\"consult-list\">\n        <header>\n                <br/>\n                <h1 class=\"uk-text-center\">E-CONSULTS LIST</h1>\n              </header>\n        <section class=\"uk-container\">\n                <div class=\"uk-margin\">\n                        <form class=\"uk-search uk-search-default uk-align-center\">\n                            <span uk-search-icon></span>\n                            <input class=\"uk-search-input uk-width-large@s\" type=\"search\" placeholder=\"Search...\">\n                        </form>\n                    </div>\n                <vk-grid class=\"uk-child-width-expand@s\">\n                  <div>\n                    <vk-tabs-vertical align=\"left\">\n                        <vk-tabs-item title=\"Done\">\n                            <div class=\"uk-overflow-auto\">\n                                <table class=\"uk-table uk-table-middle uk-table-hover uk-table-divider\">\n                                    <thead>\n                                        <tr>\n                                            <th class=\"uk-width-small\">Consult Id</th>\n                                            <th>Patient</th>\n                                            <th>Creator</th>\n                                            <th>Date of Create</th>\n                                            <th>Status</th>\n                                        </tr>\n                                    </thead>\n                                    <tbody>\n                                        <tr>\n                                            <td>6121150005</td>\n                                            <td>Firstname Lastname</td>\n                                            <td>Test NurseLastname</td>\n                                            <td>13/06/2018</td>\n                                            <td><span class=\"uk-label uk-label-success\">Done</span></td>\n                                            <td><router-link to=\"/consult-view\" class=\"uk-button uk-button-default\">View</router-link></td>\n                                            <td><router-link to=\"/message\" class=\"uk-button uk-button-primary\">Message</router-link></td>\n                                        </tr>\n                                        <tr>\n                                            <td>6121150006</td>\n                                            <td>Firstname2 Lastname2</td>\n                                            <td>Surasung NurseLastname</td>\n                                            <td>14/06/2018</td>\n                                            <td><span class=\"uk-label uk-label-success\">Done</span></td>\n                                            <td><router-link to=\"/consult-view\" class=\"uk-button uk-button-default\">View</router-link></td>\n                                            <td><router-link to=\"/message\" class=\"uk-button uk-button-primary\">Message</router-link></td>\n                                            \n                                        </tr>\n                                    </tbody>\n                                </table>\n                            </div>\n                        </vk-tabs-item>\n                    </vk-tabs-vertical>\n                  </div>\n                </vk-grid>\n              </section>\n</div>";
+
+/***/ }),
+/* 120 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(121)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/consult/edit/consult-edit.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-571e6746", Component.options)
+  } else {
+    hotAPI.reload("data-v-571e6746", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 121 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    template: __webpack_require__(122)
+});
+
+/***/ }),
+/* 122 */
+/***/ (function(module, exports) {
+
+module.exports = " \n<div id=\"consult-add\">\n        <div class=\"uk-container\">\n            <vk-grid class=\"uk-grid-small\">\n            <div class=\"uk-width-1-5@m\">\n                <br/>\n                <h1 class=\"uk-heading-primary sticky\">Edit Draft Consult</h1>\n            </div>\n\n            <div class=\"uk-width-expand@m\">\n            <form class=\"uk-margin-large\">\n            <br/>\n            <div id=\"personalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"Last name\">\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \n                            <div class=\"uk-form-controls\">\n                                    <label><input class=\"uk-radio\" type=\"radio\" name=\"radio2\" checked> Male</label>\n                                    <label><input class=\"uk-radio\" type=\"radio\" name=\"radio2\"> Female</label>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                            <div class=\"uk-form-controls\">\n                                <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Address\"></textarea>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"Last name\">\n                                </div>\n                        </div>\n                </div>\n            </div>\n                <!-- Medical Information -->\n                <br/>\n                <div id=\"medicalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                                </div>\n                        </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"kg\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"°C\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"Cr\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                </div>\n                </div>\n                <br/>\n                <!-- Record -->\n                <div id=\"recordinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\">\n                                    </div>\n                            </div>\n                    </div>\n\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\">\n                                    </div>\n                            </div>\n                    </div>\n                </div>\n    \n                <!-- Consult Request -->\n                <br/>\n                <div id=\"consultinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                    </div>\n                    <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Chief Complain\"></textarea>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Assessment and Plan\"></textarea>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <!-- Not Require -->\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>\n                            <div class=\"uk-form-controls\">\n                                <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Progress notes\"></textarea>\n                            </div>\n                    </div>\n                </div>\n                </div>\n            </form>\n            </div>\n            <div class=\"uk-width-1-5@m\">\n                \n                </div>\n        </vk-grid>\n        <br/><br/>\n        <div class=\"uk-margin-bottom uk-text-center\">\n                <router-link to=\"/consult-view\" class=\"uk-button uk-button-secondary\">Draft</router-link></td>\n                <button type=\"button\" class=\"uk-button uk-button-primary uk-width-small\">Send</button>\n                <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Cancel</a>\n        </div>\n        <br/>\n        </div>\n    </div>";
+
+/***/ }),
+/* 123 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(124)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(126)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-2733d7c2"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/message/send/message.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2733d7c2", Component.options)
+  } else {
+    hotAPI.reload("data-v-2733d7c2", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 124 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(125);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("8fcf35a0", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2733d7c2\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./message.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2733d7c2\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./message.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 125 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n#message[data-v-2733d7c2] {\n    overflow: hidden;\n}\n.crop[data-v-2733d7c2] {\n    margin-right: 1%;\n}\n.vertical-divider[data-v-2733d7c2] {\n    border-left:2px solid #F8F8F8;\n    max-height: 100%;\n    margin-top: 20px;\n    margin-bottom: 20px;\n}\n.upload[data-v-2733d7c2] {\n    margin-top: 30px;\n}\n.scrollbox[data-v-2733d7c2] {\n    height: 80vh;\n    overflow:auto;\n}\nhtml[data-v-2733d7c2], body[data-v-2733d7c2] {\n    background: #e5e5e5;\n    font-family: 'Lato', sans-serif;\n    margin: 0px auto;\n}\n[data-v-2733d7c2]::-moz-selection{\n  background: rgba(82,179,217,0.3);\n  color: inherit;\n}\n[data-v-2733d7c2]::selection{\n  background: rgba(82,179,217,0.3);\n  color: inherit;\n}\na[data-v-2733d7c2]{\n  color: rgba(82,179,217,0.9);\n}\n\n/* M E N U */\n.menu[data-v-2733d7c2] {\n    position: fixed;\n    top: 0px;\n    left: 0px;\n    right: 0px;\n    width: 100%;\n    height: 50px;\n    background: rgba(82,179,217,0.9);\n    z-index: 100;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.back[data-v-2733d7c2] {\n    position: absolute;\n    width: 90px;\n    height: 50px;\n    top: 0px;\n    left: 0px;\n    color: #fff;\n    line-height: 50px;\n    font-size: 30px;\n    padding-left: 10px;\n    cursor: pointer;\n}\n.back img[data-v-2733d7c2] {\n    position: absolute;\n    top: 5px;\n    left: 30px;\n    width: 40px;\n    height: 40px;\n    background-color: rgba(255,255,255,0.98);\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    margin-left: 15px;\n}\n.back[data-v-2733d7c2]:active {\n    background: rgba(255,255,255,0.2);\n}\n.name[data-v-2733d7c2]{\n    position: absolute;\n    top: 3px;\n    left: 110px;\n    font-family: 'Lato';\n    font-size: 25px;\n    font-weight: 300;\n    color: rgba(255,255,255,0.98);\n    cursor: default;\n}\n.last[data-v-2733d7c2]{\n    position: absolute;\n    top: 30px;\n    left: 115px;\n    font-family: 'Lato';\n    font-size: 11px;\n    font-weight: 400;\n    color: rgba(255,255,255,0.6);\n    cursor: default;\n}\n\n/* M E S S A G E S */\n.chat[data-v-2733d7c2] {\n    list-style: none;\n    background: none;\n    margin: 0;\n    padding: 0 0 50px 0;\n    margin-top: 30px;\n    margin-bottom: 20px;\n}\n.chat li[data-v-2733d7c2] {\n    padding: 0.5rem;\n    overflow: hidden;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.chat .avatar[data-v-2733d7c2] {\n    width: 40px;\n    height: 40px;\n    position: relative;\n    display: block;\n    z-index: 2;\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    background-color: rgba(255,255,255,0.9);\n}\n.chat .avatar img[data-v-2733d7c2] {\n    width: 40px;\n    height: 40px;\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    background-color: rgba(255,255,255,0.9);\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.chat .day[data-v-2733d7c2] {\n    position: relative;\n    display: block;\n    text-align: center;\n    color: #c0c0c0;\n    height: 20px;\n    text-shadow: 7px 0px 0px #e5e5e5, 6px 0px 0px #e5e5e5, 5px 0px 0px #e5e5e5, 4px 0px 0px #e5e5e5, 3px 0px 0px #e5e5e5, 2px 0px 0px #e5e5e5, 1px 0px 0px #e5e5e5, 1px 0px 0px #e5e5e5, 0px 0px 0px #e5e5e5, -1px 0px 0px #e5e5e5, -2px 0px 0px #e5e5e5, -3px 0px 0px #e5e5e5, -4px 0px 0px #e5e5e5, -5px 0px 0px #e5e5e5, -6px 0px 0px #e5e5e5, -7px 0px 0px #e5e5e5;\n    -webkit-box-shadow: inset 20px 0px 0px #e5e5e5, inset -20px 0px 0px #e5e5e5, inset 0px -2px 0px #d7d7d7;\n            box-shadow: inset 20px 0px 0px #e5e5e5, inset -20px 0px 0px #e5e5e5, inset 0px -2px 0px #d7d7d7;\n    line-height: 38px;\n    margin-top: 5px;\n    margin-bottom: 20px;\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.other .msg[data-v-2733d7c2] {\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n    border-top-left-radius: 0px;\n    -webkit-box-shadow: -1px 2px 0px #D4D4D4;\n            box-shadow: -1px 2px 0px #D4D4D4;\n}\n.other[data-v-2733d7c2]:before {\n    content: \"\";\n    position: relative;\n    top: 0px;\n    right: 0px;\n    left: 40px;\n    width: 0px;\n    height: 0px;\n    border: 5px solid #fff;\n    border-left-color: transparent;\n    border-bottom-color: transparent;\n}\n.self[data-v-2733d7c2] {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n    -webkit-box-align: end;\n        -ms-flex-align: end;\n            align-items: flex-end;\n}\n.self .msg[data-v-2733d7c2] {\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n    border-bottom-right-radius: 0px;\n    -webkit-box-shadow: 1px 2px 0px #D4D4D4;\n            box-shadow: 1px 2px 0px #D4D4D4;\n}\n.self .avatar[data-v-2733d7c2] {\n    -webkit-box-ordinal-group: 3;\n        -ms-flex-order: 2;\n            order: 2;\n}\n.self .avatar[data-v-2733d7c2]:after {\n    content: \"\";\n    position: relative;\n    display: inline-block;\n    bottom: 19px;\n    right: 0px;\n    width: 0px;\n    height: 0px;\n    border: 5px solid #fff;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    -webkit-box-shadow: 0px 2px 0px #D4D4D4;\n            box-shadow: 0px 2px 0px #D4D4D4;\n}\n.msg[data-v-2733d7c2] {\n    background: white;\n    min-width: 50px;\n    padding: 10px;\n    border-radius: 2px;\n    -webkit-box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);\n            box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);\n}\n.msg p[data-v-2733d7c2] {\n    font-size: 0.8rem;\n    margin: 0 0 0.2rem 0;\n    color: #777;\n}\n.msg img[data-v-2733d7c2] {\n    position: relative;\n    display: block;\n    width: 450px;\n    border-radius: 5px;\n    -webkit-box-shadow: 0px 0px 3px #eee;\n            box-shadow: 0px 0px 3px #eee;\n    -webkit-transition: all .4s cubic-bezier(0.565, -0.260, 0.255, 1.410);\n    transition: all .4s cubic-bezier(0.565, -0.260, 0.255, 1.410);\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n@media screen and (max-width: 800px) {\n.msg img[data-v-2733d7c2] {\n    width: 300px;\n}\n}\n@media screen and (max-width: 550px) {\n.msg img[data-v-2733d7c2] {\n    width: 200px;\n}\n}\n.msg time[data-v-2733d7c2] {\n    font-size: 0.7rem;\n    color: #ccc;\n    margin-top: 3px;\n    float: right;\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.msg time[data-v-2733d7c2]:before{\n    content:\"\\F017\";\n    color: #ddd;\n    font-family: FontAwesome;\n    display: inline-block;\n    margin-right: 4px;\n}\n[data-v-2733d7c2]::-webkit-scrollbar {\n    min-width: 12px;\n    width: 12px;\n    max-width: 12px;\n    min-height: 12px;\n    height: 12px;\n    max-height: 12px;\n    background: #e5e5e5;\n    -webkit-box-shadow: inset 0px 50px 0px rgba(82,179,217,0.9), inset 0px -52px 0px #fafafa;\n            box-shadow: inset 0px 50px 0px rgba(82,179,217,0.9), inset 0px -52px 0px #fafafa;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-thumb {\n    background: #bbb;\n    border: none;\n    border-radius: 100px;\n    border: solid 3px #e5e5e5;\n    -webkit-box-shadow: inset 0px 0px 3px #999;\n            box-shadow: inset 0px 0px 3px #999;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-thumb:hover {\n    background: #b0b0b0;\n  -webkit-box-shadow: inset 0px 0px 3px #888;\n          box-shadow: inset 0px 0px 3px #888;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-thumb:active {\n    background: #aaa;\n  -webkit-box-shadow: inset 0px 0px 3px #7f7f7f;\n          box-shadow: inset 0px 0px 3px #7f7f7f;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-button {\n    display: block;\n    height: 26px;\n}\n\n/* T Y P E */\nchatbox[data-v-2733d7c2] {\n    position:fixed;\n    bottom: 0px;\n    left: 0px;\n    right: 0px;\n    width: 100%;\n    height: 50px;\n    z-index: 99;\n    background:#c0c0c0;\n    border: none;\n    outline: none;\n    padding-left: 55px;\n    padding-right: 55px;\n    color: #666;\n    font-weight: 400;\n    font-size: 15px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 126 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    template: __webpack_require__(127)
+});
+
+/***/ }),
+/* 127 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = "<div id=\"message\">\n    <div class=\"uk-container\">\n        <vk-grid class=\"uk-grid-small\"> \n            <!-- left column -->\n            <div class=\"uk-width-1-4@m crop scrollbox\">\n                    <br/>\n                    <div>\n                            <p class=\"uk-label uk-label-warning sticky\">Consult ID 601235554</p>\n                    </div>\n\n                    <div id=\"personalinfo\">\n                            <div class=\"uk-text-left\">\n                                <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                            </div>\n                        <div class=\"uk-form-horizontal\">\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>Sammy Read</p>\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\n                                        <div class=\"uk-form-controls\">\n                                            <p>13/12/1995</p>\n                                        </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \n                                    <div class=\"uk-form-controls\">\n                                            <p>Male</p>\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>\n                                            123/6 moo3 Banndu Mueang Lampang 57100\n                                        </p>\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\n                                        <div class=\"uk-form-controls\">\n                                            <p>Mr. John Ruper</p>\n                                        </div>\n                                </div>\n                        </div>\n                    </div>\n                        <!-- Medical Information -->\n                        <br/>\n                        <div id=\"medicalinfo\">\n                            <div class=\"uk-text-left\">\n                                <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                            </div>\n                        <div class=\"uk-form-horizontal\">\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\n                                        <div class=\"uk-form-controls\">\n                                           <p>High Blood Pressure</p>\n                                        </div>\n                                </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>61223</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                                    <div class=\"uk-form-controls\">\n                                       <p>DM</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                                    <div class=\"uk-form-controls\">\n                                       <p>65 kg</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                                    <div class=\"uk-form-controls unit\">\n                                        <p>26.6</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                                    <div class=\"uk-form-controls unit\">\n                                        <p>37 °C</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls unit\">\n                                        <p>100 mg%</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                                    <div class=\"uk-form-controls unit\">\n                                        <p>0.43 Cr</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>122.1</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>1</p>\n                                    </div>\n                            </div>\n                        </div>\n                        </div>\n                        <br/>\n                        <!-- Record -->\n                        <div id=\"recordinfo\">\n                            <div class=\"uk-text-left\">\n                                <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                            </div>\n                            <div class=\"uk-form-horizontal unit\">\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                            <div class=\"uk-form-controls \">\n                                                <p>14/04/2018</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                            <div class=\"uk-form-controls \">\n                                                <p>100 mg%</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>200/90 mmHg</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>110/90 mmHg</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>120 /min</p>\n                                            </div>\n                                    </div>\n                            </div>\n        \n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                            </div>\n                            <div class=\"uk-form-horizontal unit\">\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                            <div class=\"uk-form-controls \">\n                                                <p>12/06/2018</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                            <div class=\"uk-form-controls \">\n                                                <p>100 mg%</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>115/89 mmHg</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>110/90 mmHg</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>80 /min</p>\n                                            </div>\n                                    </div>\n                            </div>\n                        </div>\n            \n                        <!-- Consult Request -->\n                        <br/>\n                        <div id=\"consultinfo\">\n                            <div class=\"uk-text-left\">\n                                <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                            </div>\n                            <div class=\"uk-form-horizontal\">\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                        <div class=\"uk-form-controls\">\n                                            <p>FBS >= 130 mg% 2 visit</p>\n                                        </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\n                                        <div class=\"uk-form-controls\">\n                                            <p>MFM 1x2 0pc</p>\n                                        </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <!-- Not Require -->\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Consult Order</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>Slmvas 1209 ½ x ns</p>\n                                    </div>\n                            </div>\n                        </div>\n                        </div>\n            </div>\n            \n            <!-- center column -->\n            <div class=\"uk-width-expand@m\">\n                <div class=\"scrollbox\">\n                    <ol class=\"chat\">\n                        <li class=\"other\">\n                            <div class=\"avatar\"><img src=\"" + __webpack_require__(6) + "\" draggable=\"false\"/></div>\n                            <div class=\"msg\">\n                                <p>Hola!</p>\n                                <p>Te vienes a cenar al centro?</p>\n                                <time>20:17</time>\n                            </div>\n                        </li>\n                        <li class=\"self\">\n                            <div class=\"avatar\"><img src=\"" + __webpack_require__(7) + "\" draggable=\"false\"/></div>\n                            <div class=\"msg\">\n                                <p>Puff...</p>\n                                <p>Aún estoy haciendo el contexto de Góngora... </p>\n                                <p>Mejor otro día</p>\n                                <time>20:18</time>\n                            </div>\n                        </li>\n                        <li class=\"other\">\n                                <div class=\"avatar\"><img src=\"" + __webpack_require__(6) + "\" draggable=\"false\"/></div>\n                                <div class=\"msg\">\n                                    <p>Hola!</p>\n                                    <p>Te vienes a cenar al centro?</p>\n                                    <time>20:17</time>\n                                </div>\n                            </li>\n                        <li class=\"self\">\n                            <div class=\"avatar\"><img src=\"" + __webpack_require__(7) + "\" draggable=\"false\"/></div>\n                            <div class=\"msg\">\n                                <p>Puff...</p>\n                                <p>Aún estoy haciendo el contexto de Góngora... </p>\n                                <p>Mejor otro día</p>\n                                <time>20:18</time>\n                            </div>\n                        </li>\n                        <li class=\"other\">\n                                <div class=\"avatar\"><img src=\"" + __webpack_require__(6) + "\" draggable=\"false\"/></div>\n                                <div class=\"msg\">\n                                    <p>Hola!</p>\n                                    <p>Te vienes a cenar al centro?</p>\n                                    <time>20:17</time>\n                                </div>\n                            </li>\n                        <li class=\"self\">\n                            <div class=\"avatar\"><img src=\"" + __webpack_require__(7) + "\" draggable=\"false\"/></div>\n                            <div class=\"msg\">\n                                <p>Puff...</p>\n                                <p>Aún estoy haciendo el contexto de Góngora... </p>\n                                <p>Mejor otro día</p>\n                                <time>20:18</time>\n                            </div>\n                        </li>\n                        <li class=\"other\">\n                                <div class=\"avatar\"><img src=\"" + __webpack_require__(6) + "\" draggable=\"false\"/></div>\n                                <div class=\"msg\">\n                                    <p>Hola!</p>\n                                    <p>Te vienes a cenar al centro?</p>\n                                    <time>20:17</time>\n                                </div>\n                            </li>\n                        <li class=\"self\">\n                            <div class=\"avatar\"><img src=\"" + __webpack_require__(7) + "\" draggable=\"false\"/></div>\n                            <div class=\"msg\">\n                                <p>Puff...</p>\n                                <p>Aún estoy haciendo el contexto de Góngora... </p>\n                                <p>Mejor otro día</p>\n                                <time>20:18</time>\n                            </div>\n                        </li>\n                        </ol>\n                    </div>\n        <textarea class=\"uk-textarea center-block chatbox\" rows=\"2\" type=\"text\" placeholder=\"Type here!\"></textarea>  \n    </div>\n    <div class=\"vertical-divider\"></div>\n        <!-- right column -->       \n        <div class=\"uk-width-1-4@m\">\n                <div class=\"js-upload uk-placeholder uk-text-center upload\">\n                        <span><vk-icon icon=\"cloud-upload\"></vk-icon></span>\n                        <span class=\"uk-text-middle\">Upload file(s) here</span>\n                        <div uk-form-custom>\n                            <input type=\"file\" multiple>\n                            <!-- <span class=\"uk-link\">selecting one</span> -->\n                        </div>\n                </div>\n                <progress id=\"js-progressbar\" class=\"uk-progress\" value=\"0\" max=\"100\" hidden></progress>  \n                <!-- Uploaded file(s) position -->\n                <div class=\"scrollbox\">\n                    <vk-grid gutter=\"small\" class=\"uk-child-width-1-2@s uk-child-width-1-3@m uk-text-center\">\n                        <div>\n                            <vk-card>Item</vk-card>\n                        </div>\n                        <div>\n                            <vk-card>Item</vk-card>\n                        </div>\n                        <div>\n                          <vk-card>Item</vk-card>\n                        </div>\n                    </vk-grid>\n                </div>\n        </div>\n        \n        </vk-grid>\n    </div>\n</div>";
+
+/***/ }),
+/* 128 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(129)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(131)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-ceb12dcc"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/message/order/reply.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-ceb12dcc", Component.options)
+  } else {
+    hotAPI.reload("data-v-ceb12dcc", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 129 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(130);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("3203354a", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ceb12dcc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./reply.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ceb12dcc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./reply.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 130 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.scrollbox[data-v-ceb12dcc] {\n    height: 80vh;\n    overflow:auto;\n}\n.vertical-divider[data-v-ceb12dcc] {\n    border-left:2px solid #F8F8F8;\n    max-height: 100%;\n    margin-top: 20px;\n    margin-bottom: 20px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 131 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    template: __webpack_require__(132)
+});
+
+/***/ }),
+/* 132 */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=\"reply\">\n                <div class=\"uk-container\">\n                        <div>\n                            <br/>\n                            <p class=\"uk-label uk-label-warning sticky\">Consult ID 601235554</p>\n                        </div>\n                    <vk-grid class=\"uk-grid-small\"> \n                        <!-- left column -->\n                        <div class=\"uk-width-1-3@m crop scrollbox\">\n                                <div id=\"personalinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                                        </div>\n                                    <div class=\"uk-form-horizontal\">\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>Sammy Read</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\n                                                    <div class=\"uk-form-controls\">\n                                                        <p>13/12/1995</p>\n                                                    </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \n                                                <div class=\"uk-form-controls\">\n                                                        <p>Male</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>\n                                                        123/6 moo3 Banndu Mueang Lampang 57100\n                                                    </p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\n                                                    <div class=\"uk-form-controls\">\n                                                        <p>Mr. John Ruper</p>\n                                                    </div>\n                                            </div>\n                                    </div>\n                                </div>\n                                    <!-- Medical Information -->\n                                    <br/>\n                                    <div id=\"medicalinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                                        </div>\n                                    <div class=\"uk-form-horizontal\">\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\n                                                    <div class=\"uk-form-controls\">\n                                                       <p>High Blood Pressure</p>\n                                                    </div>\n                                            </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>61223</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                                                <div class=\"uk-form-controls\">\n                                                   <p>DM</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                                                <div class=\"uk-form-controls\">\n                                                   <p>65 kg</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>26.6</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>37 °C</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>100 mg%</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>0.43 Cr</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>122.1</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>1</p>\n                                                </div>\n                                        </div>\n                                    </div>\n                                    </div>\n                                    <br/>\n                                    <!-- Record -->\n                                    <div id=\"recordinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                                        </div>\n                                        <div class=\"uk-form-horizontal unit\">\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                                        <div class=\"uk-form-controls \">\n                                                            <p>14/04/2018</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                                        <div class=\"uk-form-controls \">\n                                                            <p>100 mg%</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>200/90 mmHg</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>110/90 mmHg</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>120 /min</p>\n                                                        </div>\n                                                </div>\n                                        </div>\n                    \n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                                        </div>\n                                        <div class=\"uk-form-horizontal unit\">\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                                        <div class=\"uk-form-controls \">\n                                                            <p>12/06/2018</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                                        <div class=\"uk-form-controls \">\n                                                            <p>100 mg%</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>115/89 mmHg</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>110/90 mmHg</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>80 /min</p>\n                                                        </div>\n                                                </div>\n                                        </div>\n                                    </div>\n                        \n                                    <!-- Consult Request -->\n                                    <br/>\n                                    <div id=\"consultinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                                        </div>\n                                        <div class=\"uk-form-horizontal\">\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                                    <div class=\"uk-form-controls\">\n                                                        <p>FBS >= 130 mg% 2 visit</p>\n                                                    </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\n                                                    <div class=\"uk-form-controls\">\n                                                        <p>MFM 1x2 0pc, Slmvas 1209 ½ x ns</p>\n                                                    </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <!-- Not Require -->\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>-</p>\n                                                </div>\n                                        </div>\n                                    </div>\n                                    </div>\n                        </div>\n                <div class=\"vertical-divider\"></div>\n                    <!-- right column -->       \n                    <div class=\"uk-width-expand@m\">\n                            <form class=\"uk-margin-large\">\n                                        <!-- Consult Request -->\n                                <div id=\"consultinfo\">\n                                    <div class=\"uk-text-left\">\n                                        <h2 class=\"uk-heading-line\"><span>Consult Order</span></h2>\n                                    </div>\n                                    <div class=\"uk-form-horizontal\">\n                                        <div class=\"uk-margin\">\n                                        <!-- Not Require -->\n                                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Order</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <textarea class=\"uk-textarea\" id=\"form-horizontal-text\" rows=\"20\" placeholder=\"Type here...\"></textarea>\n                                                </div>\n                                        </div>\n                                    </div>\n                                </div>\n                                <router-link to=\"/\" class=\"uk-button uk-button-primary uk-align-right\">Send</router-link>\n                            </form>\n                    </div>\n                    \n                    </vk-grid>\n                </div>\n</div>   \n    \n    ";
+
+/***/ }),
+/* 133 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -29841,7 +30298,7 @@ var Vuikit = {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(13).setImmediate))
 
 /***/ }),
-/* 118 */
+/* 134 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -33071,11 +33528,11 @@ function each (obj, cb) {
 
 
 /***/ }),
-/* 119 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(120);
+var content = __webpack_require__(136);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -33089,7 +33546,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(121)(content, options);
+var update = __webpack_require__(137)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -33121,10 +33578,10 @@ if(false) {
 }
 
 /***/ }),
-/* 120 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(0)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -33135,7 +33592,7 @@ exports.push([module.i, "/**\n * Vuikit - @vuikit/theme 0.8.0\n * (c) 2018 Milja
 
 
 /***/ }),
-/* 121 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -33201,7 +33658,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(122);
+var	fixUrls = __webpack_require__(138);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -33521,7 +33978,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 122 */
+/* 138 */
 /***/ (function(module, exports) {
 
 
@@ -33616,7 +34073,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 123 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -34216,10 +34673,10 @@ module.exports = function (css) {
 }));
 
 /***/ }),
-/* 124 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Auth = __webpack_require__(125)();
+var Auth = __webpack_require__(141)();
 
 module.exports = (function () {
 
@@ -34260,11 +34717,11 @@ module.exports = (function () {
 })();
 
 /***/ }),
-/* 125 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __utils  = __webpack_require__(126),
-    __token  = __webpack_require__(127),
+var __utils  = __webpack_require__(142),
+    __token  = __webpack_require__(143),
     __cookie = __webpack_require__(21)
 
 module.exports = function () {
@@ -34974,7 +35431,7 @@ module.exports = function () {
 
 
 /***/ }),
-/* 126 */
+/* 142 */
 /***/ (function(module, exports) {
 
 module.exports = (function (){
@@ -35056,7 +35513,7 @@ module.exports = (function (){
 
 
 /***/ }),
-/* 127 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __cookie = __webpack_require__(21);
@@ -35136,7 +35593,7 @@ module.exports = (function () {
 })();
 
 /***/ }),
-/* 128 */
+/* 144 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -35158,7 +35615,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 129 */
+/* 145 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -35224,7 +35681,7 @@ module.exports = {
 
 
 /***/ }),
-/* 130 */
+/* 146 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -35292,482 +35749,10 @@ module.exports = {
 };
 
 /***/ }),
-/* 131 */
+/* 147 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 132 */,
-/* 133 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(134)
-}
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(136)
-/* template */
-var __vue_template__ = null
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = "data-v-9b73e9b4"
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/consult/view/consult-view.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-9b73e9b4", Component.options)
-  } else {
-    hotAPI.reload("data-v-9b73e9b4", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 134 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(135);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(2)("e6f6a014", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-9b73e9b4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-view.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-9b73e9b4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-view.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 135 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(0)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n\n\n\n\n\n\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 136 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(137)
-});
-
-/***/ }),
-/* 137 */
-/***/ (function(module, exports) {
-
-module.exports = "<div id=\"consult-view\">\n        <div class=\"uk-container\">\n            <vk-grid class=\"uk-grid-small\">\n            <div class=\"uk-width-1-5@m\">\n                <br/>\n                <p><h1 class=\"uk-heading-primary sticky\">Consult</h1></p>\n                <p><h2 class=\"sticky\">ID 6121150001</h2></p>\n            </div>\n\n            <div class=\"uk-width-expand@m\">\n            <form class=\"uk-margin-large\">\n            <br/>\n            <div id=\"personalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                            <div class=\"uk-form-controls\">\n                                <p>Sammy Read</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>13/12/1995</p>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \n                            <div class=\"uk-form-controls\">\n                                    <p>Male</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                            <div class=\"uk-form-controls\">\n                                <p>\n                                    123/6 moo3 Banndu Mueang Lampang 57100\n                                </p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>Mr. John Ruper</p>\n                                </div>\n                        </div>\n                </div>\n            </div>\n                <!-- Medical Information -->\n                <br/>\n                <div id=\"medicalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\n                                <div class=\"uk-form-controls\">\n                                   <p>High Blood Pressure</p>\n                                </div>\n                        </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                            <div class=\"uk-form-controls\">\n                                <p>61223</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                            <div class=\"uk-form-controls\">\n                               <p>DM</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                            <div class=\"uk-form-controls\">\n                               <p>65 kg</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>26.6</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>37 °C</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>100 mg%</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>0.43 Cr</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                            <div class=\"uk-form-controls\">\n                                <p>122.1</p>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                            <div class=\"uk-form-controls\">\n                                <p>1</p>\n                            </div>\n                    </div>\n                </div>\n                </div>\n                <br/>\n                <!-- Record -->\n                <div id=\"recordinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <p>14/04/2018</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <p>100 mg%</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>200/90 mmHg</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>110/90 mmHg</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>120 /min</p>\n                                    </div>\n                            </div>\n                    </div>\n\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <p>12/06/2018</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <p>100 mg%</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>115/89 mmHg</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>110/90 mmHg</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>80 /min</p>\n                                    </div>\n                            </div>\n                    </div>\n                </div>\n    \n                <!-- Consult Request -->\n                <br/>\n                <div id=\"consultinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                    </div>\n                    <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>FBS >= 130 mg% 2 visit</p>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>MFM 1x2 0pc, Slmvas 1209 ½ x ns</p>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <!-- Not Require -->\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>\n                            <div class=\"uk-form-controls\">\n                                <p>-</p>\n                            </div>\n                    </div>\n                </div>\n                </div>\n            </form>\n            </div>\n            <div class=\"uk-width-1-5@m\">\n                \n            </div>\n        </vk-grid>\n        <br/><br/>\n        <div class=\"uk-margin-bottom uk-text-center\">\n            <!-- Draft Status : Edit btn avaliable ,else disable -->\n                <router-link to=\"/consult-edit\" class=\"uk-button uk-button-secondary\">Edit</router-link></td>\n                <button type=\"button\" class=\"uk-button uk-button-primary uk-width-small\">Send</button>\n                <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Cancel</a>\n        </div>\n        <br/>\n        </div>\n</div>";
-
-/***/ }),
-/* 138 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(139)
-/* template */
-var __vue_template__ = null
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/consult/list/consult-list.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-2ed5f7c6", Component.options)
-  } else {
-    hotAPI.reload("data-v-2ed5f7c6", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 139 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(140)
-});
-
-/***/ }),
-/* 140 */
-/***/ (function(module, exports) {
-
-module.exports = "<div id=\"consult-list\">\n        <header>\n                <br/>\n                <h1 class=\"uk-text-center\">E-CONSULTS LIST</h1>\n              </header>\n        <section class=\"uk-container\">\n                <div class=\"uk-margin\">\n                        <form class=\"uk-search uk-search-default uk-align-center\">\n                            <span uk-search-icon></span>\n                            <input class=\"uk-search-input uk-width-large@s\" type=\"search\" placeholder=\"Search...\">\n                        </form>\n                    </div>\n                <vk-grid class=\"uk-child-width-expand@s\">\n                  <div>\n                    <vk-tabs-vertical align=\"left\">\n                        <vk-tabs-item title=\"Done\">\n                            <div class=\"uk-overflow-auto\">\n                                <table class=\"uk-table uk-table-middle uk-table-hover uk-table-divider\">\n                                    <thead>\n                                        <tr>\n                                            <th class=\"uk-width-small\">Consult Id</th>\n                                            <th>Patient</th>\n                                            <th>Creator</th>\n                                            <th>Date of Create</th>\n                                            <th>Status</th>\n                                        </tr>\n                                    </thead>\n                                    <tbody>\n                                        <tr>\n                                            <td>6121150005</td>\n                                            <td>Firstname Lastname</td>\n                                            <td>Test NurseLastname</td>\n                                            <td>13/06/2018</td>\n                                            <td><span class=\"uk-label uk-label-success\">Done</span></td>\n                                            <td><router-link to=\"/consult-view\" class=\"uk-button uk-button-default\">View</router-link></td>\n                                            <td><router-link to=\"/message\" class=\"uk-button uk-button-primary\">Message</router-link></td>\n                                        </tr>\n                                        <tr>\n                                            <td>6121150006</td>\n                                            <td>Firstname2 Lastname2</td>\n                                            <td>Surasung NurseLastname</td>\n                                            <td>14/06/2018</td>\n                                            <td><span class=\"uk-label uk-label-success\">Done</span></td>\n                                            <td><router-link to=\"/consult-view\" class=\"uk-button uk-button-default\">View</router-link></td>\n                                            <td><router-link to=\"/message\" class=\"uk-button uk-button-primary\">Message</router-link></td>\n                                            \n                                        </tr>\n                                    </tbody>\n                                </table>\n                            </div>\n                        </vk-tabs-item>\n                    </vk-tabs-vertical>\n                  </div>\n                </vk-grid>\n              </section>\n</div>";
-
-/***/ }),
-/* 141 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(142)
-/* template */
-var __vue_template__ = null
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/consult/edit/consult-edit.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-571e6746", Component.options)
-  } else {
-    hotAPI.reload("data-v-571e6746", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 142 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(143)
-});
-
-/***/ }),
-/* 143 */
-/***/ (function(module, exports) {
-
-module.exports = " \n<div id=\"consult-add\">\n        <div class=\"uk-container\">\n            <vk-grid class=\"uk-grid-small\">\n            <div class=\"uk-width-1-5@m\">\n                <br/>\n                <h1 class=\"uk-heading-primary sticky\">Edit Draft Consult</h1>\n            </div>\n\n            <div class=\"uk-width-expand@m\">\n            <form class=\"uk-margin-large\">\n            <br/>\n            <div id=\"personalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"Last name\">\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \n                            <div class=\"uk-form-controls\">\n                                    <label><input class=\"uk-radio\" type=\"radio\" name=\"radio2\" checked> Male</label>\n                                    <label><input class=\"uk-radio\" type=\"radio\" name=\"radio2\"> Female</label>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                            <div class=\"uk-form-controls\">\n                                <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Address\"></textarea>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"Last name\">\n                                </div>\n                        </div>\n                </div>\n            </div>\n                <!-- Medical Information -->\n                <br/>\n                <div id=\"medicalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                                </div>\n                        </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"kg\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"°C\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"Cr\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                            <div class=\"uk-form-controls\">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\">\n                            </div>\n                    </div>\n                </div>\n                </div>\n                <br/>\n                <!-- Record -->\n                <div id=\"recordinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\">\n                                    </div>\n                            </div>\n                    </div>\n\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\">\n                                    </div>\n                            </div>\n                    </div>\n                </div>\n    \n                <!-- Consult Request -->\n                <br/>\n                <div id=\"consultinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                    </div>\n                    <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Chief Complain\"></textarea>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Assessment and Plan\"></textarea>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <!-- Not Require -->\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>\n                            <div class=\"uk-form-controls\">\n                                <textarea class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Progress notes\"></textarea>\n                            </div>\n                    </div>\n                </div>\n                </div>\n            </form>\n            </div>\n            <div class=\"uk-width-1-5@m\">\n                \n                </div>\n        </vk-grid>\n        <br/><br/>\n        <div class=\"uk-margin-bottom uk-text-center\">\n                <router-link to=\"/consult-view\" class=\"uk-button uk-button-secondary\">Draft</router-link></td>\n                <button type=\"button\" class=\"uk-button uk-button-primary uk-width-small\">Send</button>\n                <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Cancel</a>\n        </div>\n        <br/>\n        </div>\n    </div>";
-
-/***/ }),
-/* 144 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(145)
-}
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(147)
-/* template */
-var __vue_template__ = null
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = "data-v-2733d7c2"
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/message/send/message.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-2733d7c2", Component.options)
-  } else {
-    hotAPI.reload("data-v-2733d7c2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 145 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(146);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(2)("8fcf35a0", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2733d7c2\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./message.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2733d7c2\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./message.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 146 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(0)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n#message[data-v-2733d7c2] {\n    overflow: hidden;\n}\n.crop[data-v-2733d7c2] {\n    margin-right: 1%;\n}\n.vertical-divider[data-v-2733d7c2] {\n    border-left:2px solid #F8F8F8;\n    max-height: 100%;\n    margin-top: 20px;\n    margin-bottom: 20px;\n}\n.upload[data-v-2733d7c2] {\n    margin-top: 30px;\n}\n.scrollbox[data-v-2733d7c2] {\n    height: 80vh;\n    overflow:auto;\n}\nhtml[data-v-2733d7c2], body[data-v-2733d7c2] {\n    background: #e5e5e5;\n    font-family: 'Lato', sans-serif;\n    margin: 0px auto;\n}\n[data-v-2733d7c2]::-moz-selection{\n  background: rgba(82,179,217,0.3);\n  color: inherit;\n}\n[data-v-2733d7c2]::selection{\n  background: rgba(82,179,217,0.3);\n  color: inherit;\n}\na[data-v-2733d7c2]{\n  color: rgba(82,179,217,0.9);\n}\n\n/* M E N U */\n.menu[data-v-2733d7c2] {\n    position: fixed;\n    top: 0px;\n    left: 0px;\n    right: 0px;\n    width: 100%;\n    height: 50px;\n    background: rgba(82,179,217,0.9);\n    z-index: 100;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.back[data-v-2733d7c2] {\n    position: absolute;\n    width: 90px;\n    height: 50px;\n    top: 0px;\n    left: 0px;\n    color: #fff;\n    line-height: 50px;\n    font-size: 30px;\n    padding-left: 10px;\n    cursor: pointer;\n}\n.back img[data-v-2733d7c2] {\n    position: absolute;\n    top: 5px;\n    left: 30px;\n    width: 40px;\n    height: 40px;\n    background-color: rgba(255,255,255,0.98);\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    margin-left: 15px;\n}\n.back[data-v-2733d7c2]:active {\n    background: rgba(255,255,255,0.2);\n}\n.name[data-v-2733d7c2]{\n    position: absolute;\n    top: 3px;\n    left: 110px;\n    font-family: 'Lato';\n    font-size: 25px;\n    font-weight: 300;\n    color: rgba(255,255,255,0.98);\n    cursor: default;\n}\n.last[data-v-2733d7c2]{\n    position: absolute;\n    top: 30px;\n    left: 115px;\n    font-family: 'Lato';\n    font-size: 11px;\n    font-weight: 400;\n    color: rgba(255,255,255,0.6);\n    cursor: default;\n}\n\n/* M E S S A G E S */\n.chat[data-v-2733d7c2] {\n    list-style: none;\n    background: none;\n    margin: 0;\n    padding: 0 0 50px 0;\n    margin-top: 30px;\n    margin-bottom: 20px;\n}\n.chat li[data-v-2733d7c2] {\n    padding: 0.5rem;\n    overflow: hidden;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.chat .avatar[data-v-2733d7c2] {\n    width: 40px;\n    height: 40px;\n    position: relative;\n    display: block;\n    z-index: 2;\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    background-color: rgba(255,255,255,0.9);\n}\n.chat .avatar img[data-v-2733d7c2] {\n    width: 40px;\n    height: 40px;\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    background-color: rgba(255,255,255,0.9);\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.chat .day[data-v-2733d7c2] {\n    position: relative;\n    display: block;\n    text-align: center;\n    color: #c0c0c0;\n    height: 20px;\n    text-shadow: 7px 0px 0px #e5e5e5, 6px 0px 0px #e5e5e5, 5px 0px 0px #e5e5e5, 4px 0px 0px #e5e5e5, 3px 0px 0px #e5e5e5, 2px 0px 0px #e5e5e5, 1px 0px 0px #e5e5e5, 1px 0px 0px #e5e5e5, 0px 0px 0px #e5e5e5, -1px 0px 0px #e5e5e5, -2px 0px 0px #e5e5e5, -3px 0px 0px #e5e5e5, -4px 0px 0px #e5e5e5, -5px 0px 0px #e5e5e5, -6px 0px 0px #e5e5e5, -7px 0px 0px #e5e5e5;\n    -webkit-box-shadow: inset 20px 0px 0px #e5e5e5, inset -20px 0px 0px #e5e5e5, inset 0px -2px 0px #d7d7d7;\n            box-shadow: inset 20px 0px 0px #e5e5e5, inset -20px 0px 0px #e5e5e5, inset 0px -2px 0px #d7d7d7;\n    line-height: 38px;\n    margin-top: 5px;\n    margin-bottom: 20px;\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.other .msg[data-v-2733d7c2] {\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n    border-top-left-radius: 0px;\n    -webkit-box-shadow: -1px 2px 0px #D4D4D4;\n            box-shadow: -1px 2px 0px #D4D4D4;\n}\n.other[data-v-2733d7c2]:before {\n    content: \"\";\n    position: relative;\n    top: 0px;\n    right: 0px;\n    left: 40px;\n    width: 0px;\n    height: 0px;\n    border: 5px solid #fff;\n    border-left-color: transparent;\n    border-bottom-color: transparent;\n}\n.self[data-v-2733d7c2] {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n    -webkit-box-align: end;\n        -ms-flex-align: end;\n            align-items: flex-end;\n}\n.self .msg[data-v-2733d7c2] {\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n    border-bottom-right-radius: 0px;\n    -webkit-box-shadow: 1px 2px 0px #D4D4D4;\n            box-shadow: 1px 2px 0px #D4D4D4;\n}\n.self .avatar[data-v-2733d7c2] {\n    -webkit-box-ordinal-group: 3;\n        -ms-flex-order: 2;\n            order: 2;\n}\n.self .avatar[data-v-2733d7c2]:after {\n    content: \"\";\n    position: relative;\n    display: inline-block;\n    bottom: 19px;\n    right: 0px;\n    width: 0px;\n    height: 0px;\n    border: 5px solid #fff;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    -webkit-box-shadow: 0px 2px 0px #D4D4D4;\n            box-shadow: 0px 2px 0px #D4D4D4;\n}\n.msg[data-v-2733d7c2] {\n    background: white;\n    min-width: 50px;\n    padding: 10px;\n    border-radius: 2px;\n    -webkit-box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);\n            box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);\n}\n.msg p[data-v-2733d7c2] {\n    font-size: 0.8rem;\n    margin: 0 0 0.2rem 0;\n    color: #777;\n}\n.msg img[data-v-2733d7c2] {\n    position: relative;\n    display: block;\n    width: 450px;\n    border-radius: 5px;\n    -webkit-box-shadow: 0px 0px 3px #eee;\n            box-shadow: 0px 0px 3px #eee;\n    -webkit-transition: all .4s cubic-bezier(0.565, -0.260, 0.255, 1.410);\n    transition: all .4s cubic-bezier(0.565, -0.260, 0.255, 1.410);\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n@media screen and (max-width: 800px) {\n.msg img[data-v-2733d7c2] {\n    width: 300px;\n}\n}\n@media screen and (max-width: 550px) {\n.msg img[data-v-2733d7c2] {\n    width: 200px;\n}\n}\n.msg time[data-v-2733d7c2] {\n    font-size: 0.7rem;\n    color: #ccc;\n    margin-top: 3px;\n    float: right;\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.msg time[data-v-2733d7c2]:before{\n    content:\"\\F017\";\n    color: #ddd;\n    font-family: FontAwesome;\n    display: inline-block;\n    margin-right: 4px;\n}\n[data-v-2733d7c2]::-webkit-scrollbar {\n    min-width: 12px;\n    width: 12px;\n    max-width: 12px;\n    min-height: 12px;\n    height: 12px;\n    max-height: 12px;\n    background: #e5e5e5;\n    -webkit-box-shadow: inset 0px 50px 0px rgba(82,179,217,0.9), inset 0px -52px 0px #fafafa;\n            box-shadow: inset 0px 50px 0px rgba(82,179,217,0.9), inset 0px -52px 0px #fafafa;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-thumb {\n    background: #bbb;\n    border: none;\n    border-radius: 100px;\n    border: solid 3px #e5e5e5;\n    -webkit-box-shadow: inset 0px 0px 3px #999;\n            box-shadow: inset 0px 0px 3px #999;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-thumb:hover {\n    background: #b0b0b0;\n  -webkit-box-shadow: inset 0px 0px 3px #888;\n          box-shadow: inset 0px 0px 3px #888;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-thumb:active {\n    background: #aaa;\n  -webkit-box-shadow: inset 0px 0px 3px #7f7f7f;\n          box-shadow: inset 0px 0px 3px #7f7f7f;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-button {\n    display: block;\n    height: 26px;\n}\n\n/* T Y P E */\nchatbox[data-v-2733d7c2] {\n    position:fixed;\n    bottom: 0px;\n    left: 0px;\n    right: 0px;\n    width: 100%;\n    height: 50px;\n    z-index: 99;\n    background:#c0c0c0;\n    border: none;\n    outline: none;\n    padding-left: 55px;\n    padding-right: 55px;\n    color: #666;\n    font-weight: 400;\n    font-size: 15px;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 147 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(148)
-});
-
-/***/ }),
-/* 148 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = "<div id=\"message\">\n    <div class=\"uk-container\">\n        <vk-grid class=\"uk-grid-small\"> \n            <!-- left column -->\n            <div class=\"uk-width-1-4@m crop scrollbox\">\n                    <br/>\n                    <div>\n                            <p class=\"uk-label uk-label-warning sticky\">Consult ID 601235554</p>\n                    </div>\n\n                    <div id=\"personalinfo\">\n                            <div class=\"uk-text-left\">\n                                <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                            </div>\n                        <div class=\"uk-form-horizontal\">\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>Sammy Read</p>\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\n                                        <div class=\"uk-form-controls\">\n                                            <p>13/12/1995</p>\n                                        </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \n                                    <div class=\"uk-form-controls\">\n                                            <p>Male</p>\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>\n                                            123/6 moo3 Banndu Mueang Lampang 57100\n                                        </p>\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\n                                        <div class=\"uk-form-controls\">\n                                            <p>Mr. John Ruper</p>\n                                        </div>\n                                </div>\n                        </div>\n                    </div>\n                        <!-- Medical Information -->\n                        <br/>\n                        <div id=\"medicalinfo\">\n                            <div class=\"uk-text-left\">\n                                <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                            </div>\n                        <div class=\"uk-form-horizontal\">\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\n                                        <div class=\"uk-form-controls\">\n                                           <p>High Blood Pressure</p>\n                                        </div>\n                                </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>61223</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                                    <div class=\"uk-form-controls\">\n                                       <p>DM</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                                    <div class=\"uk-form-controls\">\n                                       <p>65 kg</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                                    <div class=\"uk-form-controls unit\">\n                                        <p>26.6</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                                    <div class=\"uk-form-controls unit\">\n                                        <p>37 °C</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls unit\">\n                                        <p>100 mg%</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                                    <div class=\"uk-form-controls unit\">\n                                        <p>0.43 Cr</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>122.1</p>\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>1</p>\n                                    </div>\n                            </div>\n                        </div>\n                        </div>\n                        <br/>\n                        <!-- Record -->\n                        <div id=\"recordinfo\">\n                            <div class=\"uk-text-left\">\n                                <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                            </div>\n                            <div class=\"uk-form-horizontal unit\">\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                            <div class=\"uk-form-controls \">\n                                                <p>14/04/2018</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                            <div class=\"uk-form-controls \">\n                                                <p>100 mg%</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>200/90 mmHg</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>110/90 mmHg</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>120 /min</p>\n                                            </div>\n                                    </div>\n                            </div>\n        \n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                            </div>\n                            <div class=\"uk-form-horizontal unit\">\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                            <div class=\"uk-form-controls \">\n                                                <p>12/06/2018</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                            <div class=\"uk-form-controls \">\n                                                <p>100 mg%</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>115/89 mmHg</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>110/90 mmHg</p>\n                                            </div>\n                                    </div>\n                                    <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                            <div class=\"uk-form-controls\">\n                                                <p>80 /min</p>\n                                            </div>\n                                    </div>\n                            </div>\n                        </div>\n            \n                        <!-- Consult Request -->\n                        <br/>\n                        <div id=\"consultinfo\">\n                            <div class=\"uk-text-left\">\n                                <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                            </div>\n                            <div class=\"uk-form-horizontal\">\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                        <div class=\"uk-form-controls\">\n                                            <p>FBS >= 130 mg% 2 visit</p>\n                                        </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\n                                        <div class=\"uk-form-controls\">\n                                            <p>MFM 1x2 0pc</p>\n                                        </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <!-- Not Require -->\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Consult Order</label>\n                                    <div class=\"uk-form-controls\">\n                                        <p>Slmvas 1209 ½ x ns</p>\n                                    </div>\n                            </div>\n                        </div>\n                        </div>\n            </div>\n            \n            <!-- center column -->\n            <div class=\"uk-width-expand@m\">\n                <div class=\"scrollbox\">\n                    <ol class=\"chat\">\n                        <li class=\"other\">\n                            <div class=\"avatar\"><img src=\"" + __webpack_require__(149) + "\" draggable=\"false\"/></div>\n                            <div class=\"msg\">\n                                <p>Hola!</p>\n                                <p>Te vienes a cenar al centro?</p>\n                                <time>20:17</time>\n                            </div>\n                        </li>\n                        <li class=\"self\">\n                            <div class=\"avatar\"><img src=\"" + __webpack_require__(150) + "\" draggable=\"false\"/></div>\n                            <div class=\"msg\">\n                                <p>Puff...</p>\n                                <p>Aún estoy haciendo el contexto de Góngora... </p>\n                                <p>Mejor otro día</p>\n                                <time>20:18</time>\n                            </div>\n                        </li>\n                        <li class=\"other\">\n                                <div class=\"avatar\"><img src=\"" + __webpack_require__(149) + "\" draggable=\"false\"/></div>\n                                <div class=\"msg\">\n                                    <p>Hola!</p>\n                                    <p>Te vienes a cenar al centro?</p>\n                                    <time>20:17</time>\n                                </div>\n                            </li>\n                        <li class=\"self\">\n                            <div class=\"avatar\"><img src=\"" + __webpack_require__(150) + "\" draggable=\"false\"/></div>\n                            <div class=\"msg\">\n                                <p>Puff...</p>\n                                <p>Aún estoy haciendo el contexto de Góngora... </p>\n                                <p>Mejor otro día</p>\n                                <time>20:18</time>\n                            </div>\n                        </li>\n                        <li class=\"other\">\n                                <div class=\"avatar\"><img src=\"" + __webpack_require__(149) + "\" draggable=\"false\"/></div>\n                                <div class=\"msg\">\n                                    <p>Hola!</p>\n                                    <p>Te vienes a cenar al centro?</p>\n                                    <time>20:17</time>\n                                </div>\n                            </li>\n                        <li class=\"self\">\n                            <div class=\"avatar\"><img src=\"" + __webpack_require__(150) + "\" draggable=\"false\"/></div>\n                            <div class=\"msg\">\n                                <p>Puff...</p>\n                                <p>Aún estoy haciendo el contexto de Góngora... </p>\n                                <p>Mejor otro día</p>\n                                <time>20:18</time>\n                            </div>\n                        </li>\n                        <li class=\"other\">\n                                <div class=\"avatar\"><img src=\"" + __webpack_require__(149) + "\" draggable=\"false\"/></div>\n                                <div class=\"msg\">\n                                    <p>Hola!</p>\n                                    <p>Te vienes a cenar al centro?</p>\n                                    <time>20:17</time>\n                                </div>\n                            </li>\n                        <li class=\"self\">\n                            <div class=\"avatar\"><img src=\"" + __webpack_require__(150) + "\" draggable=\"false\"/></div>\n                            <div class=\"msg\">\n                                <p>Puff...</p>\n                                <p>Aún estoy haciendo el contexto de Góngora... </p>\n                                <p>Mejor otro día</p>\n                                <time>20:18</time>\n                            </div>\n                        </li>\n                        </ol>\n                    </div>\n        <textarea class=\"uk-textarea center-block chatbox\" rows=\"2\" type=\"text\" placeholder=\"Type here!\"></textarea>  \n    </div>\n    <div class=\"vertical-divider\"></div>\n        <!-- right column -->       \n        <div class=\"uk-width-1-4@m\">\n                <div class=\"js-upload uk-placeholder uk-text-center upload\">\n                        <span><vk-icon icon=\"cloud-upload\"></vk-icon></span>\n                        <span class=\"uk-text-middle\">Upload file(s) here</span>\n                        <div uk-form-custom>\n                            <input type=\"file\" multiple>\n                            <!-- <span class=\"uk-link\">selecting one</span> -->\n                        </div>\n                </div>\n                <progress id=\"js-progressbar\" class=\"uk-progress\" value=\"0\" max=\"100\" hidden></progress>  \n                <!-- Uploaded file(s) position -->\n                <div class=\"scrollbox\">\n                    <vk-grid gutter=\"small\" class=\"uk-child-width-1-2@s uk-child-width-1-3@m uk-text-center\">\n                        <div>\n                            <vk-card>Item</vk-card>\n                        </div>\n                        <div>\n                            <vk-card>Item</vk-card>\n                        </div>\n                        <div>\n                          <vk-card>Item</vk-card>\n                        </div>\n                    </vk-grid>\n                </div>\n        </div>\n        \n        </vk-grid>\n    </div>\n</div>";
-
-/***/ }),
-/* 149 */
-/***/ (function(module, exports) {
-
-module.exports = "/images/other.jpg?07d3deb8e855a3abd2df504eb5713672";
-
-/***/ }),
-/* 150 */
-/***/ (function(module, exports) {
-
-module.exports = "/images/self.jpg?58848faa0771170a9f3897a4da14b9c4";
-
-/***/ }),
-/* 151 */,
-/* 152 */,
-/* 153 */,
-/* 154 */,
-/* 155 */,
-/* 156 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(161)
-}
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(159)
-/* template */
-var __vue_template__ = null
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = "data-v-ceb12dcc"
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/message/order/reply.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-ceb12dcc", Component.options)
-  } else {
-    hotAPI.reload("data-v-ceb12dcc", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 157 */,
-/* 158 */,
-/* 159 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(160)
-});
-
-/***/ }),
-/* 160 */
-/***/ (function(module, exports) {
-
-module.exports = "<div id=\"reply\">\n                <div class=\"uk-container\">\n                        <div>\n                            <br/>\n                            <p class=\"uk-label uk-label-warning sticky\">Consult ID 601235554</p>\n                        </div>\n                    <vk-grid class=\"uk-grid-small\"> \n                        <!-- left column -->\n                        <div class=\"uk-width-1-3@m crop scrollbox\">\n                                <div id=\"personalinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                                        </div>\n                                    <div class=\"uk-form-horizontal\">\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>Sammy Read</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\n                                                    <div class=\"uk-form-controls\">\n                                                        <p>13/12/1995</p>\n                                                    </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \n                                                <div class=\"uk-form-controls\">\n                                                        <p>Male</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>\n                                                        123/6 moo3 Banndu Mueang Lampang 57100\n                                                    </p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\n                                                    <div class=\"uk-form-controls\">\n                                                        <p>Mr. John Ruper</p>\n                                                    </div>\n                                            </div>\n                                    </div>\n                                </div>\n                                    <!-- Medical Information -->\n                                    <br/>\n                                    <div id=\"medicalinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                                        </div>\n                                    <div class=\"uk-form-horizontal\">\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\n                                                    <div class=\"uk-form-controls\">\n                                                       <p>High Blood Pressure</p>\n                                                    </div>\n                                            </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>61223</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                                                <div class=\"uk-form-controls\">\n                                                   <p>DM</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                                                <div class=\"uk-form-controls\">\n                                                   <p>65 kg</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>26.6</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>37 °C</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>100 mg%</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>0.43 Cr</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>122.1</p>\n                                                </div>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>1</p>\n                                                </div>\n                                        </div>\n                                    </div>\n                                    </div>\n                                    <br/>\n                                    <!-- Record -->\n                                    <div id=\"recordinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                                        </div>\n                                        <div class=\"uk-form-horizontal unit\">\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                                        <div class=\"uk-form-controls \">\n                                                            <p>14/04/2018</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                                        <div class=\"uk-form-controls \">\n                                                            <p>100 mg%</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>200/90 mmHg</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>110/90 mmHg</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>120 /min</p>\n                                                        </div>\n                                                </div>\n                                        </div>\n                    \n                                        <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                                        </div>\n                                        <div class=\"uk-form-horizontal unit\">\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                                        <div class=\"uk-form-controls \">\n                                                            <p>12/06/2018</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                                        <div class=\"uk-form-controls \">\n                                                            <p>100 mg%</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>115/89 mmHg</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>110/90 mmHg</p>\n                                                        </div>\n                                                </div>\n                                                <div class=\"uk-margin\">\n                                                        <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                                        <div class=\"uk-form-controls\">\n                                                            <p>80 /min</p>\n                                                        </div>\n                                                </div>\n                                        </div>\n                                    </div>\n                        \n                                    <!-- Consult Request -->\n                                    <br/>\n                                    <div id=\"consultinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                                        </div>\n                                        <div class=\"uk-form-horizontal\">\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                                    <div class=\"uk-form-controls\">\n                                                        <p>FBS >= 130 mg% 2 visit</p>\n                                                    </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\n                                                    <div class=\"uk-form-controls\">\n                                                        <p>MFM 1x2 0pc, Slmvas 1209 ½ x ns</p>\n                                                    </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <!-- Not Require -->\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>-</p>\n                                                </div>\n                                        </div>\n                                    </div>\n                                    </div>\n                        </div>\n                <div class=\"vertical-divider\"></div>\n                    <!-- right column -->       \n                    <div class=\"uk-width-expand@m\">\n                            <form class=\"uk-margin-large\">\n                                        <!-- Consult Request -->\n                                <div id=\"consultinfo\">\n                                    <div class=\"uk-text-left\">\n                                        <h2 class=\"uk-heading-line\"><span>Consult Order</span></h2>\n                                    </div>\n                                    <div class=\"uk-form-horizontal\">\n                                        <div class=\"uk-margin\">\n                                        <!-- Not Require -->\n                                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Order</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <textarea class=\"uk-textarea\" id=\"form-horizontal-text\" rows=\"20\" placeholder=\"Type here...\"></textarea>\n                                                </div>\n                                        </div>\n                                    </div>\n                                </div>\n                                <router-link to=\"/\" class=\"uk-button uk-button-primary uk-align-right\">Send</router-link>\n                            </form>\n                    </div>\n                    \n                    </vk-grid>\n                </div>\n</div>   \n    \n    ";
-
-/***/ }),
-/* 161 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(162);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(2)("3203354a", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ceb12dcc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./reply.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ceb12dcc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./reply.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 162 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(0)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.scrollbox[data-v-ceb12dcc] {\n    height: 80vh;\n    overflow:auto;\n}\n.vertical-divider[data-v-ceb12dcc] {\n    border-left:2px solid #F8F8F8;\n    max-height: 100%;\n    margin-top: 20px;\n    margin-bottom: 20px;\n}\n", ""]);
-
-// exports
-
 
 /***/ })
 /******/ ]);
