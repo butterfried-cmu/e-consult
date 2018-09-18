@@ -6,17 +6,21 @@
   </header>
 
   <section class="uk-container">
-      <div class="uk-margin">
-          <form class="uk-search uk-search-default uk-align-center">
-              <span uk-search-icon></span>
-              <input class="uk-search-input uk-width-large@s" type="search" placeholder="Search...">
-          </form>
-      </div>
+        <vk-grid class="uk-child-width-expand@s uk-text-center">
+                <div class="uk-width-auto@s"></div>
+                <div class="uk-margin">
+                        <form class="uk-search uk-search-default uk-width-1-2@s">
+                          <input class="uk-search-input" type="search" v-model="keyword" placeholder="Search...">
+                      </form>
+                      <button class="uk-button uk-button-primary uk-width-auto@l uk-width-1-5@m" v-on:click="search()"><vk-icon icon="search"></vk-icon></button>
+                    </div>
+                <div class="uk-width-auto@s"></div>
+            </vk-grid>
   </section>
 
   <section class="uk-container">
     <vk-grid class="uk-child-width-expand@s">
-      <div>
+      <div class="title">
         <vk-tabs-vertical align="left">
           <vk-tabs-item title="Draft" v-if="isRole(3)">
               <div class="uk-overflow-auto">
