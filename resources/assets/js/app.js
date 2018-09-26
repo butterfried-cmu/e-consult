@@ -20,7 +20,11 @@ import NotFoundComponent from './components/not-found-component/not-found-compon
 import UserList from './components/user/list/user-list.vue';
 
 import ConsultAdd from './components/consult/add/consult-add.vue';
-import Message from './components/message/message.vue';
+import ConsultView from './components/consult/view/consult-view.vue';
+import ConsultList from './components/consult/list/consult-list.vue';
+import ConsultEdit from './components/consult/edit/consult-edit.vue';
+import Message from './components/message/send/message.vue';
+import Reply from './components/message/order/reply.vue';
 
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -129,6 +133,26 @@ const router = new VueRouter({
             path: '/message',
             name: 'message',
             component: Message
+        },
+        {
+            path: '/consult-view',
+            name: 'consult-view',
+            component: ConsultView
+        },
+        {
+            path: '/consult-list',
+            name: 'consult-list',
+            component: ConsultList
+        },
+        {
+            path: '/consult-edit',
+            name: 'consult-edit',
+            component: ConsultEdit
+        },
+        {
+            path: '/reply',
+            name: 'reply',
+            component: Reply
         }
     ]
 });

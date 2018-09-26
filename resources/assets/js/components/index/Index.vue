@@ -33,6 +33,15 @@
 	margin-left: 3%;
 	margin-right: 3%;
 }
+
+th {
+    font-size: large;
+}
+
+.title {
+    font-size: large;
+}
+
 .badge-bg-success {
 	background-color: #5cb85c;
 }

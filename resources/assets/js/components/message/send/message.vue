@@ -1,13 +1,16 @@
 <script>
 export default {
     template: require('./message.html'),
-    
 }
 </script>
 <style scoped>
 
 #message {
     overflow: hidden;
+}
+
+.crop {
+    margin-right: 1%;
 }
 
 .vertical-divider {

@@ -6,19 +6,23 @@
   </header>
 
   <section class="uk-container">
-      <div class="uk-margin">
-          <form class="uk-search uk-search-default uk-align-center">
-              <span uk-search-icon></span>
-              <input class="uk-search-input uk-width-large@s" type="search" placeholder="Search...">
-          </form>
-      </div>
+        <vk-grid class="uk-child-width-expand@s uk-text-center">
+                <div class="uk-width-auto@s"></div>
+                <div class="uk-margin">
+                        <form class="uk-search uk-search-default uk-width-1-2@s">
+                          <input class="uk-search-input" type="search" v-model="keyword" placeholder="Search...">
+                      </form>
+                      <button class="uk-button uk-button-primary uk-width-auto@l uk-width-1-5@m" v-on:click="search()"><vk-icon icon="search"></vk-icon></button>
+                    </div>
+                <div class="uk-width-auto@s"></div>
+            </vk-grid>
   </section>
 
   <section class="uk-container">
     <vk-grid class="uk-child-width-expand@s">
-      <div>
+      <div class="title">
         <vk-tabs-vertical align="left">
-          <vk-tabs-item title="Draft">
+          <vk-tabs-item title="Draft" v-if="isRole(3)">
               <div class="uk-overflow-auto">
                   <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
                       <thead>
@@ -33,21 +37,21 @@
                       <tbody>
                           <tr>
                               <td>6121150001</td>
-                              <td>Firstname Lastname</td>
-                              <td>Nursename NurseLastname</td>
+                              <td>Sammy Read</td>
+                              <td>Nurse Three</td>
                               <td>13/06/2018</td>
-                              <td><span class="uk-badge badge-bg-warning">Draft</span></td>
-                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                              <td><span class="uk-label uk-label-warning">Draft</span></td>
+                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
                               <td><button class="uk-button uk-button-primary" type="button">Send</button></td>
                               <td><button class="uk-button uk-button-danger" type="button">Delete</button></td>
                           </tr>
                           <tr>
                               <td>6121150002</td>
                               <td>Firstname2 Lastname2</td>
-                              <td>Nursename NurseLastname</td>
+                              <td>Nurse Three</td>
                               <td>14/06/2018</td>
-                              <td><span class="uk-badge badge-bg-warning">Draft</span></td>
-                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                              <td><span class="uk-label uk-label-warning">Draft</span></td>
+                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
                               <td><button class="uk-button uk-button-primary" type="button">Send</button></td>
                               <td><button class="uk-button uk-button-danger" type="button">Delete</button></td>
                             </tr>
@@ -56,7 +60,7 @@
               </div>
           </vk-tabs-item>
 
-          <vk-tabs-item title="Pending">
+          <vk-tabs-item title="Pending" v-if="isRole(2)|isRole(3)">
               <div class="uk-overflow-auto">
                   <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
                       <thead>
@@ -74,23 +78,25 @@
                               <td>Firstname Lastname</td>
                               <td>Nursename NurseLastname</td>
                               <td>13/06/2018</td>
-                              <td><span class="uk-badge">Pending</span></td>
-                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                              <td><span class="uk-label">Pending</span></td>
+                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
+                              <td><router-link to="/reply" class="uk-button uk-button-primary" v-if="isRole(2)">Reply</router-link></td>
                           </tr>
                           <tr>
                               <td>6121150004</td>
                               <td>Firstname2 Lastname2</td>
                               <td>Surasung NurseLastname</td>
                               <td>14/06/2018</td>
-                              <td><span class="uk-badge">Pending</span></td>
-                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                              <td><span class="uk-label">Pending</span></td>
+                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
+                              <td><router-link to="/reply" class="uk-button uk-button-primary" v-if="isRole(2)">Reply</router-link></td>
                           </tr>
                       </tbody>
                   </table>
               </div>
           </vk-tabs-item>
 
-          <vk-tabs-item title="Done">
+          <vk-tabs-item title="Done" v-if="isRole(2)|isRole(3)">
               <div class="uk-overflow-auto">
                   <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
                       <thead>
@@ -108,16 +114,19 @@
                               <td>Firstname Lastname</td>
                               <td>Test NurseLastname</td>
                               <td>13/06/2018</td>
-                              <td><span class="uk-badge badge-bg-success">Done</span></td>
-                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                              <td><span class="uk-label uk-label-success">Done</span></td>
+                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
+                              <td><router-link to="/message" class="uk-button uk-button-primary">Message</router-link></td>
                           </tr>
                           <tr>
                               <td>6121150006</td>
                               <td>Firstname2 Lastname2</td>
                               <td>Surasung NurseLastname</td>
                               <td>14/06/2018</td>
-                              <td><span class="uk-badge badge-bg-success">Done</span></td>
-                              <td><button class="uk-button uk-button-default" type="button">View</button></td>
+                              <td><span class="uk-label uk-label-success">Done</span></td>
+                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
+                              <td><router-link to="/message" class="uk-button uk-button-primary">Message</router-link></td>
+                              
                           </tr>
                       </tbody>
                   </table>

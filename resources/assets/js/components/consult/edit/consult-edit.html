@@ -15,12 +15,6 @@
                         <h2 class="uk-heading-line"><span>Patient's Information</span></h2>
                     </div>
                 <div class="uk-form-horizontal">
-                        <!-- <div class="uk-margin">
-                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Create Date</label>
-                                <div class="uk-form-controls">
-                                    <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
-                                </div>
-                        </div> -->
                         <div class="uk-margin">
                             <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Patient's name</label>
                             <div class="uk-form-controls">
@@ -63,6 +57,12 @@
                         <h2 class="uk-heading-line"><span>Physical examination</span></h2>
                     </div>
                 <div class="uk-form-horizontal">
+                        <div class="uk-margin">
+                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Health Condition</label>
+                                <div class="uk-form-controls">
+                                    <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
+                                </div>
+                        </div>
                     <div class="uk-margin">
                             <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">HN</label>
                             <div class="uk-form-controls">
@@ -78,13 +78,13 @@
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">BW</label>
                             <div class="uk-form-controls">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
+                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="kg">
                             </div>
                     </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">BMI</label>
                             <div class="uk-form-controls unit">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="kg">
+                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
                             </div>
                     </div>
                     <div class="uk-margin">
@@ -234,7 +234,7 @@
         </vk-grid>
         <br/><br/>
         <div class="uk-margin-bottom uk-text-center">
-                <button type="button" class="uk-button uk-button-secondary uk-width-small">Draft</button>
+                <router-link to="/consult-view" class="uk-button uk-button-secondary">Draft</router-link></td>
                 <button type="button" class="uk-button uk-button-primary uk-width-small">Send</button>
                 <a class="uk-button uk-button-danger uk-width-small" href="../..#/">Cancel</a>
         </div>
