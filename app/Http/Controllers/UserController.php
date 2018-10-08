@@ -145,7 +145,7 @@ class UserController extends Controller
         $role = $request->role;
 
         $query = "SELECT * FROM accounts INNER JOIN users ON users.user_id = accounts.user_id JOIN accounts_roles ON accounts_roles.account_username = accounts.username ";
-        $query .= " WHERE(users.first_name LIKE '%$keyword%' OR users.last_name LIKE '%$keyword%' OR users.citizen_id LIKE '%$keyword%') ";
+        $query .= " WHERE(CONCAT(users.first_name, \" \" , users.last_name) LIKE '%$keyword%' OR users.citizen_id LIKE '%$keyword%') ";
         if ($role != '') {
             $query .= " AND accounts_roles.role_id = $role ";
         }

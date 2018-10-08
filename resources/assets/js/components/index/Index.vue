@@ -7,12 +7,27 @@
 		template: require('./index.html'),
         data(){
             return {
-                user: {},
             }
+        },
+        mounted () {
+            this.$store.dispatch('getAllConsults').then(
+                response => {
+                    console.log('Consult lists GET');
+                }
+            );
         },
         computed: {
             user() {
                 return this.$store.getters['currentUser'];
+            },
+            consultDraft() {
+                return this.$store.getters['consultDraftList'];
+            },
+            consultPending() {
+                return this.$store.getters['consultPendingList'];
+            },
+            consultDone() {
+                return this.$store.getters['consultDoneList'];
             }
         },
 		methods: {

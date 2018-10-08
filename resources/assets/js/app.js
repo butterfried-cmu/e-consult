@@ -120,11 +120,6 @@ const router = new VueRouter({
             component: UserList
         },
         {
-            path: '*',
-            name: 'not-found-component',
-            component: NotFoundComponent
-        },
-        {
             path: '/consult-add',
             name: 'consult-add',
             component: ConsultAdd
@@ -153,7 +148,12 @@ const router = new VueRouter({
             path: '/reply',
             name: 'reply',
             component: Reply
-        }
+        },
+        {
+            path: '*',
+            name: 'not-found-component',
+            component: NotFoundComponent
+        },
     ]
 });
 

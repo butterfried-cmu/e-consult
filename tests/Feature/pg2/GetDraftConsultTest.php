@@ -20,6 +20,14 @@ class GetDraftConsultTest extends TestCase
 
     public function testGetDraftConsultTest()
     {
+//        $response = $this->json('POST', 'api/auth/login', [
+//            'username' => 'nurse1',
+//            'password' => 'nurse1'
+//        ]);
+//        $login_obj = $response->getOriginalContent();
+//        $token = $login_obj['token'];
+//
+//        $response = $this->json('GET', 'api/consults/draft?token=' . $token);
         $response = $this->json('GET', 'api/consults/draft/3333333333333');
 
         $response->assertJson([

@@ -12,6 +12,11 @@ export const store = new Vuex.Store({
         account: null,
         allUsers: null,
         currentViewUser: null,
+        consultDraft: null,
+        consultPending: null,
+        consultDone: null,
+        consultSearch: null,
+
     },
     getters: {
         isLoggedIn(state) {
@@ -31,6 +36,15 @@ export const store = new Vuex.Store({
         },
         currentViewRole(state) {
             return state.currentViewUser.role;
+        },
+        consultDraftList(state) {
+            return state.consultDraft;
+        },
+        consultPendingList(state) {
+            return state.consultPending;
+        },
+        consultDoneList(state) {
+            return state.consultDone;
         }
     },
     mutations: {
@@ -59,6 +73,15 @@ export const store = new Vuex.Store({
         },
         setCurrentViewUser(state, user) {
             state.currentViewUser = user;
+        },
+        setDraftConsults(state, consults) {
+            state.consultDraft = consults;
+        },
+        setPendingConsults(state, consults) {
+            state.consultPending = consults;
+        },
+        setDoneConsults(state, consults) {
+            state.consultDone = consults;
         }
     },
     actions: {
@@ -329,6 +352,57 @@ export const store = new Vuex.Store({
                     );
                 }, 1000);
             });
+        },
+
+        getAllConsults({commit,state}) {
+            if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
+                console.log("No Token in localStorage");
+            } else {
+                console.log("Token in localStorage");
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        axios.get("/consults/draft/" + state.user.user_id + "?token=" + localStorage.getItem('token'))
+                            .then(
+                                response => {
+                                    console.log(response);
+                                    commit('setDraftConsults', response.data.consults);
+                                    console.log("Draft consults GET");
+                                }
+                            ).catch(
+                            error => {
+                                console.log(error);
+                                resolve(error);
+                            }
+                        );
+                        axios.get("/consults/pending/?token=" + localStorage.getItem('token'))
+                            .then(
+                                response => {
+                                    console.log(response);
+                                    commit('setPendingConsults', response.data.consults);
+                                    console.log("Pending consults GET");
+                                }
+                            ).catch(
+                            error => {
+                                console.log(error);
+                                resolve(error);
+                            }
+                        );
+                        axios.get("/consults/done/?token=" + localStorage.getItem('token'))
+                            .then(
+                                response => {
+                                    console.log(response);
+                                    commit('setDoneConsults', response.data.consults);
+                                    console.log("Done consults GET");
+                                }
+                            ).catch(
+                            error => {
+                                console.log(error);
+                                resolve(error);
+                            }
+                        );
+                    }, 2000);
+                });
+            }
         },
 
 

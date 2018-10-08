@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Consult;
+use App\User;
 use Illuminate\Http\Request;
 
 use Validator;
@@ -312,6 +313,10 @@ class ConsultController extends Controller
 
     public function getDraftConsultList($user_id){
         $consults = Consult::where(['status' => 'draft', 'user_id' => $user_id])->get();
+        foreach ($consults as $consult){
+            $creator = User::where('user_id', $consult->user_id)->first();
+            $consult->created_by = $creator;
+        }
         return response()->json([
             'consults' => $consults
         ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
@@ -319,6 +324,10 @@ class ConsultController extends Controller
 
     public function getDoneConsultList(){
         $consults = Consult::where(['status' => 'done'])->get();
+        foreach ($consults as $consult){
+            $creator = User::where('user_id', $consult->user_id)->first();
+            $consult->created_by = $creator;
+        }
         return response()->json([
             'consults' => $consults
         ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
@@ -326,6 +335,10 @@ class ConsultController extends Controller
 
     public function getPendingConsultList(){
         $consults = Consult::where(['status' => 'pending'])->get();
+        foreach ($consults as $consult){
+            $creator = User::where('user_id', $consult->user_id)->first();
+            $consult->created_by = $creator;
+        }
         return response()->json([
             'consults' => $consults
         ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
@@ -347,10 +360,11 @@ class ConsultController extends Controller
         }
 
         $consults = Consult::where('status','done')
-            ->where(function($query) use ($request) {
-                $query->where('patient_firstname', 'like', '%' . $request->keyword . '%')
-                    ->orWhere('patient_lastname', 'like', '%' . $request->keyword . '%');
-            })
+            ->where()
+//            ->where(function($query) use ($request) {
+//                $query->where('patient_firstname', 'like', '%' . $request->keyword . '%')
+//                    ->orWhere('patient_lastname', 'like', '%' . $request->keyword . '%');
+//            })
             ->get();
 
         return response()->json([

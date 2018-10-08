@@ -30,31 +30,21 @@
                               <th class="uk-width-small">Consult Id</th>
                               <th>Patient</th>
                               <th>Creator</th>
-                              <th>Date of Create</th>
+                              <!--<th>Date of Create</th>-->
                               <th>Status</th>
                           </tr>
                       </thead>
                       <tbody>
-                          <tr>
-                              <td>6121150001</td>
-                              <td>Sammy Read</td>
-                              <td>Nurse Three</td>
-                              <td>13/06/2018</td>
+                          <tr v-for="consult in consultDraft">
+                              <td>{{consult.consult_id}}</td>
+                              <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>
+                              <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>
+                              <!--<td>13/06/2018</td>-->
                               <td><span class="uk-label uk-label-warning">Draft</span></td>
                               <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
                               <td><button class="uk-button uk-button-primary" type="button">Send</button></td>
                               <td><button class="uk-button uk-button-danger" type="button">Delete</button></td>
                           </tr>
-                          <tr>
-                              <td>6121150002</td>
-                              <td>Firstname2 Lastname2</td>
-                              <td>Nurse Three</td>
-                              <td>14/06/2018</td>
-                              <td><span class="uk-label uk-label-warning">Draft</span></td>
-                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
-                              <td><button class="uk-button uk-button-primary" type="button">Send</button></td>
-                              <td><button class="uk-button uk-button-danger" type="button">Delete</button></td>
-                            </tr>
                       </tbody>
                   </table>
               </div>
@@ -68,25 +58,16 @@
                               <th class="uk-width-small">Consult Id</th>
                               <th>Patient</th>
                               <th>Creator</th>
-                              <th>Date of Create</th>
+                              <!--<th>Date of Create</th>-->
                               <th>Status</th>
                           </tr>
                       </thead>
                       <tbody>
-                          <tr>
-                              <td>6121150003</td>
-                              <td>Firstname Lastname</td>
-                              <td>Nursename NurseLastname</td>
-                              <td>13/06/2018</td>
-                              <td><span class="uk-label">Pending</span></td>
-                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
-                              <td><router-link to="/reply" class="uk-button uk-button-primary" v-if="isRole(2)">Reply</router-link></td>
-                          </tr>
-                          <tr>
-                              <td>6121150004</td>
-                              <td>Firstname2 Lastname2</td>
-                              <td>Surasung NurseLastname</td>
-                              <td>14/06/2018</td>
+                        <tr v-for="consult in consultPending">
+                            <td>{{consult.consult_id}}</td>
+                            <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>
+                            <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>
+                              <!--<td>13/06/2018</td>-->
                               <td><span class="uk-label">Pending</span></td>
                               <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
                               <td><router-link to="/reply" class="uk-button uk-button-primary" v-if="isRole(2)">Reply</router-link></td>
@@ -104,29 +85,19 @@
                               <th class="uk-width-small">Consult Id</th>
                               <th>Patient</th>
                               <th>Creator</th>
-                              <th>Date of Create</th>
+                              <!--<th>Date of Create</th>-->
                               <th>Status</th>
                           </tr>
                       </thead>
                       <tbody>
-                          <tr>
-                              <td>6121150005</td>
-                              <td>Firstname Lastname</td>
-                              <td>Test NurseLastname</td>
-                              <td>13/06/2018</td>
+                      <tr v-for="consult in consultDone">
+                              <td>{{consult.consult_id}}</td>
+                              <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>
+                              <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>
+                              <!--<td>13/06/2018</td>-->
                               <td><span class="uk-label uk-label-success">Done</span></td>
                               <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
                               <td><router-link to="/message" class="uk-button uk-button-primary">Message</router-link></td>
-                          </tr>
-                          <tr>
-                              <td>6121150006</td>
-                              <td>Firstname2 Lastname2</td>
-                              <td>Surasung NurseLastname</td>
-                              <td>14/06/2018</td>
-                              <td><span class="uk-label uk-label-success">Done</span></td>
-                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
-                              <td><router-link to="/message" class="uk-button uk-button-primary">Message</router-link></td>
-                              
                           </tr>
                       </tbody>
                   </table>
