@@ -1,15 +1,12 @@
-<div id="profile">
+<div id="user-view">
     <vk-grid class="uk-child-width-expand@s" uk-grid>
         <!-- left column -->
         <div>
             <vk-grid class="uk-padding">
                 <div>
                     <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->
-                    <img v-bind:src="image_src" width="300" height="400" alt="" v-if="currentViewUser.user.image_name">
+                    <img :src="'images/users/' + currentViewUser.user.image_name" width="300" height="400" alt="" v-if="currentViewUser.user.image_name">
                     <img src="../../images/user.png" width="300" height="400" alt="" v-if="!currentViewUser.user.image_name">
-                    <button v-on:click.stop="editUser(currentViewUser.user.username)"
-                            class="uk-button uk-button-default uk-align-center">Edit Profile
-                    </button>
                 </div>
             </vk-grid>
 
@@ -20,16 +17,22 @@
             <br/> <br/>
             <div>
                 <ul style="list-style-type: none;">
-                    <li><h1>{{ currentViewUser.user.name_title.name_title }} {{ currentViewUser.user.first_name.toUpperCase() }} {{
-                        currentViewUser.user.last_name.toUpperCase() }}</h1></li>
+                    <li><h1><span class="uk-text-bold">{{ currentViewUser.user.name_title.name_title }} {{ currentViewUser.user.first_name.toUpperCase() }} {{
+                        currentViewUser.user.last_name.toUpperCase() }}</span></h1>
+                    </li>
+                    <button v-on:click.stop="editUser(currentViewUser.user_id)" class="uk-button uk-button-default">Edit Profile</button>
                     <h4>
-                        <li id="citizen_id">{{ currentViewUser.user.citizen_id }}</li>
-                        <li id="role">{{ role }}</li>
-                        <li id="gender">{{ currentViewUser.user.gender }}</li>
-                        <li id="date_of_birth">Date of Birth {{ currentViewUser.user.date_of_birth }}</li>
+                        <li id="citizen_id"><span class="uk-text-bold">Citizen ID:</span> {{ currentViewUser.user.citizen_id }}</li>
+                        <li id="role"><span class="uk-text-bold">Role:</span>
+                            <span v-for="list in currentViewUser.role">
+                                <span v-if="list == '1'">ADMIN </span><span v-if="list == '2'">COUNSELOR </span><span v-if="list == '3'">CONSULTEE </span>
+                            </span>
+                        </li>
+                        <li id="gender"><span class="uk-text-bold">Gender:</span> {{ currentViewUser.user.gender }}</li>
+                        <li id="date_of_birth"><span class="uk-text-bold">Date of Birth:</span> {{ currentViewUser.user.date_of_birth }}</li>
 
                         <hr class="uk-description-list-divider">
-                        <li><h4>WORK</h4></li>
+                        <li><h4><span class="uk-text-bold">WORKPLACE</span></h4></li>
                         <li id="unit">{{ currentViewUser.user.workplace }}</li>
                     </h4>
                     <hr class="uk-description-list-divider">
@@ -38,11 +41,11 @@
             <vk-grid>
                 <div>
                     <ul style="list-style-type: none;">
-                        <li><h4>CONTACT INFORMATION</h4></li>
+                        <li><h4><span class="uk-text-bold">CONTACT INFORMATION</span></h4></li>
                         <h4>
-                            <li>Telephone</li>
-                            <li>Email</li>
-                            <li>Address</li>
+                            <li><span class="uk-text-bold">Telephone</span></li>
+                            <li><span class="uk-text-bold">Email</span></li>
+                            <li><span class="uk-text-bold">Address</span></li>
                         </h4>
                     </ul>
                 </div>
@@ -67,3 +70,4 @@
 
     </vk-grid>
 </div>
+

@@ -58,7 +58,7 @@
         computed: {},
 
         mounted() {
-            this.edited_user = JSON.parse(JSON.stringify(this.$store.getters['currentUser']));
+            this.edited_user = JSON.parse(JSON.stringify(this.$store.getters['currentViewUser']));
             this.edited_user.role = this.$store.getters['userRole'];
             this.date = this.edited_user.date_of_birth;
         },

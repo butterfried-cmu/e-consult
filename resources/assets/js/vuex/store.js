@@ -273,7 +273,7 @@ export const store = new Vuex.Store({
                             .then(
                                 response => {
                                     console.log(response);
-                                    commit('setCurrentViewUser', response.data.user);
+                                    commit('setCurrentViewUser', response.data);
                                     console.log("GET user by id");
                                 }
                             ).catch(

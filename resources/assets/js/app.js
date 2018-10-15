@@ -45,10 +45,9 @@ Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
 Vue.use(Vuex);
 
+
 axios.defaults.baseURL = 'http://localhost:8000/api';
 // axios.defaults.baseURL = 'http://2012b965.ngrok.io/api';
-
-
 
 const ifNotLoggedIn = (to, from, next) => {
     if (!store.getters['isLoggedIn']) {

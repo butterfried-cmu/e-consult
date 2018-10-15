@@ -15,7 +15,6 @@
             let payload = this.$route.params.id;
             this.$store.dispatch('getUser',payload).then(
                 response => {
-                    this.isLoading = true;
                 }
             );
         },
@@ -25,6 +24,9 @@
             }
         },
         methods: {
+            editUser(id){
+                this.$router.push('/profile/edit/'+id);
+            }
         }
     }
 </script>
