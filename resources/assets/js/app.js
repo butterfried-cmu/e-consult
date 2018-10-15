@@ -25,6 +25,7 @@ import ConsultList from './components/consult/list/consult-list.vue';
 import ConsultEdit from './components/consult/edit/consult-edit.vue';
 import Message from './components/message/send/message.vue';
 import Reply from './components/message/order/reply.vue';
+import Graph from './components/graph/graph.vue'
 
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -148,6 +149,11 @@ const router = new VueRouter({
             path: '/reply',
             name: 'reply',
             component: Reply
+        },
+        {
+            path: '/graph',
+            name: 'graph',
+            component: Graph
         },
         {
             path: '*',

@@ -64,16 +64,54 @@
                                 </div>
                         </div>
                     <div class="uk-margin">
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">HN</label>
-                            <div class="uk-form-controls">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
-                            </div>
-                    </div>
-                    <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">Dx</label>
-                            <div class="uk-form-controls">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
-                            </div>
+                        <!-- patient’s diagnosis here -->
+                        <label class="uk-form-label" for="form-horizontal-text">Dx</label>
+                        <div class="uk-form-width-medium">
+                            <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="text" list="disease">
+                            <datalist id="disease">
+                                    <option value="Alzheimer’s disease"></option> <!-- ฮัลไซเมอร์ -->
+                                    <option value="Amyotrophic lateral sclerosis (ALS)"></option> <!-- กล้ามเนื้ออ่อนแรง -->
+                                    <option value="Arthritis"></option> <!--โรคข้ออักเสบ-->
+                                    <option value="Attention deficit hyperactivity disorder (ADHD)"></option> <!--โรคสมาธิสั้น-->
+                                    <option value="Autism spectrum disorder (ASD)"></option> <!--โรคออทิสติก-->
+                                    <option value="Bell’s palsy"></option> <!--โรคใบหน้าเบี้ยว-->
+                                    <option value="Bipolar disorder"></option> <!-- โรคใบโพล่าร์ -->
+                                    <option value="Birth defects"></option> <!--โรคพิการตั้งแต่กำเนิด-->
+                                    <option value="Cerebral palsy"></option> <!--โรคสมองพิการ-->
+                                    <object value="Chronic kidney disease"></object> <!--โรคไตเรื้อรัง-->
+                                    <option value="Chronic pain"></option> <!--โรคปวดเรื้อรัง-->
+                                    <option value="Chronic pancreatitis"></option> <!--โรคตับอ่อนอัพเสบเรื้อรัง-->
+                                    <option value="Chronic traumatic encephalopathy (CTE)"></option> <!--โรคโรคบาดเจ็บของสมอง CTE-->
+                                    <option value="Clotting/bleeding disorders"></option> <!--โรคการแข็งตัวของเลือดผิดปกติ-->
+                                    <option value="Conductive Hearing Loss"></option> <!--การสูญเสียการได้ยินชนิดการนำเสียงบกพร่อง-->
+                                    <option value="Coronary artery disease"></option> <!-- โรคหลอดเลือดหัวใจตีบตัน  -->
+                                    <option value="Crohn’s disease"></option> <!--โรคโครห์น-->
+                                    <option value="Depression"></option> <!--ภาวะซึมเศร้า-->
+                                    <option value="Diabetes mellitus"></option> <!-- โรคเบาหวาน  -->
+                                    <option value="Down syndrome"></option> <!--ดาวน์ซินโดรม-->
+                                    <option value="Eczema"></option> <!--โรคผิวหนังอักเสบ-->
+                                    <option value="Epilepsy"></option> <!--โรคลมชัก-->
+                                    <option value="Fetal alcohol syndrome (FAS)"></option> <!--กลุ่มอาการทารกในครรภ์ได้รับแอลกอฮอล์-->
+                                    <option value="Fibromyalgia"></option> <!--โรคไฟโบรมัยอัลเจีย-->
+                                    <option value="Hemochromatosis (HHC)"></option> <!--ภาวะเหล็กเกิน-->
+                                    <option value="Hemophilia"></option> <!--โรคเลือดไหลไม่หยุด-->
+                                    <option value="High blood pressure"></option> <!-- โรคความดันโลหิตสูง -->
+                                    <option value="Inflammatory bowel disease (IBD)"></option> <!--โรคลำไส้อักเสบเรื้อรัง/โรคไอบีดี -->
+                                    <option value="Insomnia"></option> <!--โรคนอนไม่หลับ-->
+                                    <option value="Liver disease"></option> <!--โรคตับ-->
+                                    <option value="Lung Cancer"></option> <!-- โรคมะเร็งปอด  -->
+                                    <option value="Obesity"></option> <!-- โรคอ้วนลงพุง -->    
+                                    <option value="Psoriasis"></option> <!--โรคสะเก็ดเงิน-->
+                                    <option value="Pulmonary Emphysema"></option> <!-- ถุงลมโป่งพอง --> 
+                                    <option value="Sickle cell anemia"></option> <!--โรคเม็ดเลือดแดงรูปเคียว-->
+                                    <option value="Sleep disorders"></option> <!--โรคนอนไม่หลับ-->
+                                    <option value="Systemic lupus erythematosus (SLE)"></option> <!--โรคแพ้ภูมิตัวเอง-->
+                                    <option value="Stroke"></option> <!-- โรคหลอดเลือดสมอง -->   
+                                    <option value="Temporomandibular joint (TMJ) disorder"></option> <!--โรคข้อต่อขากรรไกรผิดปกติ-->
+                                    <option value="Thalassemia"></option> <!--ธาลัสซีเมีย-->
+                                    <option value="Vision impairment"></option> <!--ภาวะความบกพร่องทางการมองเห็น-->
+                              </datalist>
+                        </div>
                     </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">BW</label>
