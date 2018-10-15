@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Consult extends Model
 {
     //
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $primaryKey = 'consult_id'; // or null
     public $incrementing = false;
@@ -46,10 +46,12 @@ class Consult extends Model
         'rec02_p',
         'consult_complain',
         'consult_plan',
-        'consult_order'
+        'consult_order',
+        'created_at',
     ];
 
     protected $hidden = [
+        'updated_at'
     ];
 
     public function user()

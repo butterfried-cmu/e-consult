@@ -17,8 +17,8 @@ class CreateMessageTable extends Migration
             $table->string('message_id');
             $table->string('user_id');
             $table->string('consult_id');
-            $table->date('created_at');
             $table->string('message');
+            $table->timestamps();
         });
     }
 

@@ -135,3 +135,7 @@ Route::get('/messages/download/{attachment_id}', [
     'uses' => 'messagecontroller@getDownloadAttachment',
 //    'middleware' => ['auth.jwt', 'role:ADMIN']
 ]);
+
+Route::get('/consult/print', [
+    'uses' => 'consultcontroller@printConsultForm',
+]);

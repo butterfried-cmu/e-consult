@@ -46,6 +46,7 @@ class CreateConsultTable extends Migration
             $table->string('consult_complain');
             $table->string('consult_plan');
             $table->string('consult_order');
+            $table->timestamps();
         });
     }
 

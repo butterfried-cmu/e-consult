@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Message extends Model
 {
     //
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $primaryKey = 'message_id'; // or null
     public $incrementing = false;
@@ -18,11 +18,13 @@ class Message extends Model
         'message_id',
         'user_id',
         'consult_id',
-        'created_at',
         'message',
+        'created_at',
     ];
 
-    protected $hidden = [];
+    protected $hidden = [
+        'updated_at'
+    ];
 
     public function user()
     {

@@ -19,9 +19,12 @@ class Attachment extends Model
         'consult_id',
         'type',
         'file_name',
+        'created_at',
     ];
 
-    protected $hidden = [];
+    protected $hidden = [
+        'updated_at'
+    ];
 
     public function consult()
     {

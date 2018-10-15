@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 use Validator;
 use App\Rules\ValidImage;
+use PDF;
 
 class ConsultController extends Controller
 {
@@ -370,6 +371,18 @@ class ConsultController extends Controller
         return response()->json([
             'consults' => $consults
         ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+    }
+
+    public function printConsultForm()
+    {
+        // Fetch all customers from database
+//        $data = Customer::get();
+        // Send data to the view using loadView function of PDF facade
+        $pdf = PDF::loadView('consultFormTemplate');
+        // If you want to store the generated pdf to the server then you can use the store function
+        $pdf->save(public_path().'\storage\consult.pdf');
+        // Finally, you can download the file using download function
+        return asset('storage/consult.pdf');
     }
 
 
