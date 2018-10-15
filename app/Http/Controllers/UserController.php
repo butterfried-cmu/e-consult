@@ -352,7 +352,7 @@ class UserController extends Controller
         }
 
         $name = '';
-        if ($request->get('image')) {
+        if ($request->get('image') && $request->get('image') != '') {
             // echo $request->get('image');
             $image = $request->get('image');
             $name = time() . '.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
@@ -370,7 +370,9 @@ class UserController extends Controller
         $user->contact_number = $request->input('contact_number');
         $user->address = $request->input('address');
         $user->workplace = $request->input('workplace');
-        $user->image_name = $name;
+        if($name != '') {
+            $user->image_name = $name;
+        }
         $user->email = $request->input('email');
 
         $user->save();

@@ -74,6 +74,9 @@ export const store = new Vuex.Store({
         setCurrentViewUser(state, user) {
             state.currentViewUser = user;
         },
+        setCurrentViewUserRole(state, user) {
+            state.currentViewUser = user;
+        },
         setDraftConsults(state, consults) {
             state.consultDraft = consults;
         },
@@ -275,6 +278,7 @@ export const store = new Vuex.Store({
                                     console.log(response);
                                     commit('setCurrentViewUser', response.data.user);
                                     console.log("GET user by id");
+                                    resolve(response);
                                 }
                             ).catch(
                             error => {

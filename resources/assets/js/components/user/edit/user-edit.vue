@@ -55,12 +55,30 @@
             };
         },
 
-        computed: {},
+        computed: {
+            // edited_user(){
+            //     let edited_user = this.$store.getters['currentViewUser'];
+            //     edited_user.role = this.$store.getters['currentViewRole'];
+            //     return edited_user;
+            // },
+            //
+            // date(){
+            //     return this.$store.getters['currentViewUser'].date_of_birth;
+            // }
+        },
 
         mounted() {
-            this.edited_user = JSON.parse(JSON.stringify(this.$store.getters['currentUser']));
-            this.edited_user.role = this.$store.getters['userRole'];
-            this.date = this.edited_user.date_of_birth;
+            let payload = this.$route.params.id;
+            this.$store.dispatch('getUser', payload)
+                .then(response => {
+                        console.log('user get');
+                        this.edited_user = JSON.parse(JSON.stringify(this.$store.getters['currentViewUser']));
+                        this.edited_user.role = this.$store.getters['currentViewRole'];
+                        this.date = this.edited_user.date_of_birth;
+                    }, error => {
+                        console.log('get user ' + payload + ' fails');
+                    }
+                );
         },
 
         methods: {
