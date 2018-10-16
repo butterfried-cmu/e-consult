@@ -435,6 +435,28 @@ export const store = new Vuex.Store({
             });
         },
 
+        editConsult({commit}, payload){
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    console.log("Edit Consult id = " + payload.consult_id);
+                    console.log(payload.consult)
+                    axios.post("/consults/" + payload.consult_id + "?token=" + localStorage.getItem('token'), payload.consult)
+                        .then(
+                            response => {
+                                console.log(response);
+                                // commit('setCurrentConsult', response.data.consult);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
         getConsult({commit}, consult_id) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -479,7 +501,7 @@ export const store = new Vuex.Store({
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     console.log("/consults/" + consult_id + "/send/?token=" + localStorage.getItem('token'))
-                    axios.get("/consults/" + consult_id + "/send")
+                    axios.get("/consults/" + consult_id + "/send?token=" + localStorage.getItem('token'))
                         .then(
                             response => {
                                 console.log(response);
@@ -494,9 +516,51 @@ export const store = new Vuex.Store({
                     );
                 }, 1000);
             });
+        },
+
+        postSearchConsult({commit}, keyword) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.post("/consults/search/?token=" + localStorage.getItem('token'), {
+                        'keyword': keyword
+                    })
+                        .then(
+                            response => {
+                                console.log(response);
+                                commit('setDoneConsults', response.data.consults);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
+        postReplyConsult({commit}, consult_order) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.post("/consults/" + consult_id + "/?token=" + localStorage.getItem('token'), {
+                        'consult_order': consult_order
+                    })
+                        .then(
+                            response => {
+                                console.log(response);
+                                commit('setDoneConsults', response.data.consults);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
         }
-
-
 
     },
 });

@@ -20,6 +20,26 @@ export default {
         }
     },
     methods: {
+        editConsult(consult_id) {
+            console.log('edit ' + consult_id);
+            this.$router.push('/consults/' + consult_id + '/edit');
+        },
+        sendConsult(consult_id) {
+            var payload = consult_id;
+            var r = confirm('Are you sure?');
+            if (r == true) {
+                this.$store.dispatch('getSendConsult', payload).then(
+                    response => {
+                        console.log('Consult sent successfully');
+                        this.loadConsultList();
+                    },
+                    error => {
+                        console.log('Delete consult error')
+                    }
+                );
+            } else {
+            }
+        },
     }
 }
 </script>

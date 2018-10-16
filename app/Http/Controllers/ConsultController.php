@@ -60,7 +60,6 @@ class ConsultController extends Controller
             'address' => 'required',
             'primary_doctor' => 'required',
             'health_condition' => 'required',
-            'med_hn',
             'med_xd',
             'med_bw',
             'med_bmi',
@@ -100,7 +99,6 @@ class ConsultController extends Controller
             'patient_address' => $request->input('address'),
             'primary_doctor' => $request->input('primary_doctor'),
             'health_condition' => $request->input('health_condition'),
-            'med_hn' => $request->input('med_hn'),
             'med_dx' => $request->input('med_dx'),
             'med_bw' => $request->input('med_bw'),
             'med_bmi' => $request->input('med_bmi'),
@@ -140,14 +138,13 @@ class ConsultController extends Controller
 
         $validator = Validator::make(array_merge(['consult_id' => $consult_id],$request->all()), [
             'consult_id' => 'exists:consults',
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'dob' => 'required',
-            'gender' => 'required',
-            'address' => 'required',
+            'patient_firstname' => 'required',
+            'patient_lastname' => 'required',
+            'patient_dob' => 'required',
+            'patient_gender' => 'required',
+            'patient_address' => 'required',
             'primary_doctor' => 'required',
             'health_condition' => 'required',
-            'med_hn',
             'med_xd',
             'med_bw',
             'med_bmi',
@@ -189,7 +186,6 @@ class ConsultController extends Controller
         $consult->patient_address = $request->input('patient_address');
         $consult->primary_doctor = $request->input('primary_doctor');
         $consult->health_condition = $request->input('health_condition');
-        $consult->med_hn = $request->input('med_hn');
         $consult->med_dx = $request->input('med_dx');
         $consult->med_bw = $request->input('med_bw');
         $consult->med_bmi = $request->input('med_bmi');
@@ -361,12 +357,17 @@ class ConsultController extends Controller
         }
 
         $consults = Consult::where('status','done')
-            ->where()
-//            ->where(function($query) use ($request) {
-//                $query->where('patient_firstname', 'like', '%' . $request->keyword . '%')
-//                    ->orWhere('patient_lastname', 'like', '%' . $request->keyword . '%');
-//            })
+//            ->where()
+            ->where(function($query) use ($request) {
+                $query->where('patient_firstname', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('patient_lastname', 'like', '%' . $request->keyword . '%');
+            })
             ->get();
+
+        foreach ($consults as $consult){
+            $creator = User::where('user_id', $consult->user_id)->first();
+            $consult->created_by = $creator;
+        }
 
         return response()->json([
             'consults' => $consults

@@ -233,8 +233,8 @@
         <br/><br/>
         <div class="uk-margin-bottom uk-text-center">
             <!-- Draft Status : Edit btn avaliable ,else disable -->
-                <router-link to="/consult-edit" class="uk-button uk-button-secondary">Edit</router-link></td>
-                <button type="button" class="uk-button uk-button-primary uk-width-small">Send</button>
+                <button v-on:click="editConsult(currentConsult.consult_id)" type="button" class="uk-button uk-button-secondary">Edit</button>
+                <button v-on:click="sendConsult(currentConsult.consult_id)" type="button" class="uk-button uk-button-primary uk-width-small">Send</button>
                 <a class="uk-button uk-button-danger uk-width-small" href="../..#/">Cancel</a>
         </div>
         <br/>
