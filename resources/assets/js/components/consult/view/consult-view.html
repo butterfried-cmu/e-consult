@@ -3,8 +3,7 @@
             <vk-grid class="uk-grid-small">
             <div class="uk-width-1-5@m">
                 <br/>
-                <p><h1 class="uk-heading-primary sticky">Consult</h1></p>
-                <p><h2 class="sticky">ID 6121150001</h2></p>
+                    <p class="uk-label uk-label-warning sticky">Consult ID 601235554</p>
             </div>
 
             <div class="uk-width-expand@m">
@@ -62,12 +61,6 @@
                                    <p>High Blood Pressure</p>
                                 </div>
                         </div>
-                    <div class="uk-margin">
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">HN</label>
-                            <div class="uk-form-controls">
-                                <p>61223</p>
-                            </div>
-                    </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">Dx</label>
                             <div class="uk-form-controls">
@@ -223,6 +216,19 @@
                                 <p>-</p>
                             </div>
                     </div>
+                    <div id="consultinfo">
+                        <div class="uk-text-left">
+                            <h2 class="uk-heading-line uk-text-danger"><span><b>Consult Order</b></span></h2>
+                        </div>
+                        <div class="uk-form-horizontal">
+                            <div class="uk-margin">
+                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Order</label>
+                                    <div class="uk-form-controls">
+                                        <p>Ena (5) 1x20 pc</p>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 </div>
             </form>
@@ -232,8 +238,10 @@
             </div>
         </vk-grid>
         <br/><br/>
+
+        <!-- Hide on print and done consult -->
         <div class="uk-margin-bottom uk-text-center">
-            <!-- Draft Status : Edit btn avaliable ,else disable -->
+                <!-- Draft Status : Edit btn avaliable ,else disable -->
                 <router-link to="/consult-edit" class="uk-button uk-button-secondary">Edit</router-link></td>
                 <button type="button" class="uk-button uk-button-primary uk-width-small">Send</button>
                 <a class="uk-button uk-button-danger uk-width-small" href="../..#/">Cancel</a>
