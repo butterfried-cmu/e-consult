@@ -27,14 +27,13 @@ class EditConsultTest extends TestCase
     public function testEditConsultWithAllValidInput()
     {
         $response = $this->json('POST', 'api/consults/aaaaaaaaaaaaa', [
-            "first_name" => "patient",
-            "last_name" => "test",
-            "dob" => "2012-5-10",
-            "gender" => "Male",
-            "address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
+            "patient_firstname" => "patient",
+            "patient_lastname" => "test",
+            "patient_dob" => "2012-5-10",
+            "patient_gender" => "Male",
+            "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "primary_doctor" => "Dr. James Gordon",
             "health_condition" => "diabetes",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -65,13 +64,12 @@ class EditConsultTest extends TestCase
     public function testEditConsultWithNoFirstname()
     {
         $response = $this->json('POST', 'api/consults/aaaaaaaaaaaaa', [
-            "last_name" => "test",
-            "dob" => "2012-5-10",
-            "gender" => "Male",
-            "address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
+            "patient_lastname" => "test",
+            "patient_dob" => "2012-5-10",
+            "patient_gender" => "Male",
+            "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "primary_doctor" => "Dr. James Gordon",
             "health_condition" => "diabetes",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -95,20 +93,19 @@ class EditConsultTest extends TestCase
         ]);
 
         $response->assertJson([
-            'first_name' => ['required']
+            'patient_firstname' => ['required']
         ]);
     }
 
     public function testEditConsultWithNoLastname()
     {
         $response = $this->json('POST', 'api/consults/aaaaaaaaaaaaa', [
-            "first_name" => "patient",
-            "dob" => "2012-5-10",
-            "gender" => "Male",
-            "address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
+            "patient_firstname" => "patient",
+            "patient_dob" => "2012-5-10",
+            "patient_gender" => "Male",
+            "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "primary_doctor" => "Dr. James Gordon",
             "health_condition" => "diabetes",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -132,20 +129,19 @@ class EditConsultTest extends TestCase
         ]);
 
         $response->assertJson([
-            'last_name' => ['required']
+            'patient_lastname' => ['required']
         ]);
     }
 
     public function testEditConsultWithNoDateOfBirth()
     {
         $response = $this->json('POST', 'api/consults/aaaaaaaaaaaaa', [
-            "first_name" => "patient",
-            "last_name" => "test",
-            "gender" => "Male",
-            "address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
+            "patient_firstname" => "patient",
+            "patient_lastname" => "test",
+            "patient_gender" => "Male",
+            "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "primary_doctor" => "Dr. James Gordon",
             "health_condition" => "diabetes",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -169,20 +165,19 @@ class EditConsultTest extends TestCase
         ]);
 
         $response->assertJson([
-            'dob' => ['required']
+            'patient_dob' => ['required']
         ]);
     }
 
     public function testEditConsultWithNoGender()
     {
         $response = $this->json('POST', 'api/consults/aaaaaaaaaaaaa', [
-            "first_name" => "patient",
-            "last_name" => "test",
-            "dob" => "2012-5-10",
-            "address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
+            "patient_firstname" => "patient",
+            "patient_lastname" => "test",
+            "patient_dob" => "2012-5-10",
+            "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "primary_doctor" => "Dr. James Gordon",
             "health_condition" => "diabetes",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -206,20 +201,16 @@ class EditConsultTest extends TestCase
         ]);
 
         $response->assertJson([
-            'gender' => ['required']
+            'patient_gender' => ['required']
         ]);
     }
 
     public function testEditConsultWithNoAddress()
     {
         $response = $this->json('POST', 'api/consults/aaaaaaaaaaaaa', [
-            "first_name" => "patient",
-            "last_name" => "test",
-            "dob" => "2012-5-10",
-            "gender" => "Male",
+            "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "primary_doctor" => "Dr. James Gordon",
             "health_condition" => "diabetes",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -243,20 +234,19 @@ class EditConsultTest extends TestCase
         ]);
 
         $response->assertJson([
-            'address' => ['required']
+            'patient_address' => ['required']
         ]);
     }
 
     public function testEditConsultWithNoPrimaryDoctor()
     {
         $response = $this->json('POST', 'api/consults/aaaaaaaaaaaaa', [
-            "first_name" => "patient",
-            "last_name" => "test",
-            "dob" => "2012-5-10",
-            "gender" => "Male",
-            "address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
+            "patient_firstname" => "patient",
+            "patient_lastname" => "test",
+            "patient_dob" => "2012-5-10",
+            "patient_gender" => "Male",
+            "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "health_condition" => "diabetes",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -287,13 +277,12 @@ class EditConsultTest extends TestCase
     public function testEditConsultWithAllHealthCondition()
     {
         $response = $this->json('POST', 'api/consults/aaaaaaaaaaaaa', [
-            "first_name" => "patient",
-            "last_name" => "test",
-            "dob" => "2012-5-10",
-            "gender" => "Male",
-            "address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
+            "patient_firstname" => "patient",
+            "patient_lastname" => "test",
+            "patient_dob" => "2012-5-10",
+            "patient_gender" => "Male",
+            "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "primary_doctor" => "Dr. James Gordon",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -331,7 +320,6 @@ class EditConsultTest extends TestCase
             "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "primary_doctor" => "Dr. James Gordon",
             "health_condition" => "diabetes",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -361,14 +349,13 @@ class EditConsultTest extends TestCase
     public function testEditConsultWithNotExistConsult()
     {
         $response = $this->json('POST', 'api/consults/zzzzzzzzzzzzz', [
-            "first_name" => "patient",
-            "last_name" => "test",
-            "dob" => "2012-5-10",
-            "gender" => "Male",
-            "address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
+            "patient_firstname" => "patient",
+            "patient_lastname" => "test",
+            "patient_dob" => "2012-5-10",
+            "patient_gender" => "Male",
+            "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "primary_doctor" => "Dr. James Gordon",
             "health_condition" => "diabetes",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -399,14 +386,13 @@ class EditConsultTest extends TestCase
     public function testEditConsultWithNotDraftConsult()
     {
         $response = $this->json('POST', 'api/consults/ccccccccccccc', [
-            "first_name" => "patient",
-            "last_name" => "test",
-            "dob" => "2012-5-10",
-            "gender" => "Male",
-            "address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
+            "patient_firstname" => "patient",
+            "patient_lastname" => "test",
+            "patient_dob" => "2012-5-10",
+            "patient_gender" => "Male",
+            "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
             "primary_doctor" => "Dr. James Gordon",
             "health_condition" => "diabetes",
-            "med_hn" => "61223",
             "med_dx" => "DM",
             "med_bw" => "65",
             "med_bmi" => "26.6",
@@ -439,11 +425,11 @@ class EditConsultTest extends TestCase
         $response = $this->json('POST', 'api/consults/aaaaaaaaaaaaa', []);
 
         $response->assertJson([
-            'first_name' => ['required'],
-            'last_name' => ['required'],
-            'dob' => ['required'],
-            'gender' => ['required'],
-            'address' => ['required'],
+            'patient_firstname' => ['required'],
+            'patient_lastname' => ['required'],
+            'patient_dob' => ['required'],
+            'patient_gender' => ['required'],
+            'patient_address' => ['required'],
             'primary_doctor' => ['required'],
             'health_condition' => ['required'],
             'consult_complain' => ['required']

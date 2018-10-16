@@ -23,34 +23,33 @@
                         <div class="uk-margin">
                             <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Patient's name</label>
                             <div class="uk-form-controls">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="text" placeholder="First name">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="text" placeholder="Last name">
+                                <input v-model="consult.first_name" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="text" placeholder="First name">
+                                <input v-model="consult.last_name" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="text" placeholder="Last name">
                             </div>
                         </div>
                         <div class="uk-margin">
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of Birth</label>
                                 <div class="uk-form-controls">
-                                    <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
+                                    <input v-model="consult.dob" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
                                 </div>
                         </div>
                         <div class="uk-margin">
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Gender</label>               
                             <div class="uk-form-controls">
-                                    <label><input class="uk-radio" type="radio" name="radio2" checked> Male</label>
-                                    <label><input class="uk-radio" type="radio" name="radio2"> Female</label>
+                                    <label><input v-model="consult.gender" value="Male" class="uk-radio" type="radio" name="Male" checked> Male</label>
+                                    <label><input v-model="consult.gender" value="Female" class="uk-radio" type="radio" name="Female"> Female</label>
                             </div>
                         </div>
                         <div class="uk-margin">
                             <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Address</label>
                             <div class="uk-form-controls">
-                                <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Address"></textarea>
+                                <textarea  v-model="consult.address" class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Address"></textarea>
                             </div>
                         </div>
                         <div class="uk-margin">
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Primary Doctor</label>
                                 <div class="uk-form-controls">
-                                    <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="text" placeholder="First name">
-                                    <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="text" placeholder="Last name">
+                                    <input v-model="consult.primary_doctor" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="text" placeholder="First name">
                                 </div>
                         </div>
                 </div>
@@ -65,61 +64,61 @@
                         <div class="uk-margin">
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Health Condition</label>
                                 <div class="uk-form-controls">
-                                    <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
+                                    <input v-model="consult.health_condition" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
                                 </div>
                         </div>
                     <div class="uk-margin">
                             <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">HN</label>
                             <div class="uk-form-controls">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
+                                <input v-model="consult.med_hn" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
                             </div>
                     </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">Dx</label>
                             <div class="uk-form-controls">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
+                                <input v-model="consult.med_dx" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
                             </div>
                     </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">BW</label>
                             <div class="uk-form-controls">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="kg">
+                                <input v-model="consult.med_bw" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="kg">
                             </div>
                     </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">BMI</label>
                             <div class="uk-form-controls unit">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
+                                <input v-model="consult.med_bmi" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
                             </div>
                     </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">T</label>
                             <div class="uk-form-controls unit">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="°C">
+                                <input v-model="consult.med_t" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="°C">
                             </div>
                     </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">FBS</label>
                             <div class="uk-form-controls unit">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mg%">
+                                <input v-model="consult.med_fbs" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mg%">
                             </div>
                     </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">Cr</label>
                             <div class="uk-form-controls unit">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="Cr">
+                                <input v-model="consult.med_cr" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="Cr">
                             </div>
                     </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">Clearance</label>
                             <div class="uk-form-controls">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
+                                <input v-model="consult.med_clearance" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
                             </div>
                     </div>
                     <div class="uk-margin">
                             <label class="uk-form-label" for="form-horizontal-text">Stage</label>
                             <div class="uk-form-controls">
-                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
+                                <input v-model="consult.med_stage" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="">
                             </div>
                     </div>
                 </div>
@@ -137,31 +136,31 @@
                             <div class="uk-margin">
                                     <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of Diagnosis</label>
                                     <div class="uk-form-controls ">
-                                        <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
+                                        <input v-model="consult.rec01_date" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
                                     </div>
                             </div>
                             <div class="uk-margin">
                                     <label class="uk-form-label" for="form-horizontal-text">FBS</label>
                                     <div class="uk-form-controls ">
-                                        <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mg%">
+                                        <input v-model="consult.rec01_fbs" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mg%">
                                     </div>
                             </div>
                             <div class="uk-margin">
                                     <label class="uk-form-label" for="form-horizontal-text">BP1</label>
                                     <div class="uk-form-controls">
-                                        <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mmHg">
+                                        <input v-model="consult.rec01_bp1" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mmHg">
                                     </div>
                             </div>
                             <div class="uk-margin">
                                     <label class="uk-form-label" for="form-horizontal-text">BP2</label>
                                     <div class="uk-form-controls">
-                                        <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mmHg">
+                                        <input v-model="consult.rec01_bp2" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mmHg">
                                     </div>
                             </div>
                             <div class="uk-margin">
                                     <label class="uk-form-label" for="form-horizontal-text">P</label>
                                     <div class="uk-form-controls">
-                                        <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="/min">
+                                        <input v-model="consult.rec01_p" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="/min">
                                     </div>
                             </div>
                     </div>
@@ -173,31 +172,31 @@
                             <div class="uk-margin">
                                     <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of Diagnosis</label>
                                     <div class="uk-form-controls ">
-                                        <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
+                                        <input v-model="consult.rec02_date" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
                                     </div>
                             </div>
                             <div class="uk-margin">
                                     <label class="uk-form-label" for="form-horizontal-text">FBS</label>
                                     <div class="uk-form-controls ">
-                                        <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mg%">
+                                        <input v-model="consult.rec02_fbs" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mg%">
                                     </div>
                             </div>
                             <div class="uk-margin">
                                     <label class="uk-form-label" for="form-horizontal-text">BP1</label>
                                     <div class="uk-form-controls">
-                                        <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mmHg">
+                                        <input v-model="consult.rec02_bp1" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mmHg">
                                     </div>
                             </div>
                             <div class="uk-margin">
                                     <label class="uk-form-label" for="form-horizontal-text">BP2</label>
                                     <div class="uk-form-controls">
-                                        <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mmHg">
+                                        <input v-model="consult.rec02_bp2" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="mmHg">
                                     </div>
                             </div>
                             <div class="uk-margin">
                                     <label class="uk-form-label" for="form-horizontal-text">P</label>
                                     <div class="uk-form-controls">
-                                        <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="/min">
+                                        <input v-model="consult.rec02_p" class="uk-input uk-form-width-medium" id="form-horizontal-text" type="number" placeholder="/min">
                                     </div>
                             </div>
                     </div>
@@ -213,22 +212,22 @@
                         <div class="uk-margin">
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Chief Complain</label>
                                 <div class="uk-form-controls">
-                                    <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Chief Complain"></textarea>
+                                    <textarea v-model="consult.consult_complain" class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Chief Complain"></textarea>
                                 </div>
                         </div>
                         <div class="uk-margin">
                                 <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Assessment and plan</label>
                                 <div class="uk-form-controls">
-                                    <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Assessment and Plan"></textarea>
+                                    <textarea v-model="consult.consult_plan" class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Assessment and Plan"></textarea>
                                 </div>
                         </div>
-                        <div class="uk-margin">
-                            <!-- Not Require -->
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Progress notes</label>
-                            <div class="uk-form-controls">
-                                <textarea class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Progress notes"></textarea>
-                            </div>
-                    </div>
+                        <!--<div class="uk-margin">-->
+                            <!--&lt;!&ndash; Not Require &ndash;&gt;-->
+                            <!--<label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Progress notes</label>-->
+                            <!--<div class="uk-form-controls">-->
+                                <!--<textarea v-model="consult.HERE" class="uk-textarea uk-form-width-large" id="form-horizontal-text" rows="5" placeholder="Progress notes"></textarea>-->
+                            <!--</div>-->
+                    <!--</div>-->
                 </div>
                 </div>
             </form>
@@ -239,8 +238,7 @@
         </vk-grid>
         <br/><br/>
         <div class="uk-margin-bottom uk-text-center">
-                <button type="button" class="uk-button uk-button-secondary uk-width-small">Draft</button>
-                <button type="button" class="uk-button uk-button-primary uk-width-small">Send</button>
+                <button @click="saveConsult" type="button" class="uk-button uk-button-primary uk-width-small">Save as Draft</button>
                 <a class="uk-button uk-button-danger uk-width-small" href="../..#/">Cancel</a>
         </div>
         <br/>

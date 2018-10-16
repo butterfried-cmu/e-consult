@@ -34,7 +34,6 @@ class GetConsultByIdTest extends TestCase
                 "patient_address" => "239 Huaykaew Rd., Suthep, Muang, Chiang Mai",
                 "primary_doctor" => "Dr. James Gordon",
                 "health_condition" => "diabetes",
-                "med_hn" => "61223",
                 "med_dx" => "DM",
                 "med_bw" => "65",
                 "med_bmi" => "26.6",

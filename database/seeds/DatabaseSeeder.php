@@ -19,5 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AccountsTableSeeder::class);
         $this->call(ResetPasswordRequestSeeder::class);
         $this->call(ConsultSeeder::class);
+        $this->call(AttachmentSeeder::class);
+        $this->call(MessageSeeder::class);
     }
 }

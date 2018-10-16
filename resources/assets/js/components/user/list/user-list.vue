@@ -33,11 +33,14 @@
                 if (r == true) {
                     this.$store.dispatch('getDelete',payload).then(
                         response => {
+                            this.$store.dispatch('getAllUsers').then(
+                                response => {
+                                }
+                            );
                         }
                     );
                 } else {
                 }
-
             },
             search(){
                 var payload = this.keyword;

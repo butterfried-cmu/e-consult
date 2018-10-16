@@ -1,6 +1,20 @@
 <script>
 export default {
     template: require('./message.html'),
+
+    mounted(){
+        this.interval = setInterval(() => this.count(), 3000)
+        this.interval = setInterval(() => this.count2(), 10000)
+    },
+
+    methods: {
+        count(){
+            console.log('count')
+        },
+        count2(){
+            console.log('count2')
+        },
+    }
 }
 </script>
 <style scoped>

@@ -120,33 +120,33 @@ const router = new VueRouter({
             component: UserList
         },
         {
-            path: '/consult-add',
+            path: '/consults/add',
             name: 'consult-add',
             component: ConsultAdd
         },
         {
-            path: '/message',
-            name: 'message',
+            path: '/consults/:consult_id/message',
+            name: 'consult-message',
             component: Message
         },
         {
-            path: '/consult-view',
-            name: 'consult-view',
-            component: ConsultView
-        },
-        {
-            path: '/consult-list',
+            path: '/consults',
             name: 'consult-list',
             component: ConsultList
         },
         {
-            path: '/consult-edit',
+            path: '/consults/:consult_id',
+            name: 'consult-view',
+            component: ConsultView
+        },
+        {
+            path: '/consults/:consult_id/edit',
             name: 'consult-edit',
             component: ConsultEdit
         },
         {
-            path: '/reply',
-            name: 'reply',
+            path: '/consults/:consult_id/reply',
+            name: 'consult-reply',
             component: Reply
         },
         {

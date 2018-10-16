@@ -55,16 +55,7 @@
             };
         },
 
-        computed: {
-            // edited_user(){
-            //     let edited_user = this.$store.getters['currentViewUser'];
-            //     edited_user.role = this.$store.getters['currentViewRole'];
-            //     return edited_user;
-            // },
-            //
-            // date(){
-            //     return this.$store.getters['currentViewUser'].date_of_birth;
-            // }
+        computed:{
         },
 
         mounted() {

@@ -182,11 +182,11 @@ class ConsultController extends Controller
             ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
         }
 
-        $consult->patient_firstname = $request->input('first_name');
-        $consult->patient_lastname = $request->input('last_name');
-        $consult->patient_dob = $request->input('dob');
-        $consult->patient_gender = $request->input('gender');
-        $consult->patient_address = $request->input('address');
+        $consult->patient_firstname = $request->input('patient_firstname');
+        $consult->patient_lastname = $request->input('patient_lastname');
+        $consult->patient_dob = $request->input('patient_dob');
+        $consult->patient_gender = $request->input('patient_gender');
+        $consult->patient_address = $request->input('patient_address');
         $consult->primary_doctor = $request->input('primary_doctor');
         $consult->health_condition = $request->input('health_condition');
         $consult->med_hn = $request->input('med_hn');
@@ -380,7 +380,7 @@ class ConsultController extends Controller
         // Send data to the view using loadView function of PDF facade
         $pdf = PDF::loadView('consultFormTemplate');
         // If you want to store the generated pdf to the server then you can use the store function
-        $pdf->save(public_path().'\storage\consult.pdf');
+        $pdf->save(public_path().'\storage\consult\consult.pdf');
         // Finally, you can download the file using download function
         return asset('storage/consult.pdf');
     }

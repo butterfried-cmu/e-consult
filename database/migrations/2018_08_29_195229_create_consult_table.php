@@ -24,7 +24,6 @@ class CreateConsultTable extends Migration
             $table->string('patient_address');
             $table->string('primary_doctor');
             $table->string('health_condition');
-            $table->string('med_hn');
             $table->string('med_dx');
             $table->string('med_bw');
             $table->string('med_bmi');

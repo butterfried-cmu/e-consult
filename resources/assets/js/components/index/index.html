@@ -1,111 +1,147 @@
 <div id="index">
 
-  <header>
-    <br/>
-    <h1 class="uk-text-center">Welcome to MED E-CONSULTS</h1>
-  </header>
+    <header>
+        <br/>
+        <h1 class="uk-text-center">Welcome to MED E-CONSULTS</h1>
+    </header>
 
-  <section class="uk-container">
+    <section class="uk-container">
         <vk-grid class="uk-child-width-expand@s uk-text-center">
-                <div class="uk-width-auto@s"></div>
-                <div class="uk-margin">
-                        <form class="uk-search uk-search-default uk-width-1-2@s">
-                          <input class="uk-search-input" type="search" v-model="keyword" placeholder="Search...">
-                      </form>
-                      <button class="uk-button uk-button-primary uk-width-auto@l uk-width-1-5@m" v-on:click="search()"><vk-icon icon="search"></vk-icon></button>
-                    </div>
-                <div class="uk-width-auto@s"></div>
-            </vk-grid>
-  </section>
+            <div class="uk-width-auto@s"></div>
+            <div class="uk-margin">
+                <form class="uk-search uk-search-default uk-width-1-2@s">
+                    <input class="uk-search-input" type="search" v-model="keyword" placeholder="Search...">
+                </form>
+                <button class="uk-button uk-button-primary uk-width-auto@l uk-width-1-5@m" v-on:click="search()">
+                    <vk-icon icon="search"></vk-icon>
+                </button>
+            </div>
+            <div class="uk-width-auto@s"></div>
+        </vk-grid>
+    </section>
 
-  <section class="uk-container">
-    <vk-grid class="uk-child-width-expand@s">
-      <div class="title">
-        <vk-tabs-vertical align="left">
-          <vk-tabs-item title="Draft" v-if="isRole(3)">
-              <div class="uk-overflow-auto">
-                  <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
-                      <thead>
-                          <tr>
-                              <th class="uk-width-small">Consult Id</th>
-                              <th>Patient</th>
-                              <th>Creator</th>
-                              <!--<th>Date of Create</th>-->
-                              <th>Status</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr v-for="consult in consultDraft">
-                              <td>{{consult.consult_id}}</td>
-                              <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>
-                              <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>
-                              <!--<td>13/06/2018</td>-->
-                              <td><span class="uk-label uk-label-warning">Draft</span></td>
-                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
-                              <td><button class="uk-button uk-button-primary" type="button">Send</button></td>
-                              <td><button class="uk-button uk-button-danger" type="button">Delete</button></td>
-                          </tr>
-                      </tbody>
-                  </table>
-              </div>
-          </vk-tabs-item>
+    <section class="uk-container">
+        <vk-grid class="uk-child-width-expand@s">
+            <div class="title">
+                <vk-tabs-vertical align="left">
+                    <vk-tabs-item title="Draft" v-if="isRole(3)">
+                        <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
+                                <thead>
+                                <tr>
+                                    <th class="uk-width-small">Consult Id</th>
+                                    <th>Patient</th>
+                                    <th>Creator</th>
+                                    <th>Date of Create</th>
+                                    <th>Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="consult in consultDraft">
+                                    <td>{{consult.consult_id}}</td>
+                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>
+                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>
+                                    <td>{{consult.created_at}}</td>
+                                    <td><span class="uk-label uk-label-warning">Draft</span></td>
 
-          <vk-tabs-item title="Pending" v-if="isRole(2)|isRole(3)">
-              <div class="uk-overflow-auto">
-                  <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
-                      <thead>
-                          <tr>
-                              <th class="uk-width-small">Consult Id</th>
-                              <th>Patient</th>
-                              <th>Creator</th>
-                              <!--<th>Date of Create</th>-->
-                              <th>Status</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="consult in consultPending">
-                            <td>{{consult.consult_id}}</td>
-                            <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>
-                            <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>
-                              <!--<td>13/06/2018</td>-->
-                              <td><span class="uk-label">Pending</span></td>
-                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
-                              <td><router-link to="/reply" class="uk-button uk-button-primary" v-if="isRole(2)">Reply</router-link></td>
-                          </tr>
-                      </tbody>
-                  </table>
-              </div>
-          </vk-tabs-item>
+                                    <td>
+                                        <button v-on:click="viewConsult(consult.consult_id)"
+                                                class="uk-button uk-button-default" type="button">View
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button v-on:click="sendConsult(consult.consult_id)"
+                                                class="uk-button uk-button-primary" type="button">Send
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button v-on:click="deleteConsult(consult.consult_id)"
+                                                class="uk-button uk-button-danger" type="button">Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </vk-tabs-item>
 
-          <vk-tabs-item title="Done" v-if="isRole(2)|isRole(3)">
-              <div class="uk-overflow-auto">
-                  <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
-                      <thead>
-                          <tr>
-                              <th class="uk-width-small">Consult Id</th>
-                              <th>Patient</th>
-                              <th>Creator</th>
-                              <!--<th>Date of Create</th>-->
-                              <th>Status</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                      <tr v-for="consult in consultDone">
-                              <td>{{consult.consult_id}}</td>
-                              <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>
-                              <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>
-                              <!--<td>13/06/2018</td>-->
-                              <td><span class="uk-label uk-label-success">Done</span></td>
-                              <td><router-link to="/consult-view" class="uk-button uk-button-default">View</router-link></td>
-                              <td><router-link to="/message" class="uk-button uk-button-primary">Message</router-link></td>
-                          </tr>
-                      </tbody>
-                  </table>
-              </div>
-          </vk-tabs-item>
-        </vk-tabs-vertical>
-      </div>
-    </vk-grid>
-  </section>
-  
+                    <vk-tabs-item title="Pending" v-if="isRole(2)|isRole(3)">
+                        <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
+                                <thead>
+                                <tr>
+                                    <th class="uk-width-small">Consult Id</th>
+                                    <th>Patient</th>
+                                    <th>Creator</th>
+                                    <th>Date of Create</th>
+                                    <th>Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="consult in consultPending">
+                                    <td>{{consult.consult_id}}</td>
+                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>
+                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>
+                                    <td>{{consult.created_at}}</td>
+                                    <td><span class="uk-label">Pending</span></td>
+                                    <td>
+                                        <button v-on:click="viewConsult(consult.consult_id)"
+                                                class="uk-button uk-button-default" type="button">View
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button v-on:click="messageConsult(consult.consult_id)"
+                                                class="uk-button uk-button-primary" type="button">Message
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button v-on:click="replyConsult(consult.consult_id)" v-if="isRole(2)"
+                                                class="uk-button uk-button-primary" type="button">Reply
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </vk-tabs-item>
+
+                    <vk-tabs-item title="Done" v-if="isRole(2)|isRole(3)">
+                        <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-middle uk-table-hover uk-table-divider">
+                                <thead>
+                                <tr>
+                                    <th class="uk-width-small">Consult Id</th>
+                                    <th>Patient</th>
+                                    <th>Creator</th>
+                                    <th>Date of Create</th>
+                                    <th>Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="consult in consultDone">
+                                    <td>{{consult.consult_id}}</td>
+                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>
+                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>
+                                    <td>{{consult.created_at}}</td>
+                                    <td><span class="uk-label uk-label-success">Done</span></td>
+                                    <td>
+                                        <button v-on:click="viewConsult(consult.consult_id)"
+                                                class="uk-button uk-button-default" type="button">View
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button v-on:click="messageConsult(consult.consult_id)"
+                                                class="uk-button uk-button-primary" type="button">Message
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </vk-tabs-item>
+                </vk-tabs-vertical>
+            </div>
+        </vk-grid>
+    </section>
+
 </div>

@@ -18,6 +18,7 @@ class CreateMessageAttachmentTable extends Migration
             $table->string('consult_id');
             $table->string('type');
             $table->string('file_name');
+            $table->timestamps();
         });
     }
 

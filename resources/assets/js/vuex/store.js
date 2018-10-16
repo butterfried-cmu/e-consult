@@ -16,7 +16,7 @@ export const store = new Vuex.Store({
         consultPending: null,
         consultDone: null,
         consultSearch: null,
-
+        currentConsult: null,
     },
     getters: {
         isLoggedIn(state) {
@@ -45,6 +45,9 @@ export const store = new Vuex.Store({
         },
         consultDoneList(state) {
             return state.consultDone;
+        },
+        currentConsult(state) {
+            return state.currentConsult;
         }
     },
     mutations: {
@@ -85,6 +88,9 @@ export const store = new Vuex.Store({
         },
         setDoneConsults(state, consults) {
             state.consultDone = consults;
+        },
+        setCurrentConsult(state, consult) {
+            state.currentConsult = consult;
         }
     },
     actions: {
@@ -408,6 +414,87 @@ export const store = new Vuex.Store({
                 });
             }
         },
+
+        saveConsult({commit}, payload){
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.post("/consults/?token=" + localStorage.getItem('token'), payload)
+                        .then(
+                            response => {
+                                console.log(response);
+                                // commit('setCurrentConsult', response.data.consult);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
+        getConsult({commit}, consult_id) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.get("/consults/" + consult_id + "/?token=" + localStorage.getItem('token'))
+                        .then(
+                            response => {
+                                console.log(response);
+                                commit('setCurrentConsult', response.data.consult);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
+        getDeleteConsult({commit}, consult_id) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.get("/consults/" + consult_id + "/delete/?token=" + localStorage.getItem('token'))
+                        .then(
+                            response => {
+                                console.log(response);
+                                // commit('setCurrentConsult', response.data.message);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
+        getSendConsult({commit}, consult_id) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    console.log("/consults/" + consult_id + "/send/?token=" + localStorage.getItem('token'))
+                    axios.get("/consults/" + consult_id + "/send")
+                        .then(
+                            response => {
+                                console.log(response);
+                                // commit('setCurrentConsult', response.data.message);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        }
 
 
 

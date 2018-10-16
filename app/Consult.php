@@ -25,7 +25,6 @@ class Consult extends Model
         'patient_address',
         'primary_doctor',
         'health_condition',
-        'med_hn',
         'med_dx',
         'med_bw',
         'med_bmi',
