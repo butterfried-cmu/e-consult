@@ -26,6 +26,7 @@ import ConsultEdit from './components/consult/edit/consult-edit.vue';
 import Message from './components/message/send/message.vue';
 import Reply from './components/message/order/reply.vue';
 import Graph from './components/graph/view/graph.vue';
+import ConsultPrint from './components/consult/print/consult-print.vue';
 
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -154,6 +155,11 @@ const router = new VueRouter({
             path:'/graph',
             name: 'graph',
             component: Graph
+        },
+        {
+            path: '/consult-print',
+            name: 'consult-print',
+            component: ConsultPrint
         },
         {
             path: '*',
