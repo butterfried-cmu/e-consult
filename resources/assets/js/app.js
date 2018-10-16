@@ -25,7 +25,6 @@ import ConsultList from './components/consult/list/consult-list.vue';
 import ConsultEdit from './components/consult/edit/consult-edit.vue';
 import Message from './components/message/send/message.vue';
 import Reply from './components/message/order/reply.vue';
-import Graph from './components/graph/view/graph.vue';
 
 // import 'bootstrap/dist/css/bootstrap.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -78,13 +77,13 @@ const router = new VueRouter({
             path: '/login',
             name: 'login',
             component: Login,
-            beforeEnter: ifNotLoggedIn,
+            // beforeEnter: ifNotLoggedIn,
         },
         {
             path: '/add',
             name: 'add-user',
             component: AddUser,
-            beforeEnter: ifLoggedIn,
+            // beforeEnter: ifLoggedIn,
         },
         {
             path: '/users/:id',
@@ -95,13 +94,13 @@ const router = new VueRouter({
             path: '/profile/edit/:id',
             name: 'editprofile',
             component: EditProfile,
-            beforeEnter: ifLoggedIn,
+            // beforeEnter: ifLoggedIn,
         },
         {
             path: '/profile',
             name: 'profile',
             component: Profile,
-            beforeEnter: ifLoggedIn,
+            // beforeEnter: ifLoggedIn,
         },
         {
             path: '/forgetpassword',
@@ -149,11 +148,6 @@ const router = new VueRouter({
             path: '/consults/:consult_id/reply',
             name: 'consult-reply',
             component: Reply
-        },
-        {
-            path:'/graph',
-            name: 'graph',
-            component: Graph
         },
         {
             path: '*',
