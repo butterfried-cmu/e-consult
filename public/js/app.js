@@ -15327,7 +15327,7 @@ var index_esm = {
 /* 20 */
 /***/ (function(module, exports) {
 
-module.exports = "/images/user.png?065c1b76bda66d87c6c556e9afc4c356";
+throw new Error("Module build failed: Error: ENOENT: no such file or directory, open 'D:\\github\\e-consult\\resources\\assets\\js\\components\\images\\user.png'");
 
 /***/ }),
 /* 21 */
@@ -15451,18 +15451,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__components_message_send_message_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_22__components_message_send_message_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue__ = __webpack_require__(128);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24_vuikit__ = __webpack_require__(133);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__vuikit_icons__ = __webpack_require__(134);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__vuikit_theme__ = __webpack_require__(135);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__vuikit_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_26__vuikit_theme__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27_vue_paginate__ = __webpack_require__(139);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27_vue_paginate___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_27_vue_paginate__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__components_graph_view_graph_vue__ = __webpack_require__(149);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__components_graph_view_graph_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_24__components_graph_view_graph_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25_vuikit__ = __webpack_require__(133);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__vuikit_icons__ = __webpack_require__(134);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__vuikit_theme__ = __webpack_require__(135);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__vuikit_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_27__vuikit_theme__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28_vue_paginate__ = __webpack_require__(139);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28_vue_paginate___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_28_vue_paginate__);
 
 
 
 
 
 // import BootstrapVue from 'bootstrap-vue';
+
 
 
 
@@ -15494,10 +15497,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_27_vue_paginate___default.a);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_28_vue_paginate___default.a);
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_24_vuikit__["a" /* default */]);
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_25__vuikit_icons__["a" /* default */]);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_25_vuikit__["a" /* default */]);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_26__vuikit_icons__["a" /* default */]);
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]);
 // Vue.use(BootstrapVue);
@@ -15532,13 +15535,13 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
     }, {
         path: '/login',
         name: 'login',
-        component: __WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue___default.a
-        // beforeEnter: ifNotLoggedIn,
+        component: __WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue___default.a,
+        beforeEnter: ifNotLoggedIn
     }, {
         path: '/add',
         name: 'add-user',
-        component: __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue___default.a
-        // beforeEnter: ifLoggedIn,
+        component: __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue___default.a,
+        beforeEnter: ifLoggedIn
     }, {
         path: '/users/:id',
         name: 'user',
@@ -15546,13 +15549,13 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
     }, {
         path: '/profile/edit/:id',
         name: 'editprofile',
-        component: __WEBPACK_IMPORTED_MODULE_13__components_user_edit_user_edit_vue___default.a
-        // beforeEnter: ifLoggedIn,
+        component: __WEBPACK_IMPORTED_MODULE_13__components_user_edit_user_edit_vue___default.a,
+        beforeEnter: ifLoggedIn
     }, {
         path: '/profile',
         name: 'profile',
-        component: __WEBPACK_IMPORTED_MODULE_11__components_user_profile_user_profile_vue___default.a
-        // beforeEnter: ifLoggedIn,
+        component: __WEBPACK_IMPORTED_MODULE_11__components_user_profile_user_profile_vue___default.a,
+        beforeEnter: ifLoggedIn
     }, {
         path: '/forgetpassword',
         name: 'forgetpassword',
@@ -15591,6 +15594,10 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
         path: '/consults/:consult_id/reply',
         name: 'consult-reply',
         component: __WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue___default.a
+    }, {
+        path: '/graph',
+        name: 'graph',
+        component: __WEBPACK_IMPORTED_MODULE_24__components_graph_view_graph_vue___default.a
     }, {
         path: '*',
         name: 'not-found-component',
@@ -21492,9 +21499,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 /* 77 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-module.exports = "<div id=\"profile\">\r\n    <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\r\n        <!-- left column -->\r\n        <div>\r\n            <vk-grid class=\"uk-padding\">\r\n                <div>\r\n                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\r\n                    <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"user.image_name\">\r\n                    <img src=\"" + __webpack_require__(20) + "\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!user.image_name\">\r\n                </div>\r\n            </vk-grid>\r\n\r\n        </div>\r\n\r\n        <!-- center column -->\r\n        <div class=\"uk-width-1-2@s uk-align-left@s\">\r\n            <br/> <br/>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h1><span class=\"uk-text-bold\">{{ user.name_title.name_title }} {{ user.first_name.toUpperCase() }} {{\r\n                        user.last_name.toUpperCase() }}</span></h1>\r\n                    </li>\r\n                    <button v-on:click.stop=\"editUser(user.user_id)\" class=\"uk-button uk-button-default\">Edit Profile</button>\r\n                    <h4>\r\n                        <li id=\"citizen_id\"><span class=\"uk-text-bold\">Citizen ID:</span> {{ user.citizen_id }}</li>\r\n                        <li id=\"role\"><span class=\"uk-text-bold\">Role:</span>\r\n                            <span v-for=\"list in role\">\r\n                                <span v-if=\"list == '1'\">ADMIN </span><span v-if=\"list == '2'\">COUNSELOR </span><span v-if=\"list == '3'\">CONSULTEE </span>\r\n                            </span>\r\n                        </li>\r\n                        <li id=\"gender\"><span class=\"uk-text-bold\">Gender:</span> {{ user.gender }}</li>\r\n                        <li id=\"date_of_birth\"><span class=\"uk-text-bold\">Date of Birth:</span> {{ user.date_of_birth }}</li>\r\n\r\n                        <hr class=\"uk-description-list-divider\">\r\n                        <li><h4><span class=\"uk-text-bold\">WORKPLACE</span></h4></li>\r\n                        <li id=\"unit\">{{ user.workplace }}</li>\r\n                    </h4>\r\n                    <hr class=\"uk-description-list-divider\">\r\n                </ul>\r\n            </div>\r\n            <vk-grid>\r\n                <div>\r\n                    <ul style=\"list-style-type: none;\">\r\n                        <li><h4><span class=\"uk-text-bold\">CONTACT INFORMATION</span></h4></li>\r\n                        <h4>\r\n                            <li><span class=\"uk-text-bold\">Telephone</span></li>\r\n                            <li><span class=\"uk-text-bold\">Email</span></li>\r\n                            <li><span class=\"uk-text-bold\">Address</span></li>\r\n                        </h4>\r\n                    </ul>\r\n                </div>\r\n                <div>\r\n                    <ul style=\"list-style-type: none;\">\r\n                        <li><h4>&nbsp;</h4></li>\r\n                        <h4>\r\n                            <li id=\"contact_number\">{{ user.contact_number }}</li>\r\n                            <li id=\"email\">{{ user.email }}</li>\r\n                            <li id=\"address\">{{ user.address }}</li>\r\n                        </h4>\r\n                    </ul>\r\n                </div>\r\n            </vk-grid>\r\n        </div>\r\n\r\n        <!-- right column -->\r\n        <div class=\"uk-align-center@s\">\r\n            <vk-grid class=\"uk-padding-large\">\r\n            </vk-grid>\r\n        </div>\r\n\r\n    </vk-grid>\r\n</div>\r\n";
+module.exports = "<div id=\"profile\">\r\n    <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\r\n        <!-- left column -->\r\n        <div>\r\n            <vk-grid class=\"uk-padding\">\r\n                <div>\r\n                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\r\n                    <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"user.image_name\">\r\n                    <img src=\"https://pixabay.com/photo-1633249/\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!user.image_name\">\r\n                </div>\r\n            </vk-grid>\r\n\r\n        </div>\r\n\r\n        <!-- center column -->\r\n        <div class=\"uk-width-1-2@s uk-align-left@s\">\r\n            <br/> <br/>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h1><span class=\"uk-text-bold\">{{ user.name_title.name_title }} {{ user.first_name.toUpperCase() }} {{\r\n                        user.last_name.toUpperCase() }}</span></h1>\r\n                    </li>\r\n                    <button v-on:click.stop=\"editUser(user.user_id)\" class=\"uk-button uk-button-default\">Edit Profile</button>\r\n                    <h4>\r\n                        <li id=\"citizen_id\"><span class=\"uk-text-bold\">Citizen ID:</span> {{ user.citizen_id }}</li>\r\n                        <li id=\"role\"><span class=\"uk-text-bold\">Role:</span>\r\n                            <span v-for=\"list in role\">\r\n                                <span v-if=\"list == '1'\">ADMIN </span><span v-if=\"list == '2'\">COUNSELOR </span><span v-if=\"list == '3'\">CONSULTEE </span>\r\n                            </span>\r\n                        </li>\r\n                        <li id=\"gender\"><span class=\"uk-text-bold\">Gender:</span> {{ user.gender }}</li>\r\n                        <li id=\"date_of_birth\"><span class=\"uk-text-bold\">Date of Birth:</span> {{ user.date_of_birth }}</li>\r\n\r\n                        <hr class=\"uk-description-list-divider\">\r\n                        <li><h4><span class=\"uk-text-bold\">WORKPLACE</span></h4></li>\r\n                        <li id=\"unit\">{{ user.workplace }}</li>\r\n                    </h4>\r\n                    <hr class=\"uk-description-list-divider\">\r\n                </ul>\r\n            </div>\r\n            <vk-grid>\r\n                <div>\r\n                    <ul style=\"list-style-type: none;\">\r\n                        <li><h4><span class=\"uk-text-bold\">CONTACT INFORMATION</span></h4></li>\r\n                        <h4>\r\n                            <li><span class=\"uk-text-bold\">Telephone</span></li>\r\n                            <li><span class=\"uk-text-bold\">Email</span></li>\r\n                            <li><span class=\"uk-text-bold\">Address</span></li>\r\n                        </h4>\r\n                    </ul>\r\n                </div>\r\n                <div>\r\n                    <ul style=\"list-style-type: none;\">\r\n                        <li><h4>&nbsp;</h4></li>\r\n                        <h4>\r\n                            <li id=\"contact_number\">{{ user.contact_number }}</li>\r\n                            <li id=\"email\">{{ user.email }}</li>\r\n                            <li id=\"address\">{{ user.address }}</li>\r\n                        </h4>\r\n                    </ul>\r\n                </div>\r\n            </vk-grid>\r\n        </div>\r\n\r\n        <!-- right column -->\r\n        <div class=\"uk-align-center@s\">\r\n            <vk-grid class=\"uk-padding-large\">\r\n            </vk-grid>\r\n        </div>\r\n\r\n    </vk-grid>\r\n</div>\r\n";
 
 /***/ }),
 /* 78 */
@@ -36071,6 +36078,119 @@ module.exports = {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 148 */,
+/* 149 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(150)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(152)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-34db8d7c"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\graph\\view\\graph.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-34db8d7c", Component.options)
+  } else {
+    hotAPI.reload("data-v-34db8d7c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 150 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(151);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("cb682b38", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-34db8d7c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./graph.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-34db8d7c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./graph.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 151 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n#graph[data-v-34db8d7c] {\n    background-color: aqua;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 152 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+throw new Error("Cannot find module \"vue-chartjs\"");
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    template: __webpack_require__(153)
+});
+
+/***/ }),
+/* 153 */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=\"graph\">\r\n<h1>Hello Graph!</h1>\r\n</div>";
 
 /***/ })
 /******/ ]);
