@@ -260,13 +260,27 @@
         <!-- Hide on print and done consult -->
         <div class="uk-margin-bottom uk-text-center">
             <!-- Draft Status : Edit btn avaliable ,else disable -->
-            <button v-on:click="editConsult(currentConsult.consult_id)" type="button"
+            <button v-on:click="editConsult(currentConsult.consult_id)"
+                    v-if="isDraft()"
+                    type="button"
                     class="uk-button uk-button-secondary">Edit
             </button>
-            <button v-on:click="sendConsult(currentConsult.consult_id)" type="button"
+            <button v-on:click="sendConsult(currentConsult.consult_id)"
+                    v-if="isDraft()"
+                    type="button"
                     class="uk-button uk-button-primary uk-width-small">Send
             </button>
-            <a class="uk-button uk-button-danger uk-width-small" href="../..#/">Cancel</a>
+            <button v-on:click="messageConsult(currentConsult.consult_id)"
+                    v-if="isPending() || isDone()"
+                    type="button"
+                    class="uk-button uk-button-secondary">Message
+            </button>
+            <button v-on:click="printConsult(currentConsult.consult_id)"
+                    v-if="isDone()"
+                    type="button"
+                    class="uk-button uk-button-primary uk-width-small">Print
+            </button>
+            <a class="uk-button uk-button-danger uk-width-small" href="../..#/">Back</a>
         </div>
         <br/>
     </div>

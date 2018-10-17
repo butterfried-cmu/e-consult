@@ -662,5 +662,24 @@ export const store = new Vuex.Store({
             });
         },
 
+        getPrintConsult({commit}, consult_id) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.get("/consults/" + consult_id + "/print/?token=" + localStorage.getItem('token'))
+                        .then(
+                            response => {
+                                // console.log(response);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
     },
 });
