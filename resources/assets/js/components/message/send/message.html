@@ -266,10 +266,14 @@
                 <div class="scrollbox">
                     <vk-grid gutter="small" class="uk-child-width-1-1@s uk-child-width-1-2@m uk-text-center" style="max-height: 60vh;">
                         <div v-for="attachment in attachments">
-                            <vk-card style="word-wrap: break-word;">
-                                type = {{attachment.type}}<br>
-                                name = {{attachment.file_name}}
+                            <vk-card style="word-wrap: break-word;" v-if="isImage(attachment)">
+                                IMG here and click to open in web
                             </vk-card>
+                            <vk-card v-on:click="downloadAttachment(attachment.attachment_id)" v-if="!isImage(attachment)" style="word-wrap: break-word;">
+                                Other file
+                            </vk-card>
+                            <br>
+                            name = {{attachment.file_name}}
                         </div>
                     </vk-grid>
                 </div>

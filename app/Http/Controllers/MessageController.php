@@ -137,7 +137,10 @@ class MessageController extends Controller
             $file_type = $request->attachments_type;
 
             $file_name = $attachment_id . '.' . $attachments_type[$key];
-            \File::put(public_path(''). '/storage/attachments/' . $consult_id . '/' . $file_name, base64_decode($attachment));
+            $pos  = strpos($attachment, ',');
+            $file_attachment = substr($attachment, $pos+1);
+//            return $file_attachment;
+            \File::put(public_path(''). '/storage/attachments/' . $consult_id . '/' . $file_name, base64_decode($file_attachment));
 
             $new_attachment = new Attachment([
                 'attachment_id' => $attachment_id,
@@ -170,7 +173,12 @@ class MessageController extends Controller
 
         $attachment = Attachment::where('attachment_id', $attachment_id)->first();
 
-        return response()->download(public_path().'\storage\attachments\\' . $attachment->consult_id . '\\'.$attachment->file_name);
+//        return response()->json(public_path().'\storage\attachments\\' .
+//            $attachment->consult_id . '\\'.$attachment->file_name);
+        return response()->json([
+            'file_link' => asset('storage/attachments/' . $attachment->consult_id . '/' . $attachment->file_name),
+            'file_name' => $attachment->file_name
+        ], 200,[], JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
     }
 
     /**

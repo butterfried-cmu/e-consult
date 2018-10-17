@@ -1,4 +1,6 @@
 <script>
+    import axios from 'axios';
+
     export default {
         template: require('./message.html'),
 
@@ -49,6 +51,10 @@
             },
             isDone() {
                 if (this.currentConsult.status == 'done') return true;
+                return false;
+            },
+            isImage(attachment) {
+                if (attachment.type == 'image') return true;
                 return false;
             },
             fetchData(consult_id) {
@@ -123,6 +129,25 @@
                         this.loadMessages(this.currentConsult.consult_id);
                     }
                 );
+            },
+            downloadAttachment(attachment_id) {
+                setTimeout(() => {
+                    axios.get("/messages/download/" + attachment_id + "/?token=" + localStorage.getItem('token'))
+                        .then(
+                            response => {
+                                let link = document.createElement('a');
+                                link.href = response.data.file_link;
+                                link.download = response.data.file_name;
+                                link.target = '_blank';
+                                link.click();
+                                console.log(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                        }
+                    );
+                }, 3000);
             }
         },
 
