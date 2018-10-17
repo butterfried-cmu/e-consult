@@ -1,8 +1,8 @@
 <script>
-import { Line } from 'vue-chartjs'
+import { Doughnut } from 'vue-chartjs'
 
 export default {
-    extends: Line,
+    extends: Doughnut,
     data () {
     return {
       gradient: null,
@@ -25,15 +25,6 @@ export default {
     this.renderChart({
       labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       datasets: [
-        {
-          label: 'Alzheimer’s disease',
-          borderColor: '#FC2525',
-          pointBackgroundColor: 'white',
-          borderWidth: 1,
-          pointBorderColor: '#FC2525',
-          backgroundColor: this.gradient,
-          data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
-        },
         {
           label: 'Bipolar disorder',
           borderColor: '#05CBE1',

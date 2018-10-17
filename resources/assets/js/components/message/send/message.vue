@@ -3,18 +3,46 @@ export default {
     template: require('./message.html'),
 
     mounted(){
-        this.interval = setInterval(() => this.count(), 3000)
-        this.interval = setInterval(() => this.count2(), 10000)
+        let payload = this.$route.params.consult_id;
+        this.$store.dispatch('getConsult',payload).then(
+            response => {
+                this.fetchData(this.currentConsult.consult_id)
+                this.timer1 = setInterval(() => this.fetchData(this.currentConsult.consult_id), 3000);
+            }
+        );
     },
 
     methods: {
-        count(){
-            console.log('count')
+        fetchData(consult_id){
+            console.log('FETCHED');
+            this.loadMessages(consult_id);
+            this.loadAttachments(consult_id);
         },
-        count2(){
-            console.log('count2')
+        loadMessages(consult_id){
+            this.$store.dispatch('getConsultMessages',consult_id).then(
+                response => {
+                }
+            );
         },
-    }
+        loadAttachments(consult_id){
+        },
+        isSelf(user_id){
+            if( user_id == this.currentUser.user_id ) return true;
+            return false;
+        }
+    },
+
+    computed: {
+        currentUser(){
+            return this.$store.getters['currentUser'];
+        },
+        currentConsult(){
+            return this.$store.getters['currentConsult'];
+        },
+        messages(){
+            return this.$store.getters['currentConsultMessages'];
+        }
+    },
 }
 </script>
 <style scoped>

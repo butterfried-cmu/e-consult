@@ -5,9 +5,6 @@
 
     export default {
         template: require('./index.html'),
-        data() {
-            return {}
-        },
         mounted() {
             this.loadConsultList();
         },

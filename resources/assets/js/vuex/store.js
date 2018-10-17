@@ -17,6 +17,7 @@ export const store = new Vuex.Store({
         consultDone: null,
         consultSearch: null,
         currentConsult: null,
+        currentConsultMessages: null,
     },
     getters: {
         isLoggedIn(state) {
@@ -48,6 +49,9 @@ export const store = new Vuex.Store({
         },
         currentConsult(state) {
             return state.currentConsult;
+        },
+        currentConsultMessages(state) {
+            return state.currentConsultMessages;
         }
     },
     mutations: {
@@ -91,7 +95,10 @@ export const store = new Vuex.Store({
         },
         setCurrentConsult(state, consult) {
             state.currentConsult = consult;
-        }
+        },
+        setCurrentConsultMessages(state, messages) {
+            state.currentConsultMessages = messages;
+        },
     },
     actions: {
         init({commit}) {
@@ -550,6 +557,26 @@ export const store = new Vuex.Store({
                             response => {
                                 console.log(response);
                                 commit('setDoneConsults', response.data.consults);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
+        getConsultMessages({commit}, consult_id) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.get("/messages/" + consult_id + "/?token=" + localStorage.getItem('token'))
+                        .then(
+                            response => {
+                                console.log(response);
+                                commit('setCurrentConsultMessages', response.data.messages);
                                 resolve(response);
                             }
                         ).catch(

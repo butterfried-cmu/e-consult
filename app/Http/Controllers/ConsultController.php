@@ -381,9 +381,9 @@ class ConsultController extends Controller
         // Send data to the view using loadView function of PDF facade
         $pdf = PDF::loadView('consultFormTemplate');
         // If you want to store the generated pdf to the server then you can use the store function
-        $pdf->save(public_path().'\storage\consult\consult.pdf');
+        $pdf->save(public_path().'\storage\consults\consult.pdf');
         // Finally, you can download the file using download function
-        return asset('storage/consult.pdf');
+        return asset('storage/consults/consult.pdf');
     }
 
 
