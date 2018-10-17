@@ -245,15 +245,15 @@
                         </li>
                     </ol>
                 </div>
-                <div class="centered">
-                    <textarea v-model="message" v-on:keyup.enter="sendMessage" class="uk-textarea center-block chatbox" id="message-box" rows="2" type="text" placeholder="Type here!"></textarea>
+                <div class="centered" v-if="isPending()">
+                    <textarea v-model="message" v-on:keyup.enter="sendMessage" class="uk-textarea center-block chatbox" id="message-box" rows="2" type="text" placeholder="Type here"></textarea>
                     <button v-on:click="sendMessage" class="uk-button uk-button-primary" id="send-btn">Send</button>
                 </div>
             </div>
             <div class="vertical-divider"></div>
             <!-- right column -->
             <div class="uk-width-1-4@m">
-                <div class="js-upload uk-placeholder uk-text-center upload">
+                <div v-if="isPending()" class="js-upload uk-placeholder uk-text-center upload">
                     <span><vk-icon icon="cloud-upload"></vk-icon></span>
                     <span class="uk-text-middle">Upload file(s) here</span>
                     <div uk-form-custom>
