@@ -91,6 +91,17 @@ Route::post('/consults/search', [
     'uses' => 'consultcontroller@postFindConsultByKeyword',
 //    'middleware' => ['auth.jwt', 'role:ADMIN']
 ]);
+
+
+// summary
+Route::get('/consults/summary', [
+    'uses' => 'consultcontroller@getConsultRecordSummary',
+]);
+Route::post('/consults/summary', [
+    'uses' => 'consultcontroller@postConsultRecordSummary',
+]);
+
+
 Route::get('/consults/{consult_id}', [
     'uses' => 'consultcontroller@getConsultById',
 //    'middleware' => ['auth.jwt', 'role:ADMIN']

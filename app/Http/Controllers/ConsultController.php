@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Rules\ValidImage;
 use PDF;
+use DB;
 
 class ConsultController extends Controller
 {
@@ -420,7 +421,49 @@ class ConsultController extends Controller
 
     public function getConsultRecordSummary()
     {
-        $results = DB::select('select * from users where id = :id', ['id' => 1]);
+        $results = DB::select('select med_dx,count(*) as count from consults group by med_dx');
+        $summaries = [];
+
+        foreach ($results as $item) {
+            $summary = new \stdClass;
+            $summary->disease_name = $item->med_dx;
+            $summary->amount = $item->count;
+
+            array_push($summaries, $summary);
+        }
+
+        return response()->json($summaries, 200);
+    }
+
+    public function postConsultRecordSummary()
+    {
+        $request = request();
+
+        $messages = [
+            'required' => 'required'
+        ];
+
+        $validator = Validator::make(array_merge($request->all()), [
+            'start_date' => 'required',
+            'end_date' => 'required',
+        ], $messages);
+
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 200);
+        }
+
+        $results = DB::select("select med_dx,count(*) as count from consults where (created_at between '$request->start_date' AND '$request->end_date') group by med_dx");
+        $summaries = [];
+
+        foreach ($results as $item) {
+            $summary = new \stdClass;
+            $summary->disease_name = $item->med_dx;
+            $summary->amount = $item->count;
+
+            array_push($summaries, $summary);
+        }
+
+        return response()->json($summaries, 200);
     }
 
 

@@ -30,7 +30,7 @@
                         if (!this.isMounted) {
                             clearInterval(this.timer2);
                         }
-                    }, 10000);
+                    }, 7000);
                 }
             );
         },
