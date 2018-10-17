@@ -38,7 +38,7 @@ class ConsultController extends Controller
 
         return response()->json([
             'consult' => $consult
-        ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
     }
 
@@ -124,7 +124,7 @@ class ConsultController extends Controller
 
         return response()->json([
             'message' => 'success'
-        ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     }
 
     public function postEditConsult($consult_id)
@@ -136,7 +136,7 @@ class ConsultController extends Controller
             'exists' => 'not_exist',
         ];
 
-        $validator = Validator::make(array_merge(['consult_id' => $consult_id],$request->all()), [
+        $validator = Validator::make(array_merge(['consult_id' => $consult_id], $request->all()), [
             'consult_id' => 'exists:consults',
             'patient_firstname' => 'required',
             'patient_lastname' => 'required',
@@ -173,10 +173,10 @@ class ConsultController extends Controller
 
         $consult = Consult::find($consult_id);
 
-        if($consult->status != "draft"){
+        if ($consult->status != "draft") {
             return response()->json([
                 'error' => 'not_draft_consult'
-            ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+            ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         }
 
         $consult->patient_firstname = $request->input('patient_firstname');
@@ -211,11 +211,12 @@ class ConsultController extends Controller
 
         return response()->json([
             'message' => 'success'
-        ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
     }
 
-    public function getDeleteDraftConsult($consult_id){
+    public function getDeleteDraftConsult($consult_id)
+    {
         $messages = [
             'required' => 'required',
             'exists' => 'not_exist',
@@ -231,7 +232,7 @@ class ConsultController extends Controller
 
         $consult = Consult::find($consult_id);
 
-        if($consult->status != "draft"){
+        if ($consult->status != "draft") {
             return response()->json([
                 'error' => 'not_draft_consult'
             ], 200);
@@ -244,7 +245,8 @@ class ConsultController extends Controller
         ], 200);
     }
 
-    public function getSendDraftConsult($consult_id){
+    public function getSendDraftConsult($consult_id)
+    {
         $messages = [
             'required' => 'required',
             'exists' => 'not_exist',
@@ -260,7 +262,7 @@ class ConsultController extends Controller
 
         $consult = Consult::find($consult_id);
 
-        if($consult->status != "draft"){
+        if ($consult->status != "draft") {
             return response()->json([
                 'error' => 'not_draft_consult'
             ], 200);
@@ -274,7 +276,8 @@ class ConsultController extends Controller
         ], 200);
     }
 
-    public function postReplyConsult($consult_id){
+    public function postReplyConsult($consult_id)
+    {
         $request = request();
 
         $messages = [
@@ -282,7 +285,7 @@ class ConsultController extends Controller
             'exists' => 'not_exist',
         ];
 
-        $validator = Validator::make(array_merge(['consult_id' => $consult_id],$request->all()), [
+        $validator = Validator::make(array_merge(['consult_id' => $consult_id], $request->all()), [
             'consult_id' => 'required|exists:consults',
             'consult_order' => 'required'
         ], $messages);
@@ -293,7 +296,7 @@ class ConsultController extends Controller
 
         $consult = Consult::find($consult_id);
 
-        if($consult->status != "pending"){
+        if ($consult->status != "pending") {
             return response()->json([
                 'error' => 'not_pending_consult'
             ], 200);
@@ -308,40 +311,44 @@ class ConsultController extends Controller
         ], 200);
     }
 
-    public function getDraftConsultList($user_id){
+    public function getDraftConsultList($user_id)
+    {
         $consults = Consult::where(['status' => 'draft', 'user_id' => $user_id])->get();
-        foreach ($consults as $consult){
+        foreach ($consults as $consult) {
             $creator = User::where('user_id', $consult->user_id)->first();
             $consult->created_by = $creator;
         }
         return response()->json([
             'consults' => $consults
-        ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     }
 
-    public function getDoneConsultList(){
+    public function getDoneConsultList()
+    {
         $consults = Consult::where(['status' => 'done'])->get();
-        foreach ($consults as $consult){
+        foreach ($consults as $consult) {
             $creator = User::where('user_id', $consult->user_id)->first();
             $consult->created_by = $creator;
         }
         return response()->json([
             'consults' => $consults
-        ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     }
 
-    public function getPendingConsultList(){
+    public function getPendingConsultList()
+    {
         $consults = Consult::where(['status' => 'pending'])->get();
-        foreach ($consults as $consult){
+        foreach ($consults as $consult) {
             $creator = User::where('user_id', $consult->user_id)->first();
             $consult->created_by = $creator;
         }
         return response()->json([
             'consults' => $consults
-        ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     }
 
-    public function postFindConsultByKeyword(){
+    public function postFindConsultByKeyword()
+    {
         $request = request();
 
         $messages = [
@@ -356,22 +363,22 @@ class ConsultController extends Controller
             return response()->json($validator->messages(), 200);
         }
 
-        $consults = Consult::where('status','done')
+        $consults = Consult::where('status', 'done')
 //            ->where()
-            ->where(function($query) use ($request) {
+            ->where(function ($query) use ($request) {
                 $query->where('patient_firstname', 'like', '%' . $request->keyword . '%')
                     ->orWhere('patient_lastname', 'like', '%' . $request->keyword . '%');
             })
             ->get();
 
-        foreach ($consults as $consult){
+        foreach ($consults as $consult) {
             $creator = User::where('user_id', $consult->user_id)->first();
             $consult->created_by = $creator;
         }
 
         return response()->json([
             'consults' => $consults
-        ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     }
 
     public function printConsultForm($consult_id)
@@ -394,7 +401,7 @@ class ConsultController extends Controller
 //        $data = Customer::get();
         $consult = Consult::with('user')->where('consult_id', $consult_id)->first();
 
-        if( $consult->status != 'done' ){
+        if ($consult->status != 'done') {
             return response()->json([
                 'consult_id' => ['not_done']
             ], 200);
@@ -402,13 +409,18 @@ class ConsultController extends Controller
         // Send data to the view using loadView function of PDF facade
         $pdf = PDF::loadView('consultFormTemplate', ['consult' => $consult]);
         // If you want to store the generated pdf to the server then you can use the store function
-        $path = public_path().'\storage\consults\report\\' . $consult_id . '.pdf';
+        $path = public_path() . '\storage\consults\report\\' . $consult_id . '.pdf';
         $pdf->save($path);
         // Finally, you can download the file using download function
         $options = app('request')->header('accept-charset') == 'utf-8' ? JSON_UNESCAPED_UNICODE : null;
         return response()->json([
             'file_link' => asset('storage/consults/report/' . $consult_id . '.pdf')
-        ], 200,[], JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    }
+
+    public function getConsultRecordSummary()
+    {
+        $results = DB::select('select * from users where id = :id', ['id' => 1]);
     }
 
 
