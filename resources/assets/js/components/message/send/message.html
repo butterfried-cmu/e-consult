@@ -7,194 +7,6 @@
                 <div>
                     <p class="uk-label uk-label-warning sticky">Consult ID {{currentConsult.consult_id}}</p>
                 </div>
-
-                <div id="personalinfo">
-                    <div class="uk-text-left">
-                        <h2 class="uk-heading-line"><span>Patient's Information</span></h2>
-                    </div>
-                    <div class="uk-form-horizontal">
-                        <div class="uk-margin">
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Patient's
-                                name</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.patient_firstname}} {{currentConsult.patient_lastname}}</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of
-                                Birth</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.patient_dob}}</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Gender</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.patient_gender}}</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Address</label>
-                            <div class="uk-form-controls">
-                                <p>
-                                    {{currentConsult.patient_address}}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Primary
-                                Doctor</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.primary_doctor}}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Medical Information -->
-                <br/>
-                <div id="medicalinfo">
-                    <div class="uk-text-left">
-                        <h2 class="uk-heading-line"><span>Physical examination</span></h2>
-                    </div>
-                    <div class="uk-form-horizontal">
-                        <div class="uk-margin">
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Health
-                                Condition</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.health_condition}}</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">Dx</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.med_dx}}</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">BW</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.med_bw}} kg</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">BMI</label>
-                            <div class="uk-form-controls unit">
-                                <p>{{currentConsult.med_bmi}}</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">T</label>
-                            <div class="uk-form-controls unit">
-                                <p>{{currentConsult.med_t}} °C</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">FBS</label>
-                            <div class="uk-form-controls unit">
-                                <p>{{currentConsult.med_fbs}} mg%</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">Cr</label>
-                            <div class="uk-form-controls unit">
-                                <p>{{currentConsult.med_cr}} Cr</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">Clearance</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.med_clearance}}</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">Stage</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.med_stage}}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <br/>
-                <!-- Record -->
-                <div id="recordinfo">
-                    <div class="uk-text-left">
-                        <h2 class="uk-heading-line"><span>Record</span></h2>
-                    </div>
-                    <div class="uk-margin">
-                        <label class="uk-form-label uk-text-lead" for="form-horizontal-text">Hx : OLD RECORD 1</label>
-                    </div>
-                    <div class="uk-form-horizontal unit">
-                        <div class="uk-margin">
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of
-                                Diagnosis</label>
-                            <div class="uk-form-controls ">
-                                <p>{{currentConsult.rec01_date}}</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">FBS</label>
-                            <div class="uk-form-controls ">
-                                <p>{{currentConsult.rec01_fbs}} mg%</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">BP1</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.rec01_bp1}} mmHg</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">BP2</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.rec01_bp2}} mmHg</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">P</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.rec01_p}} /min</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="uk-margin">
-                        <label class="uk-form-label uk-text-lead" for="form-horizontal-text">Hx : OLD RECORD 2</label>
-                    </div>
-                    <div class="uk-form-horizontal unit">
-                        <div class="uk-margin">
-                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of
-                                Diagnosis</label>
-                            <div class="uk-form-controls ">
-                                <p>{{currentConsult.rec02_date}}</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">FBS</label>
-                            <div class="uk-form-controls ">
-                                <p>{{currentConsult.rec02_fbs}} mg%</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">BP1</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.rec02_bp1}} mmHg</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">BP2</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.rec02_bp2}} mmHg</p>
-                            </div>
-                        </div>
-                        <div class="uk-margin">
-                            <label class="uk-form-label" for="form-horizontal-text">P</label>
-                            <div class="uk-form-controls">
-                                <p>{{currentConsult.rec02_p}} /min</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Consult Request -->
                 <br/>
                 <div id="consultinfo">
@@ -226,6 +38,196 @@
                         </div>
                     </div>
                 </div>
+                <br/>
+                <vk-offcanvas-content>
+                        <vk-button @click="show = !show" class="uk-align-center">Click to view Information</vk-button>
+                        <vk-offcanvas :show.sync="show">
+                                <div id="personalinfo">
+                                        <div class="uk-text-left">
+                                            <h2 class="uk-heading-line"><span>Patient's Information</span></h2>
+                                        </div>
+                                        <div class="uk-form-horizontal">
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Patient's
+                                                    name</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.patient_firstname}} {{currentConsult.patient_lastname}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of
+                                                    Birth</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.patient_dob}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Gender</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.patient_gender}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Address</label>
+                                                <div class="uk-form-controls">
+                                                    <p>
+                                                        {{currentConsult.patient_address}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Primary
+                                                    Doctor</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.primary_doctor}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <div id="medicalinfo">
+                                        <div class="uk-text-left">
+                                            <h2 class="uk-heading-line"><span>Physical examination</span></h2>
+                                        </div>
+                                        <div class="uk-form-horizontal">
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Health
+                                                    Condition</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.health_condition}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">Dx</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.med_dx}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">BW</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.med_bw}} kg</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">BMI</label>
+                                                <div class="uk-form-controls unit">
+                                                    <p>{{currentConsult.med_bmi}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">T</label>
+                                                <div class="uk-form-controls unit">
+                                                    <p>{{currentConsult.med_t}} °C</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">FBS</label>
+                                                <div class="uk-form-controls unit">
+                                                    <p>{{currentConsult.med_fbs}} mg%</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">Cr</label>
+                                                <div class="uk-form-controls unit">
+                                                    <p>{{currentConsult.med_cr}} Cr</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">Clearance</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.med_clearance}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">Stage</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.med_stage}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <!-- Record -->
+                                    <div id="recordinfo">
+                                        <div class="uk-text-left">
+                                            <h2 class="uk-heading-line"><span>Record</span></h2>
+                                        </div>
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label uk-text-lead" for="form-horizontal-text">Hx : OLD RECORD 1</label>
+                                        </div>
+                                        <div class="uk-form-horizontal unit">
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of
+                                                    Diagnosis</label>
+                                                <div class="uk-form-controls ">
+                                                    <p>{{currentConsult.rec01_date}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">FBS</label>
+                                                <div class="uk-form-controls ">
+                                                    <p>{{currentConsult.rec01_fbs}} mg%</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">BP1</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.rec01_bp1}} mmHg</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">BP2</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.rec01_bp2}} mmHg</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">P</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.rec01_p}} /min</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                    
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label uk-text-lead" for="form-horizontal-text">Hx : OLD RECORD 2</label>
+                                        </div>
+                                        <div class="uk-form-horizontal unit">
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Date of
+                                                    Diagnosis</label>
+                                                <div class="uk-form-controls ">
+                                                    <p>{{currentConsult.rec02_date}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">FBS</label>
+                                                <div class="uk-form-controls ">
+                                                    <p>{{currentConsult.rec02_fbs}} mg%</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">BP1</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.rec02_bp1}} mmHg</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">BP2</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.rec02_bp2}} mmHg</p>
+                                                </div>
+                                            </div>
+                                            <div class="uk-margin">
+                                                <label class="uk-form-label" for="form-horizontal-text">P</label>
+                                                <div class="uk-form-controls">
+                                                    <p>{{currentConsult.rec02_p}} /min</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                        </vk-offcanvas>
+                      </vk-offcanvas-content>
             </div>
 
             <!-- center column -->
@@ -242,10 +244,9 @@
                         </li>
                     </ol>
                 </div>
-                <div v-if="isPending()">
-                    <textarea v-model="message" class="uk-textarea center-block chatbox" rows="2" type="text"
-                              placeholder="Type here!"></textarea>
-                    <button v-on:click="sendMessage">Send</button>
+                <div class="centered" v-if="isPending()">
+                    <textarea v-model="message" v-on:keyup.enter="sendMessage" class="uk-textarea center-block chatbox" id="message-box" rows="2" type="text" placeholder="Type here"></textarea>
+                    <button v-on:click="sendMessage" class="uk-button uk-button-primary" id="send-btn">Send</button>
                 </div>
             </div>
             <div class="vertical-divider"></div>
@@ -263,9 +264,9 @@
                 <progress id="js-progressbar" class="uk-progress" value="0" max="100" hidden></progress>
                 <!-- Uploaded file(s) position -->
                 <div class="scrollbox">
-                    <vk-grid gutter="small" class="uk-child-width-1-1@s uk-child-width-1-2@m uk-text-center">
+                    <vk-grid gutter="small" class="uk-child-width-1-1@s uk-child-width-1-2@m uk-text-center" style="max-height: 60vh;">
                         <div v-for="attachment in attachments">
-                            <vk-card>
+                            <vk-card style="word-wrap: break-word;">
                                 type = {{attachment.type}}<br>
                                 name = {{attachment.file_name}}
                             </vk-card>
