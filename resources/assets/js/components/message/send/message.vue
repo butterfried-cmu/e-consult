@@ -148,6 +148,9 @@
                         }
                     );
                 }, 3000);
+            },
+            image_path(file_name){
+                return "../../storage/attachments/" + this.currentConsult.consult_id + "/" + file_name;
             }
         },
 
@@ -163,7 +166,7 @@
             },
             attachments() {
                 return this.$store.getters['currentConsultAttachments'];
-            }
+            },
         },
     }
 </script>
