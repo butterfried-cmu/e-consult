@@ -13,27 +13,9 @@
                 message: "",
                 upload_files: [],
                 upload_files_extension: [],
-                images : [
-            {
-                src : 'https://cdn.rawgit.com/vrajroham/vrajroham.github.io/85d64ac5/imgs/img1.jpg',
-                title : 'Image 2'
-            },
-            {
-                src : 'https://cdn.rawgit.com/vrajroham/vrajroham.github.io/85d64ac5/imgs/img2.jpg',
-                title : 'Image 3'
-            },
-            {
-                src : 'https://cdn.rawgit.com/vrajroham/vrajroham.github.io/85d64ac5/imgs/img3.jpg',
-                title : ''
-            },
-            {
-                src : 'https://cdn.rawgit.com/vrajroham/vrajroham.github.io/85d64ac5/imgs/img4.jpg',
-                title : ''
-            },
-          ],
-          options : {
-            closeText : 'x'
-          }
+                options: {
+                    closeText: 'x'
+                }
             }
         },
 
@@ -136,6 +118,7 @@
                 }
                 this.$store.dispatch('postSendAttachments', payload).then(
                     response => {
+                        this.upload_files = []
                     }
                 );
             },
@@ -173,8 +156,15 @@
                     );
                 }, 3000);
             },
-            image_path(file_name){
+            image_path(file_name) {
                 return "../../storage/attachments/" + this.currentConsult.consult_id + "/" + file_name;
+            },
+            lightbox_image(file_name){
+                return [
+                    {
+                        src: this.image_path(file_name)
+                    }
+                ]
             }
         },
 
@@ -195,6 +185,10 @@
     }
 </script>
 <style scoped>
+    .my-gallery a img{
+        width: 100%;
+    }
+
     #message {
         overflow: hidden;
     }

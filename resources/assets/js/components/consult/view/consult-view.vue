@@ -41,8 +41,8 @@
                 if (r == true) {
                     this.$store.dispatch('getSendConsult', payload).then(
                         response => {
-                            console.log('Consult sent successfully');
-                            this.loadConsultList();
+                            alert('Consult sent successfully');
+                            // this.loadConsultList();
                         },
                         error => {
                             console.log('Delete consult error')

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 154);
+/******/ 	return __webpack_require__(__webpack_require__.s = 159);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1902,7 +1902,7 @@
             try {
                 oldLocale = globalLocale._abbr;
                 var aliasedRequire = require;
-                __webpack_require__(304)("./" + name);
+                __webpack_require__(306)("./" + name);
                 getSetGlobalLocale(oldLocale);
             } catch (e) {}
         }
@@ -4574,7 +4574,7 @@
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(303)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(305)(module)))
 
 /***/ }),
 /* 1 */
@@ -4583,10 +4583,10 @@
 "use strict";
 
 
-module.exports = __webpack_require__(13);
-module.exports.easing = __webpack_require__(277);
-module.exports.canvas = __webpack_require__(278);
-module.exports.options = __webpack_require__(279);
+module.exports = __webpack_require__(15);
+module.exports.easing = __webpack_require__(283);
+module.exports.canvas = __webpack_require__(284);
+module.exports.options = __webpack_require__(285);
 
 
 /***/ }),
@@ -4819,7 +4819,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
   ) }
 }
 
-var listToStyles = __webpack_require__(180)
+var listToStyles = __webpack_require__(185)
 
 /*
 type StyleObject = {
@@ -5034,8 +5034,8 @@ function applyToTag (styleElement, obj) {
 "use strict";
 
 
-var bind = __webpack_require__(20);
-var isBuffer = __webpack_require__(159);
+var bind = __webpack_require__(22);
+var isBuffer = __webpack_require__(164);
 
 /*global toString:true*/
 
@@ -5344,7 +5344,7 @@ module.exports = {
 "use strict";
 
 
-var color = __webpack_require__(26);
+var color = __webpack_require__(28);
 var helpers = __webpack_require__(1);
 
 function interpolate(start, view, model, ease) {
@@ -5463,24 +5463,74 @@ module.exports = Element;
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-module.exports = {};
-module.exports.Arc = __webpack_require__(285);
-module.exports.Line = __webpack_require__(286);
-module.exports.Point = __webpack_require__(287);
-module.exports.Rectangle = __webpack_require__(288);
-
+module.exports = __webpack_require__(163);
 
 /***/ }),
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(158);
+"use strict";
+
+
+var defaults = __webpack_require__(2);
+var helpers = __webpack_require__(1);
+var layouts = __webpack_require__(11);
+
+module.exports = {
+	// Scale registration object. Extensions can register new scale types (such as log or DB scales) and then
+	// use the new chart options to grab the correct scale
+	constructors: {},
+	// Use a registration function so that we can move to an ES6 map when we no longer need to support
+	// old browsers
+
+	// Scale config defaults
+	defaults: {},
+	registerScaleType: function(type, scaleConstructor, scaleDefaults) {
+		this.constructors[type] = scaleConstructor;
+		this.defaults[type] = helpers.clone(scaleDefaults);
+	},
+	getScaleConstructor: function(type) {
+		return this.constructors.hasOwnProperty(type) ? this.constructors[type] : undefined;
+	},
+	getScaleDefaults: function(type) {
+		// Return the scale defaults merged with the global settings so that we always use the latest ones
+		return this.defaults.hasOwnProperty(type) ? helpers.merge({}, [defaults.scale, this.defaults[type]]) : {};
+	},
+	updateScaleDefaults: function(type, additions) {
+		var me = this;
+		if (me.defaults.hasOwnProperty(type)) {
+			me.defaults[type] = helpers.extend(me.defaults[type], additions);
+		}
+	},
+	addScalesToLayout: function(chart) {
+		// Adds each scale to the chart.boxes array to be sized accordingly
+		helpers.each(chart.scales, function(scale) {
+			// Set ILayoutItem parameters for backwards compatibility
+			scale.fullWidth = scale.options.fullWidth;
+			scale.position = scale.options.position;
+			scale.weight = scale.options.weight;
+			layouts.addBox(chart, scale);
+		});
+	}
+};
+
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {};
+module.exports.Arc = __webpack_require__(291);
+module.exports.Line = __webpack_require__(292);
+module.exports.Point = __webpack_require__(293);
+module.exports.Rectangle = __webpack_require__(294);
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5906,7 +5956,948 @@ module.exports = {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var defaults = __webpack_require__(2);
+var Element = __webpack_require__(7);
+var helpers = __webpack_require__(1);
+var Ticks = __webpack_require__(13);
+
+defaults._set('scale', {
+	display: true,
+	position: 'left',
+	offset: false,
+
+	// grid line settings
+	gridLines: {
+		display: true,
+		color: 'rgba(0, 0, 0, 0.1)',
+		lineWidth: 1,
+		drawBorder: true,
+		drawOnChartArea: true,
+		drawTicks: true,
+		tickMarkLength: 10,
+		zeroLineWidth: 1,
+		zeroLineColor: 'rgba(0,0,0,0.25)',
+		zeroLineBorderDash: [],
+		zeroLineBorderDashOffset: 0.0,
+		offsetGridLines: false,
+		borderDash: [],
+		borderDashOffset: 0.0
+	},
+
+	// scale label
+	scaleLabel: {
+		// display property
+		display: false,
+
+		// actual label
+		labelString: '',
+
+		// line height
+		lineHeight: 1.2,
+
+		// top/bottom padding
+		padding: {
+			top: 4,
+			bottom: 4
+		}
+	},
+
+	// label settings
+	ticks: {
+		beginAtZero: false,
+		minRotation: 0,
+		maxRotation: 50,
+		mirror: false,
+		padding: 0,
+		reverse: false,
+		display: true,
+		autoSkip: true,
+		autoSkipPadding: 0,
+		labelOffset: 0,
+		// We pass through arrays to be rendered as multiline labels, we convert Others to strings here.
+		callback: Ticks.formatters.values,
+		minor: {},
+		major: {}
+	}
+});
+
+function labelsFromTicks(ticks) {
+	var labels = [];
+	var i, ilen;
+
+	for (i = 0, ilen = ticks.length; i < ilen; ++i) {
+		labels.push(ticks[i].label);
+	}
+
+	return labels;
+}
+
+function getLineValue(scale, index, offsetGridLines) {
+	var lineValue = scale.getPixelForTick(index);
+
+	if (offsetGridLines) {
+		if (index === 0) {
+			lineValue -= (scale.getPixelForTick(1) - lineValue) / 2;
+		} else {
+			lineValue -= (lineValue - scale.getPixelForTick(index - 1)) / 2;
+		}
+	}
+	return lineValue;
+}
+
+function computeTextSize(context, tick, font) {
+	return helpers.isArray(tick) ?
+		helpers.longestText(context, font, tick) :
+		context.measureText(tick).width;
+}
+
+function parseFontOptions(options) {
+	var valueOrDefault = helpers.valueOrDefault;
+	var globalDefaults = defaults.global;
+	var size = valueOrDefault(options.fontSize, globalDefaults.defaultFontSize);
+	var style = valueOrDefault(options.fontStyle, globalDefaults.defaultFontStyle);
+	var family = valueOrDefault(options.fontFamily, globalDefaults.defaultFontFamily);
+
+	return {
+		size: size,
+		style: style,
+		family: family,
+		font: helpers.fontString(size, style, family)
+	};
+}
+
+function parseLineHeight(options) {
+	return helpers.options.toLineHeight(
+		helpers.valueOrDefault(options.lineHeight, 1.2),
+		helpers.valueOrDefault(options.fontSize, defaults.global.defaultFontSize));
+}
+
+module.exports = Element.extend({
+	/**
+	 * Get the padding needed for the scale
+	 * @method getPadding
+	 * @private
+	 * @returns {Padding} the necessary padding
+	 */
+	getPadding: function() {
+		var me = this;
+		return {
+			left: me.paddingLeft || 0,
+			top: me.paddingTop || 0,
+			right: me.paddingRight || 0,
+			bottom: me.paddingBottom || 0
+		};
+	},
+
+	/**
+	 * Returns the scale tick objects ({label, major})
+	 * @since 2.7
+	 */
+	getTicks: function() {
+		return this._ticks;
+	},
+
+	// These methods are ordered by lifecyle. Utilities then follow.
+	// Any function defined here is inherited by all scale types.
+	// Any function can be extended by the scale type
+
+	mergeTicksOptions: function() {
+		var ticks = this.options.ticks;
+		if (ticks.minor === false) {
+			ticks.minor = {
+				display: false
+			};
+		}
+		if (ticks.major === false) {
+			ticks.major = {
+				display: false
+			};
+		}
+		for (var key in ticks) {
+			if (key !== 'major' && key !== 'minor') {
+				if (typeof ticks.minor[key] === 'undefined') {
+					ticks.minor[key] = ticks[key];
+				}
+				if (typeof ticks.major[key] === 'undefined') {
+					ticks.major[key] = ticks[key];
+				}
+			}
+		}
+	},
+	beforeUpdate: function() {
+		helpers.callback(this.options.beforeUpdate, [this]);
+	},
+
+	update: function(maxWidth, maxHeight, margins) {
+		var me = this;
+		var i, ilen, labels, label, ticks, tick;
+
+		// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
+		me.beforeUpdate();
+
+		// Absorb the master measurements
+		me.maxWidth = maxWidth;
+		me.maxHeight = maxHeight;
+		me.margins = helpers.extend({
+			left: 0,
+			right: 0,
+			top: 0,
+			bottom: 0
+		}, margins);
+		me.longestTextCache = me.longestTextCache || {};
+
+		// Dimensions
+		me.beforeSetDimensions();
+		me.setDimensions();
+		me.afterSetDimensions();
+
+		// Data min/max
+		me.beforeDataLimits();
+		me.determineDataLimits();
+		me.afterDataLimits();
+
+		// Ticks - `this.ticks` is now DEPRECATED!
+		// Internal ticks are now stored as objects in the PRIVATE `this._ticks` member
+		// and must not be accessed directly from outside this class. `this.ticks` being
+		// around for long time and not marked as private, we can't change its structure
+		// without unexpected breaking changes. If you need to access the scale ticks,
+		// use scale.getTicks() instead.
+
+		me.beforeBuildTicks();
+
+		// New implementations should return an array of objects but for BACKWARD COMPAT,
+		// we still support no return (`this.ticks` internally set by calling this method).
+		ticks = me.buildTicks() || [];
+
+		me.afterBuildTicks();
+
+		me.beforeTickToLabelConversion();
+
+		// New implementations should return the formatted tick labels but for BACKWARD
+		// COMPAT, we still support no return (`this.ticks` internally changed by calling
+		// this method and supposed to contain only string values).
+		labels = me.convertTicksToLabels(ticks) || me.ticks;
+
+		me.afterTickToLabelConversion();
+
+		me.ticks = labels;   // BACKWARD COMPATIBILITY
+
+		// IMPORTANT: from this point, we consider that `this.ticks` will NEVER change!
+
+		// BACKWARD COMPAT: synchronize `_ticks` with labels (so potentially `this.ticks`)
+		for (i = 0, ilen = labels.length; i < ilen; ++i) {
+			label = labels[i];
+			tick = ticks[i];
+			if (!tick) {
+				ticks.push(tick = {
+					label: label,
+					major: false
+				});
+			} else {
+				tick.label = label;
+			}
+		}
+
+		me._ticks = ticks;
+
+		// Tick Rotation
+		me.beforeCalculateTickRotation();
+		me.calculateTickRotation();
+		me.afterCalculateTickRotation();
+		// Fit
+		me.beforeFit();
+		me.fit();
+		me.afterFit();
+		//
+		me.afterUpdate();
+
+		return me.minSize;
+
+	},
+	afterUpdate: function() {
+		helpers.callback(this.options.afterUpdate, [this]);
+	},
+
+	//
+
+	beforeSetDimensions: function() {
+		helpers.callback(this.options.beforeSetDimensions, [this]);
+	},
+	setDimensions: function() {
+		var me = this;
+		// Set the unconstrained dimension before label rotation
+		if (me.isHorizontal()) {
+			// Reset position before calculating rotation
+			me.width = me.maxWidth;
+			me.left = 0;
+			me.right = me.width;
+		} else {
+			me.height = me.maxHeight;
+
+			// Reset position before calculating rotation
+			me.top = 0;
+			me.bottom = me.height;
+		}
+
+		// Reset padding
+		me.paddingLeft = 0;
+		me.paddingTop = 0;
+		me.paddingRight = 0;
+		me.paddingBottom = 0;
+	},
+	afterSetDimensions: function() {
+		helpers.callback(this.options.afterSetDimensions, [this]);
+	},
+
+	// Data limits
+	beforeDataLimits: function() {
+		helpers.callback(this.options.beforeDataLimits, [this]);
+	},
+	determineDataLimits: helpers.noop,
+	afterDataLimits: function() {
+		helpers.callback(this.options.afterDataLimits, [this]);
+	},
+
+	//
+	beforeBuildTicks: function() {
+		helpers.callback(this.options.beforeBuildTicks, [this]);
+	},
+	buildTicks: helpers.noop,
+	afterBuildTicks: function() {
+		helpers.callback(this.options.afterBuildTicks, [this]);
+	},
+
+	beforeTickToLabelConversion: function() {
+		helpers.callback(this.options.beforeTickToLabelConversion, [this]);
+	},
+	convertTicksToLabels: function() {
+		var me = this;
+		// Convert ticks to strings
+		var tickOpts = me.options.ticks;
+		me.ticks = me.ticks.map(tickOpts.userCallback || tickOpts.callback, this);
+	},
+	afterTickToLabelConversion: function() {
+		helpers.callback(this.options.afterTickToLabelConversion, [this]);
+	},
+
+	//
+
+	beforeCalculateTickRotation: function() {
+		helpers.callback(this.options.beforeCalculateTickRotation, [this]);
+	},
+	calculateTickRotation: function() {
+		var me = this;
+		var context = me.ctx;
+		var tickOpts = me.options.ticks;
+		var labels = labelsFromTicks(me._ticks);
+
+		// Get the width of each grid by calculating the difference
+		// between x offsets between 0 and 1.
+		var tickFont = parseFontOptions(tickOpts);
+		context.font = tickFont.font;
+
+		var labelRotation = tickOpts.minRotation || 0;
+
+		if (labels.length && me.options.display && me.isHorizontal()) {
+			var originalLabelWidth = helpers.longestText(context, tickFont.font, labels, me.longestTextCache);
+			var labelWidth = originalLabelWidth;
+			var cosRotation, sinRotation;
+
+			// Allow 3 pixels x2 padding either side for label readability
+			var tickWidth = me.getPixelForTick(1) - me.getPixelForTick(0) - 6;
+
+			// Max label rotation can be set or default to 90 - also act as a loop counter
+			while (labelWidth > tickWidth && labelRotation < tickOpts.maxRotation) {
+				var angleRadians = helpers.toRadians(labelRotation);
+				cosRotation = Math.cos(angleRadians);
+				sinRotation = Math.sin(angleRadians);
+
+				if (sinRotation * originalLabelWidth > me.maxHeight) {
+					// go back one step
+					labelRotation--;
+					break;
+				}
+
+				labelRotation++;
+				labelWidth = cosRotation * originalLabelWidth;
+			}
+		}
+
+		me.labelRotation = labelRotation;
+	},
+	afterCalculateTickRotation: function() {
+		helpers.callback(this.options.afterCalculateTickRotation, [this]);
+	},
+
+	//
+
+	beforeFit: function() {
+		helpers.callback(this.options.beforeFit, [this]);
+	},
+	fit: function() {
+		var me = this;
+		// Reset
+		var minSize = me.minSize = {
+			width: 0,
+			height: 0
+		};
+
+		var labels = labelsFromTicks(me._ticks);
+
+		var opts = me.options;
+		var tickOpts = opts.ticks;
+		var scaleLabelOpts = opts.scaleLabel;
+		var gridLineOpts = opts.gridLines;
+		var display = opts.display;
+		var isHorizontal = me.isHorizontal();
+
+		var tickFont = parseFontOptions(tickOpts);
+		var tickMarkLength = opts.gridLines.tickMarkLength;
+
+		// Width
+		if (isHorizontal) {
+			// subtract the margins to line up with the chartArea if we are a full width scale
+			minSize.width = me.isFullWidth() ? me.maxWidth - me.margins.left - me.margins.right : me.maxWidth;
+		} else {
+			minSize.width = display && gridLineOpts.drawTicks ? tickMarkLength : 0;
+		}
+
+		// height
+		if (isHorizontal) {
+			minSize.height = display && gridLineOpts.drawTicks ? tickMarkLength : 0;
+		} else {
+			minSize.height = me.maxHeight; // fill all the height
+		}
+
+		// Are we showing a title for the scale?
+		if (scaleLabelOpts.display && display) {
+			var scaleLabelLineHeight = parseLineHeight(scaleLabelOpts);
+			var scaleLabelPadding = helpers.options.toPadding(scaleLabelOpts.padding);
+			var deltaHeight = scaleLabelLineHeight + scaleLabelPadding.height;
+
+			if (isHorizontal) {
+				minSize.height += deltaHeight;
+			} else {
+				minSize.width += deltaHeight;
+			}
+		}
+
+		// Don't bother fitting the ticks if we are not showing them
+		if (tickOpts.display && display) {
+			var largestTextWidth = helpers.longestText(me.ctx, tickFont.font, labels, me.longestTextCache);
+			var tallestLabelHeightInLines = helpers.numberOfLabelLines(labels);
+			var lineSpace = tickFont.size * 0.5;
+			var tickPadding = me.options.ticks.padding;
+
+			if (isHorizontal) {
+				// A horizontal axis is more constrained by the height.
+				me.longestLabelWidth = largestTextWidth;
+
+				var angleRadians = helpers.toRadians(me.labelRotation);
+				var cosRotation = Math.cos(angleRadians);
+				var sinRotation = Math.sin(angleRadians);
+
+				// TODO - improve this calculation
+				var labelHeight = (sinRotation * largestTextWidth)
+					+ (tickFont.size * tallestLabelHeightInLines)
+					+ (lineSpace * (tallestLabelHeightInLines - 1))
+					+ lineSpace; // padding
+
+				minSize.height = Math.min(me.maxHeight, minSize.height + labelHeight + tickPadding);
+
+				me.ctx.font = tickFont.font;
+				var firstLabelWidth = computeTextSize(me.ctx, labels[0], tickFont.font);
+				var lastLabelWidth = computeTextSize(me.ctx, labels[labels.length - 1], tickFont.font);
+
+				// Ensure that our ticks are always inside the canvas. When rotated, ticks are right aligned
+				// which means that the right padding is dominated by the font height
+				if (me.labelRotation !== 0) {
+					me.paddingLeft = opts.position === 'bottom' ? (cosRotation * firstLabelWidth) + 3 : (cosRotation * lineSpace) + 3; // add 3 px to move away from canvas edges
+					me.paddingRight = opts.position === 'bottom' ? (cosRotation * lineSpace) + 3 : (cosRotation * lastLabelWidth) + 3;
+				} else {
+					me.paddingLeft = firstLabelWidth / 2 + 3; // add 3 px to move away from canvas edges
+					me.paddingRight = lastLabelWidth / 2 + 3;
+				}
+			} else {
+				// A vertical axis is more constrained by the width. Labels are the
+				// dominant factor here, so get that length first and account for padding
+				if (tickOpts.mirror) {
+					largestTextWidth = 0;
+				} else {
+					// use lineSpace for consistency with horizontal axis
+					// tickPadding is not implemented for horizontal
+					largestTextWidth += tickPadding + lineSpace;
+				}
+
+				minSize.width = Math.min(me.maxWidth, minSize.width + largestTextWidth);
+
+				me.paddingTop = tickFont.size / 2;
+				me.paddingBottom = tickFont.size / 2;
+			}
+		}
+
+		me.handleMargins();
+
+		me.width = minSize.width;
+		me.height = minSize.height;
+	},
+
+	/**
+	 * Handle margins and padding interactions
+	 * @private
+	 */
+	handleMargins: function() {
+		var me = this;
+		if (me.margins) {
+			me.paddingLeft = Math.max(me.paddingLeft - me.margins.left, 0);
+			me.paddingTop = Math.max(me.paddingTop - me.margins.top, 0);
+			me.paddingRight = Math.max(me.paddingRight - me.margins.right, 0);
+			me.paddingBottom = Math.max(me.paddingBottom - me.margins.bottom, 0);
+		}
+	},
+
+	afterFit: function() {
+		helpers.callback(this.options.afterFit, [this]);
+	},
+
+	// Shared Methods
+	isHorizontal: function() {
+		return this.options.position === 'top' || this.options.position === 'bottom';
+	},
+	isFullWidth: function() {
+		return (this.options.fullWidth);
+	},
+
+	// Get the correct value. NaN bad inputs, If the value type is object get the x or y based on whether we are horizontal or not
+	getRightValue: function(rawValue) {
+		// Null and undefined values first
+		if (helpers.isNullOrUndef(rawValue)) {
+			return NaN;
+		}
+		// isNaN(object) returns true, so make sure NaN is checking for a number; Discard Infinite values
+		if (typeof rawValue === 'number' && !isFinite(rawValue)) {
+			return NaN;
+		}
+		// If it is in fact an object, dive in one more level
+		if (rawValue) {
+			if (this.isHorizontal()) {
+				if (rawValue.x !== undefined) {
+					return this.getRightValue(rawValue.x);
+				}
+			} else if (rawValue.y !== undefined) {
+				return this.getRightValue(rawValue.y);
+			}
+		}
+
+		// Value is good, return it
+		return rawValue;
+	},
+
+	/**
+	 * Used to get the value to display in the tooltip for the data at the given index
+	 * @param index
+	 * @param datasetIndex
+	 */
+	getLabelForIndex: helpers.noop,
+
+	/**
+	 * Returns the location of the given data point. Value can either be an index or a numerical value
+	 * The coordinate (0, 0) is at the upper-left corner of the canvas
+	 * @param value
+	 * @param index
+	 * @param datasetIndex
+	 */
+	getPixelForValue: helpers.noop,
+
+	/**
+	 * Used to get the data value from a given pixel. This is the inverse of getPixelForValue
+	 * The coordinate (0, 0) is at the upper-left corner of the canvas
+	 * @param pixel
+	 */
+	getValueForPixel: helpers.noop,
+
+	/**
+	 * Returns the location of the tick at the given index
+	 * The coordinate (0, 0) is at the upper-left corner of the canvas
+	 */
+	getPixelForTick: function(index) {
+		var me = this;
+		var offset = me.options.offset;
+		if (me.isHorizontal()) {
+			var innerWidth = me.width - (me.paddingLeft + me.paddingRight);
+			var tickWidth = innerWidth / Math.max((me._ticks.length - (offset ? 0 : 1)), 1);
+			var pixel = (tickWidth * index) + me.paddingLeft;
+
+			if (offset) {
+				pixel += tickWidth / 2;
+			}
+
+			var finalVal = me.left + Math.round(pixel);
+			finalVal += me.isFullWidth() ? me.margins.left : 0;
+			return finalVal;
+		}
+		var innerHeight = me.height - (me.paddingTop + me.paddingBottom);
+		return me.top + (index * (innerHeight / (me._ticks.length - 1)));
+	},
+
+	/**
+	 * Utility for getting the pixel location of a percentage of scale
+	 * The coordinate (0, 0) is at the upper-left corner of the canvas
+	 */
+	getPixelForDecimal: function(decimal) {
+		var me = this;
+		if (me.isHorizontal()) {
+			var innerWidth = me.width - (me.paddingLeft + me.paddingRight);
+			var valueOffset = (innerWidth * decimal) + me.paddingLeft;
+
+			var finalVal = me.left + Math.round(valueOffset);
+			finalVal += me.isFullWidth() ? me.margins.left : 0;
+			return finalVal;
+		}
+		return me.top + (decimal * me.height);
+	},
+
+	/**
+	 * Returns the pixel for the minimum chart value
+	 * The coordinate (0, 0) is at the upper-left corner of the canvas
+	 */
+	getBasePixel: function() {
+		return this.getPixelForValue(this.getBaseValue());
+	},
+
+	getBaseValue: function() {
+		var me = this;
+		var min = me.min;
+		var max = me.max;
+
+		return me.beginAtZero ? 0 :
+			min < 0 && max < 0 ? max :
+			min > 0 && max > 0 ? min :
+			0;
+	},
+
+	/**
+	 * Returns a subset of ticks to be plotted to avoid overlapping labels.
+	 * @private
+	 */
+	_autoSkip: function(ticks) {
+		var skipRatio;
+		var me = this;
+		var isHorizontal = me.isHorizontal();
+		var optionTicks = me.options.ticks.minor;
+		var tickCount = ticks.length;
+		var labelRotationRadians = helpers.toRadians(me.labelRotation);
+		var cosRotation = Math.cos(labelRotationRadians);
+		var longestRotatedLabel = me.longestLabelWidth * cosRotation;
+		var result = [];
+		var i, tick, shouldSkip;
+
+		// figure out the maximum number of gridlines to show
+		var maxTicks;
+		if (optionTicks.maxTicksLimit) {
+			maxTicks = optionTicks.maxTicksLimit;
+		}
+
+		if (isHorizontal) {
+			skipRatio = false;
+
+			if ((longestRotatedLabel + optionTicks.autoSkipPadding) * tickCount > (me.width - (me.paddingLeft + me.paddingRight))) {
+				skipRatio = 1 + Math.floor(((longestRotatedLabel + optionTicks.autoSkipPadding) * tickCount) / (me.width - (me.paddingLeft + me.paddingRight)));
+			}
+
+			// if they defined a max number of optionTicks,
+			// increase skipRatio until that number is met
+			if (maxTicks && tickCount > maxTicks) {
+				skipRatio = Math.max(skipRatio, Math.floor(tickCount / maxTicks));
+			}
+		}
+
+		for (i = 0; i < tickCount; i++) {
+			tick = ticks[i];
+
+			// Since we always show the last tick,we need may need to hide the last shown one before
+			shouldSkip = (skipRatio > 1 && i % skipRatio > 0) || (i % skipRatio === 0 && i + skipRatio >= tickCount);
+			if (shouldSkip && i !== tickCount - 1) {
+				// leave tick in place but make sure it's not displayed (#4635)
+				delete tick.label;
+			}
+			result.push(tick);
+		}
+		return result;
+	},
+
+	// Actually draw the scale on the canvas
+	// @param {rectangle} chartArea : the area of the chart to draw full grid lines on
+	draw: function(chartArea) {
+		var me = this;
+		var options = me.options;
+		if (!options.display) {
+			return;
+		}
+
+		var context = me.ctx;
+		var globalDefaults = defaults.global;
+		var optionTicks = options.ticks.minor;
+		var optionMajorTicks = options.ticks.major || optionTicks;
+		var gridLines = options.gridLines;
+		var scaleLabel = options.scaleLabel;
+
+		var isRotated = me.labelRotation !== 0;
+		var isHorizontal = me.isHorizontal();
+
+		var ticks = optionTicks.autoSkip ? me._autoSkip(me.getTicks()) : me.getTicks();
+		var tickFontColor = helpers.valueOrDefault(optionTicks.fontColor, globalDefaults.defaultFontColor);
+		var tickFont = parseFontOptions(optionTicks);
+		var majorTickFontColor = helpers.valueOrDefault(optionMajorTicks.fontColor, globalDefaults.defaultFontColor);
+		var majorTickFont = parseFontOptions(optionMajorTicks);
+
+		var tl = gridLines.drawTicks ? gridLines.tickMarkLength : 0;
+
+		var scaleLabelFontColor = helpers.valueOrDefault(scaleLabel.fontColor, globalDefaults.defaultFontColor);
+		var scaleLabelFont = parseFontOptions(scaleLabel);
+		var scaleLabelPadding = helpers.options.toPadding(scaleLabel.padding);
+		var labelRotationRadians = helpers.toRadians(me.labelRotation);
+
+		var itemsToDraw = [];
+
+		var axisWidth = me.options.gridLines.lineWidth;
+		var xTickStart = options.position === 'right' ? me.left : me.right - axisWidth - tl;
+		var xTickEnd = options.position === 'right' ? me.left + tl : me.right;
+		var yTickStart = options.position === 'bottom' ? me.top + axisWidth : me.bottom - tl - axisWidth;
+		var yTickEnd = options.position === 'bottom' ? me.top + axisWidth + tl : me.bottom + axisWidth;
+
+		helpers.each(ticks, function(tick, index) {
+			// autoskipper skipped this tick (#4635)
+			if (helpers.isNullOrUndef(tick.label)) {
+				return;
+			}
+
+			var label = tick.label;
+			var lineWidth, lineColor, borderDash, borderDashOffset;
+			if (index === me.zeroLineIndex && options.offset === gridLines.offsetGridLines) {
+				// Draw the first index specially
+				lineWidth = gridLines.zeroLineWidth;
+				lineColor = gridLines.zeroLineColor;
+				borderDash = gridLines.zeroLineBorderDash;
+				borderDashOffset = gridLines.zeroLineBorderDashOffset;
+			} else {
+				lineWidth = helpers.valueAtIndexOrDefault(gridLines.lineWidth, index);
+				lineColor = helpers.valueAtIndexOrDefault(gridLines.color, index);
+				borderDash = helpers.valueOrDefault(gridLines.borderDash, globalDefaults.borderDash);
+				borderDashOffset = helpers.valueOrDefault(gridLines.borderDashOffset, globalDefaults.borderDashOffset);
+			}
+
+			// Common properties
+			var tx1, ty1, tx2, ty2, x1, y1, x2, y2, labelX, labelY;
+			var textAlign = 'middle';
+			var textBaseline = 'middle';
+			var tickPadding = optionTicks.padding;
+
+			if (isHorizontal) {
+				var labelYOffset = tl + tickPadding;
+
+				if (options.position === 'bottom') {
+					// bottom
+					textBaseline = !isRotated ? 'top' : 'middle';
+					textAlign = !isRotated ? 'center' : 'right';
+					labelY = me.top + labelYOffset;
+				} else {
+					// top
+					textBaseline = !isRotated ? 'bottom' : 'middle';
+					textAlign = !isRotated ? 'center' : 'left';
+					labelY = me.bottom - labelYOffset;
+				}
+
+				var xLineValue = getLineValue(me, index, gridLines.offsetGridLines && ticks.length > 1);
+				if (xLineValue < me.left) {
+					lineColor = 'rgba(0,0,0,0)';
+				}
+				xLineValue += helpers.aliasPixel(lineWidth);
+
+				labelX = me.getPixelForTick(index) + optionTicks.labelOffset; // x values for optionTicks (need to consider offsetLabel option)
+
+				tx1 = tx2 = x1 = x2 = xLineValue;
+				ty1 = yTickStart;
+				ty2 = yTickEnd;
+				y1 = chartArea.top;
+				y2 = chartArea.bottom + axisWidth;
+			} else {
+				var isLeft = options.position === 'left';
+				var labelXOffset;
+
+				if (optionTicks.mirror) {
+					textAlign = isLeft ? 'left' : 'right';
+					labelXOffset = tickPadding;
+				} else {
+					textAlign = isLeft ? 'right' : 'left';
+					labelXOffset = tl + tickPadding;
+				}
+
+				labelX = isLeft ? me.right - labelXOffset : me.left + labelXOffset;
+
+				var yLineValue = getLineValue(me, index, gridLines.offsetGridLines && ticks.length > 1);
+				if (yLineValue < me.top) {
+					lineColor = 'rgba(0,0,0,0)';
+				}
+				yLineValue += helpers.aliasPixel(lineWidth);
+
+				labelY = me.getPixelForTick(index) + optionTicks.labelOffset;
+
+				tx1 = xTickStart;
+				tx2 = xTickEnd;
+				x1 = chartArea.left;
+				x2 = chartArea.right + axisWidth;
+				ty1 = ty2 = y1 = y2 = yLineValue;
+			}
+
+			itemsToDraw.push({
+				tx1: tx1,
+				ty1: ty1,
+				tx2: tx2,
+				ty2: ty2,
+				x1: x1,
+				y1: y1,
+				x2: x2,
+				y2: y2,
+				labelX: labelX,
+				labelY: labelY,
+				glWidth: lineWidth,
+				glColor: lineColor,
+				glBorderDash: borderDash,
+				glBorderDashOffset: borderDashOffset,
+				rotation: -1 * labelRotationRadians,
+				label: label,
+				major: tick.major,
+				textBaseline: textBaseline,
+				textAlign: textAlign
+			});
+		});
+
+		// Draw all of the tick labels, tick marks, and grid lines at the correct places
+		helpers.each(itemsToDraw, function(itemToDraw) {
+			if (gridLines.display) {
+				context.save();
+				context.lineWidth = itemToDraw.glWidth;
+				context.strokeStyle = itemToDraw.glColor;
+				if (context.setLineDash) {
+					context.setLineDash(itemToDraw.glBorderDash);
+					context.lineDashOffset = itemToDraw.glBorderDashOffset;
+				}
+
+				context.beginPath();
+
+				if (gridLines.drawTicks) {
+					context.moveTo(itemToDraw.tx1, itemToDraw.ty1);
+					context.lineTo(itemToDraw.tx2, itemToDraw.ty2);
+				}
+
+				if (gridLines.drawOnChartArea) {
+					context.moveTo(itemToDraw.x1, itemToDraw.y1);
+					context.lineTo(itemToDraw.x2, itemToDraw.y2);
+				}
+
+				context.stroke();
+				context.restore();
+			}
+
+			if (optionTicks.display) {
+				// Make sure we draw text in the correct color and font
+				context.save();
+				context.translate(itemToDraw.labelX, itemToDraw.labelY);
+				context.rotate(itemToDraw.rotation);
+				context.font = itemToDraw.major ? majorTickFont.font : tickFont.font;
+				context.fillStyle = itemToDraw.major ? majorTickFontColor : tickFontColor;
+				context.textBaseline = itemToDraw.textBaseline;
+				context.textAlign = itemToDraw.textAlign;
+
+				var label = itemToDraw.label;
+				if (helpers.isArray(label)) {
+					var lineCount = label.length;
+					var lineHeight = tickFont.size * 1.5;
+					var y = me.isHorizontal() ? 0 : -lineHeight * (lineCount - 1) / 2;
+
+					for (var i = 0; i < lineCount; ++i) {
+						// We just make sure the multiline element is a string here..
+						context.fillText('' + label[i], 0, y);
+						// apply same lineSpacing as calculated @ L#320
+						y += lineHeight;
+					}
+				} else {
+					context.fillText(label, 0, 0);
+				}
+				context.restore();
+			}
+		});
+
+		if (scaleLabel.display) {
+			// Draw the scale label
+			var scaleLabelX;
+			var scaleLabelY;
+			var rotation = 0;
+			var halfLineHeight = parseLineHeight(scaleLabel) / 2;
+
+			if (isHorizontal) {
+				scaleLabelX = me.left + ((me.right - me.left) / 2); // midpoint of the width
+				scaleLabelY = options.position === 'bottom'
+					? me.bottom - halfLineHeight - scaleLabelPadding.bottom
+					: me.top + halfLineHeight + scaleLabelPadding.top;
+			} else {
+				var isLeft = options.position === 'left';
+				scaleLabelX = isLeft
+					? me.left + halfLineHeight + scaleLabelPadding.top
+					: me.right - halfLineHeight - scaleLabelPadding.top;
+				scaleLabelY = me.top + ((me.bottom - me.top) / 2);
+				rotation = isLeft ? -0.5 * Math.PI : 0.5 * Math.PI;
+			}
+
+			context.save();
+			context.translate(scaleLabelX, scaleLabelY);
+			context.rotate(rotation);
+			context.textAlign = 'center';
+			context.textBaseline = 'middle';
+			context.fillStyle = scaleLabelFontColor; // render in correct colour
+			context.font = scaleLabelFont.font;
+			context.fillText(scaleLabel.labelString, 0, 0);
+			context.restore();
+		}
+
+		if (gridLines.drawBorder) {
+			// Draw the line at the edge of the axis
+			context.lineWidth = helpers.valueAtIndexOrDefault(gridLines.lineWidth, 0);
+			context.strokeStyle = helpers.valueAtIndexOrDefault(gridLines.color, 0);
+			var x1 = me.left;
+			var x2 = me.right + axisWidth;
+			var y1 = me.top;
+			var y2 = me.bottom + axisWidth;
+
+			var aliasPixel = helpers.aliasPixel(context.lineWidth);
+			if (isHorizontal) {
+				y1 = y2 = options.position === 'top' ? me.bottom : me.top;
+				y1 += aliasPixel;
+				y2 += aliasPixel;
+			} else {
+				x1 = x2 = options.position === 'left' ? me.right : me.left;
+				x1 += aliasPixel;
+				x2 += aliasPixel;
+			}
+
+			context.beginPath();
+			context.moveTo(x1, y1);
+			context.lineTo(x2, y2);
+			context.stroke();
+		}
+	}
+});
+
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5989,7 +6980,7 @@ module.exports = {
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports) {
 
 var g;
@@ -6016,7 +7007,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6362,7 +7353,7 @@ helpers.getValueAtIndexOrDefault = helpers.valueAtIndexOrDefault;
 
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -6552,14 +7543,14 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(6);
-var normalizeHeaderName = __webpack_require__(161);
+var normalizeHeaderName = __webpack_require__(166);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -6575,10 +7566,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(21);
+    adapter = __webpack_require__(23);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(21);
+    adapter = __webpack_require__(23);
   }
   return adapter;
 }
@@ -6653,10 +7644,10 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8153,15 +9144,15 @@ var Datepicker = {render: function(){var _vm=this;var _h=_vm.$createElement;var 
 
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return store; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_axios__);
 
 
@@ -8762,7 +9753,7 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 });
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19725,10 +20716,10 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(19).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14), __webpack_require__(21).setImmediate))
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -19784,7 +20775,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(156);
+__webpack_require__(161);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -19795,10 +20786,10 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
                          (typeof global !== "undefined" && global.clearImmediate) ||
                          (this && this.clearImmediate);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)))
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19816,19 +20807,19 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(6);
-var settle = __webpack_require__(162);
-var buildURL = __webpack_require__(164);
-var parseHeaders = __webpack_require__(165);
-var isURLSameOrigin = __webpack_require__(166);
-var createError = __webpack_require__(22);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(167);
+var settle = __webpack_require__(167);
+var buildURL = __webpack_require__(169);
+var parseHeaders = __webpack_require__(170);
+var isURLSameOrigin = __webpack_require__(171);
+var createError = __webpack_require__(24);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(172);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -19925,7 +20916,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(168);
+      var cookies = __webpack_require__(173);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -20003,13 +20994,13 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var enhanceError = __webpack_require__(163);
+var enhanceError = __webpack_require__(168);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -20028,7 +21019,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20040,7 +21031,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20066,7 +21057,7 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21011,12 +22002,12 @@ var index_esm = {
 
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* MIT license */
-var convert = __webpack_require__(281);
-var string = __webpack_require__(283);
+var convert = __webpack_require__(287);
+var string = __webpack_require__(289);
 
 var Color = function (obj) {
 	if (obj instanceof Color) {
@@ -21502,7 +22493,193 @@ module.exports = Color;
 
 
 /***/ }),
-/* 27 */
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Element = __webpack_require__(7);
+
+var exports = module.exports = Element.extend({
+	chart: null, // the animation associated chart instance
+	currentStep: 0, // the current animation step
+	numSteps: 60, // default number of steps
+	easing: '', // the easing to use for this animation
+	render: null, // render function used by the animation service
+
+	onAnimationProgress: null, // user specified callback to fire on each step of the animation
+	onAnimationComplete: null, // user specified callback to fire when the animation finishes
+});
+
+// DEPRECATIONS
+
+/**
+ * Provided for backward compatibility, use Chart.Animation instead
+ * @prop Chart.Animation#animationObject
+ * @deprecated since version 2.6.0
+ * @todo remove at version 3
+ */
+Object.defineProperty(exports.prototype, 'animationObject', {
+	get: function() {
+		return this;
+	}
+});
+
+/**
+ * Provided for backward compatibility, use Chart.Animation#chart instead
+ * @prop Chart.Animation#chartInstance
+ * @deprecated since version 2.6.0
+ * @todo remove at version 3
+ */
+Object.defineProperty(exports.prototype, 'chartInstance', {
+	get: function() {
+		return this.chart;
+	},
+	set: function(value) {
+		this.chart = value;
+	}
+});
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* global window: false */
+
+
+var defaults = __webpack_require__(2);
+var helpers = __webpack_require__(1);
+
+defaults._set('global', {
+	animation: {
+		duration: 1000,
+		easing: 'easeOutQuart',
+		onProgress: helpers.noop,
+		onComplete: helpers.noop
+	}
+});
+
+module.exports = {
+	frameDuration: 17,
+	animations: [],
+	dropFrames: 0,
+	request: null,
+
+	/**
+	 * @param {Chart} chart - The chart to animate.
+	 * @param {Chart.Animation} animation - The animation that we will animate.
+	 * @param {Number} duration - The animation duration in ms.
+	 * @param {Boolean} lazy - if true, the chart is not marked as animating to enable more responsive interactions
+	 */
+	addAnimation: function(chart, animation, duration, lazy) {
+		var animations = this.animations;
+		var i, ilen;
+
+		animation.chart = chart;
+
+		if (!lazy) {
+			chart.animating = true;
+		}
+
+		for (i = 0, ilen = animations.length; i < ilen; ++i) {
+			if (animations[i].chart === chart) {
+				animations[i] = animation;
+				return;
+			}
+		}
+
+		animations.push(animation);
+
+		// If there are no animations queued, manually kickstart a digest, for lack of a better word
+		if (animations.length === 1) {
+			this.requestAnimationFrame();
+		}
+	},
+
+	cancelAnimation: function(chart) {
+		var index = helpers.findIndex(this.animations, function(animation) {
+			return animation.chart === chart;
+		});
+
+		if (index !== -1) {
+			this.animations.splice(index, 1);
+			chart.animating = false;
+		}
+	},
+
+	requestAnimationFrame: function() {
+		var me = this;
+		if (me.request === null) {
+			// Skip animation frame requests until the active one is executed.
+			// This can happen when processing mouse events, e.g. 'mousemove'
+			// and 'mouseout' events will trigger multiple renders.
+			me.request = helpers.requestAnimFrame.call(window, function() {
+				me.request = null;
+				me.startDigest();
+			});
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	startDigest: function() {
+		var me = this;
+		var startTime = Date.now();
+		var framesToDrop = 0;
+
+		if (me.dropFrames > 1) {
+			framesToDrop = Math.floor(me.dropFrames);
+			me.dropFrames = me.dropFrames % 1;
+		}
+
+		me.advance(1 + framesToDrop);
+
+		var endTime = Date.now();
+
+		me.dropFrames += (endTime - startTime) / me.frameDuration;
+
+		// Do we have more stuff to animate?
+		if (me.animations.length > 0) {
+			me.requestAnimationFrame();
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	advance: function(count) {
+		var animations = this.animations;
+		var animation, chart;
+		var i = 0;
+
+		while (i < animations.length) {
+			animation = animations[i];
+			chart = animation.chart;
+
+			animation.currentStep = (animation.currentStep || 0) + count;
+			animation.currentStep = Math.min(animation.currentStep, animation.numSteps);
+
+			helpers.callback(animation.render, [chart, animation], chart);
+			helpers.callback(animation.onAnimationProgress, [animation], chart);
+
+			if (animation.currentStep >= animation.numSteps) {
+				helpers.callback(animation.onAnimationComplete, [animation], chart);
+				chart.animating = false;
+				animations.splice(i, 1);
+			} else {
+				++i;
+			}
+		}
+	}
+};
+
+
+/***/ }),
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21839,15 +23016,15 @@ module.exports = {
 
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var helpers = __webpack_require__(1);
-var basic = __webpack_require__(289);
-var dom = __webpack_require__(290);
+var basic = __webpack_require__(295);
+var dom = __webpack_require__(296);
 
 // @TODO Make possible to select another platform at build time.
 var implementation = dom._enabled ? dom : basic;
@@ -21920,7 +23097,7 @@ module.exports = helpers.extend({
 
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22309,7 +23486,987 @@ module.exports = {
 
 
 /***/ }),
-/* 30 */
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var defaults = __webpack_require__(2);
+var Element = __webpack_require__(7);
+var helpers = __webpack_require__(1);
+
+defaults._set('global', {
+	tooltips: {
+		enabled: true,
+		custom: null,
+		mode: 'nearest',
+		position: 'average',
+		intersect: true,
+		backgroundColor: 'rgba(0,0,0,0.8)',
+		titleFontStyle: 'bold',
+		titleSpacing: 2,
+		titleMarginBottom: 6,
+		titleFontColor: '#fff',
+		titleAlign: 'left',
+		bodySpacing: 2,
+		bodyFontColor: '#fff',
+		bodyAlign: 'left',
+		footerFontStyle: 'bold',
+		footerSpacing: 2,
+		footerMarginTop: 6,
+		footerFontColor: '#fff',
+		footerAlign: 'left',
+		yPadding: 6,
+		xPadding: 6,
+		caretPadding: 2,
+		caretSize: 5,
+		cornerRadius: 6,
+		multiKeyBackground: '#fff',
+		displayColors: true,
+		borderColor: 'rgba(0,0,0,0)',
+		borderWidth: 0,
+		callbacks: {
+			// Args are: (tooltipItems, data)
+			beforeTitle: helpers.noop,
+			title: function(tooltipItems, data) {
+				// Pick first xLabel for now
+				var title = '';
+				var labels = data.labels;
+				var labelCount = labels ? labels.length : 0;
+
+				if (tooltipItems.length > 0) {
+					var item = tooltipItems[0];
+
+					if (item.xLabel) {
+						title = item.xLabel;
+					} else if (labelCount > 0 && item.index < labelCount) {
+						title = labels[item.index];
+					}
+				}
+
+				return title;
+			},
+			afterTitle: helpers.noop,
+
+			// Args are: (tooltipItems, data)
+			beforeBody: helpers.noop,
+
+			// Args are: (tooltipItem, data)
+			beforeLabel: helpers.noop,
+			label: function(tooltipItem, data) {
+				var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+				if (label) {
+					label += ': ';
+				}
+				label += tooltipItem.yLabel;
+				return label;
+			},
+			labelColor: function(tooltipItem, chart) {
+				var meta = chart.getDatasetMeta(tooltipItem.datasetIndex);
+				var activeElement = meta.data[tooltipItem.index];
+				var view = activeElement._view;
+				return {
+					borderColor: view.borderColor,
+					backgroundColor: view.backgroundColor
+				};
+			},
+			labelTextColor: function() {
+				return this._options.bodyFontColor;
+			},
+			afterLabel: helpers.noop,
+
+			// Args are: (tooltipItems, data)
+			afterBody: helpers.noop,
+
+			// Args are: (tooltipItems, data)
+			beforeFooter: helpers.noop,
+			footer: helpers.noop,
+			afterFooter: helpers.noop
+		}
+	}
+});
+
+var positioners = {
+	/**
+	 * Average mode places the tooltip at the average position of the elements shown
+	 * @function Chart.Tooltip.positioners.average
+	 * @param elements {ChartElement[]} the elements being displayed in the tooltip
+	 * @returns {Point} tooltip position
+	 */
+	average: function(elements) {
+		if (!elements.length) {
+			return false;
+		}
+
+		var i, len;
+		var x = 0;
+		var y = 0;
+		var count = 0;
+
+		for (i = 0, len = elements.length; i < len; ++i) {
+			var el = elements[i];
+			if (el && el.hasValue()) {
+				var pos = el.tooltipPosition();
+				x += pos.x;
+				y += pos.y;
+				++count;
+			}
+		}
+
+		return {
+			x: Math.round(x / count),
+			y: Math.round(y / count)
+		};
+	},
+
+	/**
+	 * Gets the tooltip position nearest of the item nearest to the event position
+	 * @function Chart.Tooltip.positioners.nearest
+	 * @param elements {Chart.Element[]} the tooltip elements
+	 * @param eventPosition {Point} the position of the event in canvas coordinates
+	 * @returns {Point} the tooltip position
+	 */
+	nearest: function(elements, eventPosition) {
+		var x = eventPosition.x;
+		var y = eventPosition.y;
+		var minDistance = Number.POSITIVE_INFINITY;
+		var i, len, nearestElement;
+
+		for (i = 0, len = elements.length; i < len; ++i) {
+			var el = elements[i];
+			if (el && el.hasValue()) {
+				var center = el.getCenterPoint();
+				var d = helpers.distanceBetweenPoints(eventPosition, center);
+
+				if (d < minDistance) {
+					minDistance = d;
+					nearestElement = el;
+				}
+			}
+		}
+
+		if (nearestElement) {
+			var tp = nearestElement.tooltipPosition();
+			x = tp.x;
+			y = tp.y;
+		}
+
+		return {
+			x: x,
+			y: y
+		};
+	}
+};
+
+/**
+ * Helper method to merge the opacity into a color
+ */
+function mergeOpacity(colorString, opacity) {
+	var color = helpers.color(colorString);
+	return color.alpha(opacity * color.alpha()).rgbaString();
+}
+
+// Helper to push or concat based on if the 2nd parameter is an array or not
+function pushOrConcat(base, toPush) {
+	if (toPush) {
+		if (helpers.isArray(toPush)) {
+			// base = base.concat(toPush);
+			Array.prototype.push.apply(base, toPush);
+		} else {
+			base.push(toPush);
+		}
+	}
+
+	return base;
+}
+
+/**
+ * Returns array of strings split by newline
+ * @param {String} value - The value to split by newline.
+ * @returns {Array} value if newline present - Returned from String split() method
+ * @function
+ */
+function splitNewlines(str) {
+	if ((typeof str === 'string' || str instanceof String) && str.indexOf('\n') > -1) {
+		return str.split('\n');
+	}
+	return str;
+}
+
+
+// Private helper to create a tooltip item model
+// @param element : the chart element (point, arc, bar) to create the tooltip item for
+// @return : new tooltip item
+function createTooltipItem(element) {
+	var xScale = element._xScale;
+	var yScale = element._yScale || element._scale; // handle radar || polarArea charts
+	var index = element._index;
+	var datasetIndex = element._datasetIndex;
+
+	return {
+		xLabel: xScale ? xScale.getLabelForIndex(index, datasetIndex) : '',
+		yLabel: yScale ? yScale.getLabelForIndex(index, datasetIndex) : '',
+		index: index,
+		datasetIndex: datasetIndex,
+		x: element._model.x,
+		y: element._model.y
+	};
+}
+
+/**
+ * Helper to get the reset model for the tooltip
+ * @param tooltipOpts {Object} the tooltip options
+ */
+function getBaseModel(tooltipOpts) {
+	var globalDefaults = defaults.global;
+	var valueOrDefault = helpers.valueOrDefault;
+
+	return {
+		// Positioning
+		xPadding: tooltipOpts.xPadding,
+		yPadding: tooltipOpts.yPadding,
+		xAlign: tooltipOpts.xAlign,
+		yAlign: tooltipOpts.yAlign,
+
+		// Body
+		bodyFontColor: tooltipOpts.bodyFontColor,
+		_bodyFontFamily: valueOrDefault(tooltipOpts.bodyFontFamily, globalDefaults.defaultFontFamily),
+		_bodyFontStyle: valueOrDefault(tooltipOpts.bodyFontStyle, globalDefaults.defaultFontStyle),
+		_bodyAlign: tooltipOpts.bodyAlign,
+		bodyFontSize: valueOrDefault(tooltipOpts.bodyFontSize, globalDefaults.defaultFontSize),
+		bodySpacing: tooltipOpts.bodySpacing,
+
+		// Title
+		titleFontColor: tooltipOpts.titleFontColor,
+		_titleFontFamily: valueOrDefault(tooltipOpts.titleFontFamily, globalDefaults.defaultFontFamily),
+		_titleFontStyle: valueOrDefault(tooltipOpts.titleFontStyle, globalDefaults.defaultFontStyle),
+		titleFontSize: valueOrDefault(tooltipOpts.titleFontSize, globalDefaults.defaultFontSize),
+		_titleAlign: tooltipOpts.titleAlign,
+		titleSpacing: tooltipOpts.titleSpacing,
+		titleMarginBottom: tooltipOpts.titleMarginBottom,
+
+		// Footer
+		footerFontColor: tooltipOpts.footerFontColor,
+		_footerFontFamily: valueOrDefault(tooltipOpts.footerFontFamily, globalDefaults.defaultFontFamily),
+		_footerFontStyle: valueOrDefault(tooltipOpts.footerFontStyle, globalDefaults.defaultFontStyle),
+		footerFontSize: valueOrDefault(tooltipOpts.footerFontSize, globalDefaults.defaultFontSize),
+		_footerAlign: tooltipOpts.footerAlign,
+		footerSpacing: tooltipOpts.footerSpacing,
+		footerMarginTop: tooltipOpts.footerMarginTop,
+
+		// Appearance
+		caretSize: tooltipOpts.caretSize,
+		cornerRadius: tooltipOpts.cornerRadius,
+		backgroundColor: tooltipOpts.backgroundColor,
+		opacity: 0,
+		legendColorBackground: tooltipOpts.multiKeyBackground,
+		displayColors: tooltipOpts.displayColors,
+		borderColor: tooltipOpts.borderColor,
+		borderWidth: tooltipOpts.borderWidth
+	};
+}
+
+/**
+ * Get the size of the tooltip
+ */
+function getTooltipSize(tooltip, model) {
+	var ctx = tooltip._chart.ctx;
+
+	var height = model.yPadding * 2; // Tooltip Padding
+	var width = 0;
+
+	// Count of all lines in the body
+	var body = model.body;
+	var combinedBodyLength = body.reduce(function(count, bodyItem) {
+		return count + bodyItem.before.length + bodyItem.lines.length + bodyItem.after.length;
+	}, 0);
+	combinedBodyLength += model.beforeBody.length + model.afterBody.length;
+
+	var titleLineCount = model.title.length;
+	var footerLineCount = model.footer.length;
+	var titleFontSize = model.titleFontSize;
+	var bodyFontSize = model.bodyFontSize;
+	var footerFontSize = model.footerFontSize;
+
+	height += titleLineCount * titleFontSize; // Title Lines
+	height += titleLineCount ? (titleLineCount - 1) * model.titleSpacing : 0; // Title Line Spacing
+	height += titleLineCount ? model.titleMarginBottom : 0; // Title's bottom Margin
+	height += combinedBodyLength * bodyFontSize; // Body Lines
+	height += combinedBodyLength ? (combinedBodyLength - 1) * model.bodySpacing : 0; // Body Line Spacing
+	height += footerLineCount ? model.footerMarginTop : 0; // Footer Margin
+	height += footerLineCount * (footerFontSize); // Footer Lines
+	height += footerLineCount ? (footerLineCount - 1) * model.footerSpacing : 0; // Footer Line Spacing
+
+	// Title width
+	var widthPadding = 0;
+	var maxLineWidth = function(line) {
+		width = Math.max(width, ctx.measureText(line).width + widthPadding);
+	};
+
+	ctx.font = helpers.fontString(titleFontSize, model._titleFontStyle, model._titleFontFamily);
+	helpers.each(model.title, maxLineWidth);
+
+	// Body width
+	ctx.font = helpers.fontString(bodyFontSize, model._bodyFontStyle, model._bodyFontFamily);
+	helpers.each(model.beforeBody.concat(model.afterBody), maxLineWidth);
+
+	// Body lines may include some extra width due to the color box
+	widthPadding = model.displayColors ? (bodyFontSize + 2) : 0;
+	helpers.each(body, function(bodyItem) {
+		helpers.each(bodyItem.before, maxLineWidth);
+		helpers.each(bodyItem.lines, maxLineWidth);
+		helpers.each(bodyItem.after, maxLineWidth);
+	});
+
+	// Reset back to 0
+	widthPadding = 0;
+
+	// Footer width
+	ctx.font = helpers.fontString(footerFontSize, model._footerFontStyle, model._footerFontFamily);
+	helpers.each(model.footer, maxLineWidth);
+
+	// Add padding
+	width += 2 * model.xPadding;
+
+	return {
+		width: width,
+		height: height
+	};
+}
+
+/**
+ * Helper to get the alignment of a tooltip given the size
+ */
+function determineAlignment(tooltip, size) {
+	var model = tooltip._model;
+	var chart = tooltip._chart;
+	var chartArea = tooltip._chart.chartArea;
+	var xAlign = 'center';
+	var yAlign = 'center';
+
+	if (model.y < size.height) {
+		yAlign = 'top';
+	} else if (model.y > (chart.height - size.height)) {
+		yAlign = 'bottom';
+	}
+
+	var lf, rf; // functions to determine left, right alignment
+	var olf, orf; // functions to determine if left/right alignment causes tooltip to go outside chart
+	var yf; // function to get the y alignment if the tooltip goes outside of the left or right edges
+	var midX = (chartArea.left + chartArea.right) / 2;
+	var midY = (chartArea.top + chartArea.bottom) / 2;
+
+	if (yAlign === 'center') {
+		lf = function(x) {
+			return x <= midX;
+		};
+		rf = function(x) {
+			return x > midX;
+		};
+	} else {
+		lf = function(x) {
+			return x <= (size.width / 2);
+		};
+		rf = function(x) {
+			return x >= (chart.width - (size.width / 2));
+		};
+	}
+
+	olf = function(x) {
+		return x + size.width + model.caretSize + model.caretPadding > chart.width;
+	};
+	orf = function(x) {
+		return x - size.width - model.caretSize - model.caretPadding < 0;
+	};
+	yf = function(y) {
+		return y <= midY ? 'top' : 'bottom';
+	};
+
+	if (lf(model.x)) {
+		xAlign = 'left';
+
+		// Is tooltip too wide and goes over the right side of the chart.?
+		if (olf(model.x)) {
+			xAlign = 'center';
+			yAlign = yf(model.y);
+		}
+	} else if (rf(model.x)) {
+		xAlign = 'right';
+
+		// Is tooltip too wide and goes outside left edge of canvas?
+		if (orf(model.x)) {
+			xAlign = 'center';
+			yAlign = yf(model.y);
+		}
+	}
+
+	var opts = tooltip._options;
+	return {
+		xAlign: opts.xAlign ? opts.xAlign : xAlign,
+		yAlign: opts.yAlign ? opts.yAlign : yAlign
+	};
+}
+
+/**
+ * Helper to get the location a tooltip needs to be placed at given the initial position (via the vm) and the size and alignment
+ */
+function getBackgroundPoint(vm, size, alignment, chart) {
+	// Background Position
+	var x = vm.x;
+	var y = vm.y;
+
+	var caretSize = vm.caretSize;
+	var caretPadding = vm.caretPadding;
+	var cornerRadius = vm.cornerRadius;
+	var xAlign = alignment.xAlign;
+	var yAlign = alignment.yAlign;
+	var paddingAndSize = caretSize + caretPadding;
+	var radiusAndPadding = cornerRadius + caretPadding;
+
+	if (xAlign === 'right') {
+		x -= size.width;
+	} else if (xAlign === 'center') {
+		x -= (size.width / 2);
+		if (x + size.width > chart.width) {
+			x = chart.width - size.width;
+		}
+		if (x < 0) {
+			x = 0;
+		}
+	}
+
+	if (yAlign === 'top') {
+		y += paddingAndSize;
+	} else if (yAlign === 'bottom') {
+		y -= size.height + paddingAndSize;
+	} else {
+		y -= (size.height / 2);
+	}
+
+	if (yAlign === 'center') {
+		if (xAlign === 'left') {
+			x += paddingAndSize;
+		} else if (xAlign === 'right') {
+			x -= paddingAndSize;
+		}
+	} else if (xAlign === 'left') {
+		x -= radiusAndPadding;
+	} else if (xAlign === 'right') {
+		x += radiusAndPadding;
+	}
+
+	return {
+		x: x,
+		y: y
+	};
+}
+
+/**
+ * Helper to build before and after body lines
+ */
+function getBeforeAfterBodyLines(callback) {
+	return pushOrConcat([], splitNewlines(callback));
+}
+
+var exports = module.exports = Element.extend({
+	initialize: function() {
+		this._model = getBaseModel(this._options);
+		this._lastActive = [];
+	},
+
+	// Get the title
+	// Args are: (tooltipItem, data)
+	getTitle: function() {
+		var me = this;
+		var opts = me._options;
+		var callbacks = opts.callbacks;
+
+		var beforeTitle = callbacks.beforeTitle.apply(me, arguments);
+		var title = callbacks.title.apply(me, arguments);
+		var afterTitle = callbacks.afterTitle.apply(me, arguments);
+
+		var lines = [];
+		lines = pushOrConcat(lines, splitNewlines(beforeTitle));
+		lines = pushOrConcat(lines, splitNewlines(title));
+		lines = pushOrConcat(lines, splitNewlines(afterTitle));
+
+		return lines;
+	},
+
+	// Args are: (tooltipItem, data)
+	getBeforeBody: function() {
+		return getBeforeAfterBodyLines(this._options.callbacks.beforeBody.apply(this, arguments));
+	},
+
+	// Args are: (tooltipItem, data)
+	getBody: function(tooltipItems, data) {
+		var me = this;
+		var callbacks = me._options.callbacks;
+		var bodyItems = [];
+
+		helpers.each(tooltipItems, function(tooltipItem) {
+			var bodyItem = {
+				before: [],
+				lines: [],
+				after: []
+			};
+			pushOrConcat(bodyItem.before, splitNewlines(callbacks.beforeLabel.call(me, tooltipItem, data)));
+			pushOrConcat(bodyItem.lines, callbacks.label.call(me, tooltipItem, data));
+			pushOrConcat(bodyItem.after, splitNewlines(callbacks.afterLabel.call(me, tooltipItem, data)));
+
+			bodyItems.push(bodyItem);
+		});
+
+		return bodyItems;
+	},
+
+	// Args are: (tooltipItem, data)
+	getAfterBody: function() {
+		return getBeforeAfterBodyLines(this._options.callbacks.afterBody.apply(this, arguments));
+	},
+
+	// Get the footer and beforeFooter and afterFooter lines
+	// Args are: (tooltipItem, data)
+	getFooter: function() {
+		var me = this;
+		var callbacks = me._options.callbacks;
+
+		var beforeFooter = callbacks.beforeFooter.apply(me, arguments);
+		var footer = callbacks.footer.apply(me, arguments);
+		var afterFooter = callbacks.afterFooter.apply(me, arguments);
+
+		var lines = [];
+		lines = pushOrConcat(lines, splitNewlines(beforeFooter));
+		lines = pushOrConcat(lines, splitNewlines(footer));
+		lines = pushOrConcat(lines, splitNewlines(afterFooter));
+
+		return lines;
+	},
+
+	update: function(changed) {
+		var me = this;
+		var opts = me._options;
+
+		// Need to regenerate the model because its faster than using extend and it is necessary due to the optimization in Chart.Element.transition
+		// that does _view = _model if ease === 1. This causes the 2nd tooltip update to set properties in both the view and model at the same time
+		// which breaks any animations.
+		var existingModel = me._model;
+		var model = me._model = getBaseModel(opts);
+		var active = me._active;
+
+		var data = me._data;
+
+		// In the case where active.length === 0 we need to keep these at existing values for good animations
+		var alignment = {
+			xAlign: existingModel.xAlign,
+			yAlign: existingModel.yAlign
+		};
+		var backgroundPoint = {
+			x: existingModel.x,
+			y: existingModel.y
+		};
+		var tooltipSize = {
+			width: existingModel.width,
+			height: existingModel.height
+		};
+		var tooltipPosition = {
+			x: existingModel.caretX,
+			y: existingModel.caretY
+		};
+
+		var i, len;
+
+		if (active.length) {
+			model.opacity = 1;
+
+			var labelColors = [];
+			var labelTextColors = [];
+			tooltipPosition = positioners[opts.position].call(me, active, me._eventPosition);
+
+			var tooltipItems = [];
+			for (i = 0, len = active.length; i < len; ++i) {
+				tooltipItems.push(createTooltipItem(active[i]));
+			}
+
+			// If the user provided a filter function, use it to modify the tooltip items
+			if (opts.filter) {
+				tooltipItems = tooltipItems.filter(function(a) {
+					return opts.filter(a, data);
+				});
+			}
+
+			// If the user provided a sorting function, use it to modify the tooltip items
+			if (opts.itemSort) {
+				tooltipItems = tooltipItems.sort(function(a, b) {
+					return opts.itemSort(a, b, data);
+				});
+			}
+
+			// Determine colors for boxes
+			helpers.each(tooltipItems, function(tooltipItem) {
+				labelColors.push(opts.callbacks.labelColor.call(me, tooltipItem, me._chart));
+				labelTextColors.push(opts.callbacks.labelTextColor.call(me, tooltipItem, me._chart));
+			});
+
+
+			// Build the Text Lines
+			model.title = me.getTitle(tooltipItems, data);
+			model.beforeBody = me.getBeforeBody(tooltipItems, data);
+			model.body = me.getBody(tooltipItems, data);
+			model.afterBody = me.getAfterBody(tooltipItems, data);
+			model.footer = me.getFooter(tooltipItems, data);
+
+			// Initial positioning and colors
+			model.x = Math.round(tooltipPosition.x);
+			model.y = Math.round(tooltipPosition.y);
+			model.caretPadding = opts.caretPadding;
+			model.labelColors = labelColors;
+			model.labelTextColors = labelTextColors;
+
+			// data points
+			model.dataPoints = tooltipItems;
+
+			// We need to determine alignment of the tooltip
+			tooltipSize = getTooltipSize(this, model);
+			alignment = determineAlignment(this, tooltipSize);
+			// Final Size and Position
+			backgroundPoint = getBackgroundPoint(model, tooltipSize, alignment, me._chart);
+		} else {
+			model.opacity = 0;
+		}
+
+		model.xAlign = alignment.xAlign;
+		model.yAlign = alignment.yAlign;
+		model.x = backgroundPoint.x;
+		model.y = backgroundPoint.y;
+		model.width = tooltipSize.width;
+		model.height = tooltipSize.height;
+
+		// Point where the caret on the tooltip points to
+		model.caretX = tooltipPosition.x;
+		model.caretY = tooltipPosition.y;
+
+		me._model = model;
+
+		if (changed && opts.custom) {
+			opts.custom.call(me, model);
+		}
+
+		return me;
+	},
+
+	drawCaret: function(tooltipPoint, size) {
+		var ctx = this._chart.ctx;
+		var vm = this._view;
+		var caretPosition = this.getCaretPosition(tooltipPoint, size, vm);
+
+		ctx.lineTo(caretPosition.x1, caretPosition.y1);
+		ctx.lineTo(caretPosition.x2, caretPosition.y2);
+		ctx.lineTo(caretPosition.x3, caretPosition.y3);
+	},
+	getCaretPosition: function(tooltipPoint, size, vm) {
+		var x1, x2, x3, y1, y2, y3;
+		var caretSize = vm.caretSize;
+		var cornerRadius = vm.cornerRadius;
+		var xAlign = vm.xAlign;
+		var yAlign = vm.yAlign;
+		var ptX = tooltipPoint.x;
+		var ptY = tooltipPoint.y;
+		var width = size.width;
+		var height = size.height;
+
+		if (yAlign === 'center') {
+			y2 = ptY + (height / 2);
+
+			if (xAlign === 'left') {
+				x1 = ptX;
+				x2 = x1 - caretSize;
+				x3 = x1;
+
+				y1 = y2 + caretSize;
+				y3 = y2 - caretSize;
+			} else {
+				x1 = ptX + width;
+				x2 = x1 + caretSize;
+				x3 = x1;
+
+				y1 = y2 - caretSize;
+				y3 = y2 + caretSize;
+			}
+		} else {
+			if (xAlign === 'left') {
+				x2 = ptX + cornerRadius + (caretSize);
+				x1 = x2 - caretSize;
+				x3 = x2 + caretSize;
+			} else if (xAlign === 'right') {
+				x2 = ptX + width - cornerRadius - caretSize;
+				x1 = x2 - caretSize;
+				x3 = x2 + caretSize;
+			} else {
+				x2 = vm.caretX;
+				x1 = x2 - caretSize;
+				x3 = x2 + caretSize;
+			}
+			if (yAlign === 'top') {
+				y1 = ptY;
+				y2 = y1 - caretSize;
+				y3 = y1;
+			} else {
+				y1 = ptY + height;
+				y2 = y1 + caretSize;
+				y3 = y1;
+				// invert drawing order
+				var tmp = x3;
+				x3 = x1;
+				x1 = tmp;
+			}
+		}
+		return {x1: x1, x2: x2, x3: x3, y1: y1, y2: y2, y3: y3};
+	},
+
+	drawTitle: function(pt, vm, ctx, opacity) {
+		var title = vm.title;
+
+		if (title.length) {
+			ctx.textAlign = vm._titleAlign;
+			ctx.textBaseline = 'top';
+
+			var titleFontSize = vm.titleFontSize;
+			var titleSpacing = vm.titleSpacing;
+
+			ctx.fillStyle = mergeOpacity(vm.titleFontColor, opacity);
+			ctx.font = helpers.fontString(titleFontSize, vm._titleFontStyle, vm._titleFontFamily);
+
+			var i, len;
+			for (i = 0, len = title.length; i < len; ++i) {
+				ctx.fillText(title[i], pt.x, pt.y);
+				pt.y += titleFontSize + titleSpacing; // Line Height and spacing
+
+				if (i + 1 === title.length) {
+					pt.y += vm.titleMarginBottom - titleSpacing; // If Last, add margin, remove spacing
+				}
+			}
+		}
+	},
+
+	drawBody: function(pt, vm, ctx, opacity) {
+		var bodyFontSize = vm.bodyFontSize;
+		var bodySpacing = vm.bodySpacing;
+		var body = vm.body;
+
+		ctx.textAlign = vm._bodyAlign;
+		ctx.textBaseline = 'top';
+		ctx.font = helpers.fontString(bodyFontSize, vm._bodyFontStyle, vm._bodyFontFamily);
+
+		// Before Body
+		var xLinePadding = 0;
+		var fillLineOfText = function(line) {
+			ctx.fillText(line, pt.x + xLinePadding, pt.y);
+			pt.y += bodyFontSize + bodySpacing;
+		};
+
+		// Before body lines
+		ctx.fillStyle = mergeOpacity(vm.bodyFontColor, opacity);
+		helpers.each(vm.beforeBody, fillLineOfText);
+
+		var drawColorBoxes = vm.displayColors;
+		xLinePadding = drawColorBoxes ? (bodyFontSize + 2) : 0;
+
+		// Draw body lines now
+		helpers.each(body, function(bodyItem, i) {
+			var textColor = mergeOpacity(vm.labelTextColors[i], opacity);
+			ctx.fillStyle = textColor;
+			helpers.each(bodyItem.before, fillLineOfText);
+
+			helpers.each(bodyItem.lines, function(line) {
+				// Draw Legend-like boxes if needed
+				if (drawColorBoxes) {
+					// Fill a white rect so that colours merge nicely if the opacity is < 1
+					ctx.fillStyle = mergeOpacity(vm.legendColorBackground, opacity);
+					ctx.fillRect(pt.x, pt.y, bodyFontSize, bodyFontSize);
+
+					// Border
+					ctx.lineWidth = 1;
+					ctx.strokeStyle = mergeOpacity(vm.labelColors[i].borderColor, opacity);
+					ctx.strokeRect(pt.x, pt.y, bodyFontSize, bodyFontSize);
+
+					// Inner square
+					ctx.fillStyle = mergeOpacity(vm.labelColors[i].backgroundColor, opacity);
+					ctx.fillRect(pt.x + 1, pt.y + 1, bodyFontSize - 2, bodyFontSize - 2);
+					ctx.fillStyle = textColor;
+				}
+
+				fillLineOfText(line);
+			});
+
+			helpers.each(bodyItem.after, fillLineOfText);
+		});
+
+		// Reset back to 0 for after body
+		xLinePadding = 0;
+
+		// After body lines
+		helpers.each(vm.afterBody, fillLineOfText);
+		pt.y -= bodySpacing; // Remove last body spacing
+	},
+
+	drawFooter: function(pt, vm, ctx, opacity) {
+		var footer = vm.footer;
+
+		if (footer.length) {
+			pt.y += vm.footerMarginTop;
+
+			ctx.textAlign = vm._footerAlign;
+			ctx.textBaseline = 'top';
+
+			ctx.fillStyle = mergeOpacity(vm.footerFontColor, opacity);
+			ctx.font = helpers.fontString(vm.footerFontSize, vm._footerFontStyle, vm._footerFontFamily);
+
+			helpers.each(footer, function(line) {
+				ctx.fillText(line, pt.x, pt.y);
+				pt.y += vm.footerFontSize + vm.footerSpacing;
+			});
+		}
+	},
+
+	drawBackground: function(pt, vm, ctx, tooltipSize, opacity) {
+		ctx.fillStyle = mergeOpacity(vm.backgroundColor, opacity);
+		ctx.strokeStyle = mergeOpacity(vm.borderColor, opacity);
+		ctx.lineWidth = vm.borderWidth;
+		var xAlign = vm.xAlign;
+		var yAlign = vm.yAlign;
+		var x = pt.x;
+		var y = pt.y;
+		var width = tooltipSize.width;
+		var height = tooltipSize.height;
+		var radius = vm.cornerRadius;
+
+		ctx.beginPath();
+		ctx.moveTo(x + radius, y);
+		if (yAlign === 'top') {
+			this.drawCaret(pt, tooltipSize);
+		}
+		ctx.lineTo(x + width - radius, y);
+		ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+		if (yAlign === 'center' && xAlign === 'right') {
+			this.drawCaret(pt, tooltipSize);
+		}
+		ctx.lineTo(x + width, y + height - radius);
+		ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+		if (yAlign === 'bottom') {
+			this.drawCaret(pt, tooltipSize);
+		}
+		ctx.lineTo(x + radius, y + height);
+		ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+		if (yAlign === 'center' && xAlign === 'left') {
+			this.drawCaret(pt, tooltipSize);
+		}
+		ctx.lineTo(x, y + radius);
+		ctx.quadraticCurveTo(x, y, x + radius, y);
+		ctx.closePath();
+
+		ctx.fill();
+
+		if (vm.borderWidth > 0) {
+			ctx.stroke();
+		}
+	},
+
+	draw: function() {
+		var ctx = this._chart.ctx;
+		var vm = this._view;
+
+		if (vm.opacity === 0) {
+			return;
+		}
+
+		var tooltipSize = {
+			width: vm.width,
+			height: vm.height
+		};
+		var pt = {
+			x: vm.x,
+			y: vm.y
+		};
+
+		// IE11/Edge does not like very small opacities, so snap to 0
+		var opacity = Math.abs(vm.opacity < 1e-3) ? 0 : vm.opacity;
+
+		// Truthy/falsey value for empty tooltip
+		var hasTooltipContent = vm.title.length || vm.beforeBody.length || vm.body.length || vm.afterBody.length || vm.footer.length;
+
+		if (this._options.enabled && hasTooltipContent) {
+			// Draw Background
+			this.drawBackground(pt, vm, ctx, tooltipSize, opacity);
+
+			// Draw Title, Body, and Footer
+			pt.x += vm.xPadding;
+			pt.y += vm.yPadding;
+
+			// Titles
+			this.drawTitle(pt, vm, ctx, opacity);
+
+			// Body
+			this.drawBody(pt, vm, ctx, opacity);
+
+			// Footer
+			this.drawFooter(pt, vm, ctx, opacity);
+		}
+	},
+
+	/**
+	 * Handle an event
+	 * @private
+	 * @param {IEvent} event - The event to handle
+	 * @returns {Boolean} true if the tooltip changed
+	 */
+	handleEvent: function(e) {
+		var me = this;
+		var options = me._options;
+		var changed = false;
+
+		me._lastActive = me._lastActive || [];
+
+		// Find Active Elements for tooltips
+		if (e.type === 'mouseout') {
+			me._active = [];
+		} else {
+			me._active = me._chart.getElementsAtEventForMode(e, options.mode, options);
+		}
+
+		// Remember Last Actives
+		changed = !helpers.arrayEquals(me._active, me._lastActive);
+
+		// Only handle target event on tooltip change
+		if (changed) {
+			me._lastActive = me._active;
+
+			if (options.enabled || options.custom) {
+				me._eventPosition = {
+					x: e.x,
+					y: e.y
+				};
+
+				me.update(true);
+				me.pivot();
+			}
+		}
+
+		return changed;
+	}
+});
+
+/**
+ * @namespace Chart.Tooltip.positioners
+ */
+exports.positioners = positioners;
+
+
+
+/***/ }),
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22386,7 +24543,7 @@ module.exports = {
 
 
 /***/ }),
-/* 31 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22525,7 +24682,7 @@ module.exports = {
 
 
 /***/ }),
-/* 32 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22588,7 +24745,7 @@ module.exports = {
 
 
 /***/ }),
-/* 33 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22651,7 +24808,7 @@ module.exports = {
 
 
 /***/ }),
-/* 34 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22777,7 +24934,7 @@ module.exports = {
 
 
 /***/ }),
-/* 35 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22840,7 +24997,7 @@ module.exports = {
 
 
 /***/ }),
-/* 36 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22948,7 +25105,7 @@ module.exports = {
 
 
 /***/ }),
-/* 37 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23011,7 +25168,7 @@ module.exports = {
 
 
 /***/ }),
-/* 38 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23120,7 +25277,7 @@ module.exports = {
 
 
 /***/ }),
-/* 39 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23256,7 +25413,7 @@ module.exports = {
 
 
 /***/ }),
-/* 40 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23350,7 +25507,7 @@ module.exports = {
 
 
 /***/ }),
-/* 41 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23412,7 +25569,7 @@ module.exports = {
 
 
 /***/ }),
-/* 42 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23535,7 +25692,7 @@ module.exports = {
 
 
 /***/ }),
-/* 43 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23658,7 +25815,7 @@ module.exports = {
 
 
 /***/ }),
-/* 44 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23770,7 +25927,7 @@ module.exports = {
 
 
 /***/ }),
-/* 45 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23925,7 +26082,7 @@ module.exports = {
 
 
 /***/ }),
-/* 46 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24017,7 +26174,7 @@ module.exports = {
 
 
 /***/ }),
-/* 47 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24200,7 +26357,7 @@ module.exports = {
 
 
 /***/ }),
-/* 48 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24267,7 +26424,7 @@ module.exports = {
 
 
 /***/ }),
-/* 49 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24351,7 +26508,7 @@ module.exports = {
 
 
 /***/ }),
-/* 50 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24415,7 +26572,7 @@ module.exports = {
 
 
 /***/ }),
-/* 51 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24495,7 +26652,7 @@ module.exports = {
 
 
 /***/ }),
-/* 52 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24575,7 +26732,7 @@ module.exports = {
 
 
 /***/ }),
-/* 53 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24655,7 +26812,7 @@ module.exports = {
 
 
 /***/ }),
-/* 54 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24758,7 +26915,7 @@ module.exports = {
 
 
 /***/ }),
-/* 55 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24862,7 +27019,7 @@ module.exports = {
 
 
 /***/ }),
-/* 56 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24933,7 +27090,7 @@ module.exports = {
 
 
 /***/ }),
-/* 57 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25000,7 +27157,7 @@ module.exports = {
 
 
 /***/ }),
-/* 58 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25071,7 +27228,7 @@ module.exports = {
 
 
 /***/ }),
-/* 59 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25142,7 +27299,7 @@ module.exports = {
 
 
 /***/ }),
-/* 60 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25208,7 +27365,7 @@ module.exports = {
 
 
 /***/ }),
-/* 61 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25279,7 +27436,7 @@ module.exports = {
 
 
 /***/ }),
-/* 62 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25354,7 +27511,7 @@ module.exports = {
 
 
 /***/ }),
-/* 63 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25450,7 +27607,7 @@ module.exports = {
 
 
 /***/ }),
-/* 64 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25546,7 +27703,7 @@ module.exports = {
 
 
 /***/ }),
-/* 65 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25633,7 +27790,7 @@ module.exports = {
 
 
 /***/ }),
-/* 66 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25717,7 +27874,7 @@ module.exports = {
 
 
 /***/ }),
-/* 67 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25787,7 +27944,7 @@ module.exports = {
 
 
 /***/ }),
-/* 68 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25897,7 +28054,7 @@ module.exports = {
 
 
 /***/ }),
-/* 69 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26010,7 +28167,7 @@ module.exports = {
 
 
 /***/ }),
-/* 70 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26074,7 +28231,7 @@ module.exports = {
 
 
 /***/ }),
-/* 71 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26161,7 +28318,7 @@ module.exports = {
 
 
 /***/ }),
-/* 72 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26239,7 +28396,7 @@ module.exports = {
 
 
 /***/ }),
-/* 73 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26321,7 +28478,7 @@ module.exports = {
 
 
 /***/ }),
-/* 74 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26400,7 +28557,7 @@ module.exports = {
 
 
 /***/ }),
-/* 75 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26480,7 +28637,7 @@ module.exports = {
 
 
 /***/ }),
-/* 76 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26561,7 +28718,7 @@ module.exports = {
 
 
 /***/ }),
-/* 77 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26688,7 +28845,7 @@ module.exports = {
 
 
 /***/ }),
-/* 78 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26816,7 +28973,7 @@ module.exports = {
 
 
 /***/ }),
-/* 79 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26917,7 +29074,7 @@ module.exports = {
 
 
 /***/ }),
-/* 80 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27045,7 +29202,7 @@ module.exports = {
 
 
 /***/ }),
-/* 81 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27203,7 +29360,7 @@ module.exports = {
 
 
 /***/ }),
-/* 82 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27317,7 +29474,7 @@ module.exports = {
 
 
 /***/ }),
-/* 83 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27416,7 +29573,7 @@ module.exports = {
 
 
 /***/ }),
-/* 84 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27502,7 +29659,7 @@ module.exports = {
 
 
 /***/ }),
-/* 85 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27638,7 +29795,7 @@ module.exports = {
 
 
 /***/ }),
-/* 86 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27711,7 +29868,7 @@ module.exports = {
 
 
 /***/ }),
-/* 87 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27807,7 +29964,7 @@ module.exports = {
 
 
 /***/ }),
-/* 88 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27893,7 +30050,7 @@ module.exports = {
 
 
 /***/ }),
-/* 89 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27986,7 +30143,7 @@ module.exports = {
 
 
 /***/ }),
-/* 90 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28077,7 +30234,7 @@ module.exports = {
 
 
 /***/ }),
-/* 91 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28191,7 +30348,7 @@ module.exports = {
 
 
 /***/ }),
-/* 92 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28321,7 +30478,7 @@ module.exports = {
 
 
 /***/ }),
-/* 93 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28406,7 +30563,7 @@ module.exports = {
 
 
 /***/ }),
-/* 94 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28497,7 +30654,7 @@ module.exports = {
 
 
 /***/ }),
-/* 95 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28637,7 +30794,7 @@ module.exports = {
 
 
 /***/ }),
-/* 96 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28711,7 +30868,7 @@ module.exports = {
 
 
 /***/ }),
-/* 97 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28833,7 +30990,7 @@ module.exports = {
 
 
 /***/ }),
-/* 98 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28934,7 +31091,7 @@ module.exports = {
 
 
 /***/ }),
-/* 99 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29050,7 +31207,7 @@ module.exports = {
 
 
 /***/ }),
-/* 100 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29118,7 +31275,7 @@ module.exports = {
 
 
 /***/ }),
-/* 101 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29212,7 +31369,7 @@ module.exports = {
 
 
 /***/ }),
-/* 102 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29297,7 +31454,7 @@ module.exports = {
 
 
 /***/ }),
-/* 103 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29405,7 +31562,7 @@ module.exports = {
 
 
 /***/ }),
-/* 104 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29569,7 +31726,7 @@ module.exports = {
 
 
 /***/ }),
-/* 105 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29655,7 +31812,7 @@ module.exports = {
 
 
 /***/ }),
-/* 106 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29741,7 +31898,7 @@ module.exports = {
 
 
 /***/ }),
-/* 107 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29805,7 +31962,7 @@ module.exports = {
 
 
 /***/ }),
-/* 108 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29902,7 +32059,7 @@ module.exports = {
 
 
 /***/ }),
-/* 109 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29968,7 +32125,7 @@ module.exports = {
 
 
 /***/ }),
-/* 110 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30095,7 +32252,7 @@ module.exports = {
 
 
 /***/ }),
-/* 111 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30186,7 +32343,7 @@ module.exports = {
 
 
 /***/ }),
-/* 112 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30277,7 +32434,7 @@ module.exports = {
 
 
 /***/ }),
-/* 113 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30341,7 +32498,7 @@ module.exports = {
 
 
 /***/ }),
-/* 114 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30469,7 +32626,7 @@ module.exports = {
 
 
 /***/ }),
-/* 115 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30599,7 +32756,7 @@ module.exports = {
 
 
 /***/ }),
-/* 116 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30668,7 +32825,7 @@ module.exports = {
 
 
 /***/ }),
-/* 117 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30733,7 +32890,7 @@ module.exports = {
 
 
 /***/ }),
-/* 118 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30812,7 +32969,7 @@ module.exports = {
 
 
 /***/ }),
-/* 119 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30998,7 +33155,7 @@ module.exports = {
 
 
 /***/ }),
-/* 120 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -31100,7 +33257,7 @@ module.exports = {
 
 
 /***/ }),
-/* 121 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -31164,7 +33321,7 @@ module.exports = {
 
 
 /***/ }),
-/* 122 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -31239,7 +33396,7 @@ module.exports = {
 
 
 /***/ }),
-/* 123 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -31399,7 +33556,7 @@ module.exports = {
 
 
 /***/ }),
-/* 124 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -31576,7 +33733,7 @@ module.exports = {
 
 
 /***/ }),
-/* 125 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -31648,7 +33805,7 @@ module.exports = {
 
 
 /***/ }),
-/* 126 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -31763,7 +33920,7 @@ module.exports = {
 
 
 /***/ }),
-/* 127 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -31878,7 +34035,7 @@ module.exports = {
 
 
 /***/ }),
-/* 128 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -31970,7 +34127,7 @@ module.exports = {
 
 
 /***/ }),
-/* 129 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32043,7 +34200,7 @@ module.exports = {
 
 
 /***/ }),
-/* 130 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32106,7 +34263,7 @@ module.exports = {
 
 
 /***/ }),
-/* 131 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32239,7 +34396,7 @@ module.exports = {
 
 
 /***/ }),
-/* 132 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32332,7 +34489,7 @@ module.exports = {
 
 
 /***/ }),
-/* 133 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32403,7 +34560,7 @@ module.exports = {
 
 
 /***/ }),
-/* 134 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32523,7 +34680,7 @@ module.exports = {
 
 
 /***/ }),
-/* 135 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32594,7 +34751,7 @@ module.exports = {
 
 
 /***/ }),
-/* 136 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32660,7 +34817,7 @@ module.exports = {
 
 
 /***/ }),
-/* 137 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32786,7 +34943,7 @@ module.exports = {
 
 
 /***/ }),
-/* 138 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -32884,7 +35041,7 @@ module.exports = {
 
 
 /***/ }),
-/* 139 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -32979,7 +35136,7 @@ module.exports = {
 
 
 /***/ }),
-/* 140 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33041,7 +35198,7 @@ module.exports = {
 
 
 /***/ }),
-/* 141 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33103,7 +35260,7 @@ module.exports = {
 
 
 /***/ }),
-/* 142 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js language configuration
@@ -33226,7 +35383,7 @@ module.exports = {
 
 
 /***/ }),
-/* 143 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33381,7 +35538,7 @@ module.exports = {
 
 
 /***/ }),
-/* 144 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33483,7 +35640,7 @@ module.exports = {
 
 
 /***/ }),
-/* 145 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33545,7 +35702,7 @@ module.exports = {
 
 
 /***/ }),
-/* 146 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33607,7 +35764,7 @@ module.exports = {
 
 
 /***/ }),
-/* 147 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33690,7 +35847,7 @@ module.exports = {
 
 
 /***/ }),
-/* 148 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33762,7 +35919,7 @@ module.exports = {
 
 
 /***/ }),
-/* 149 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33826,7 +35983,7 @@ module.exports = {
 
 
 /***/ }),
-/* 150 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -33940,7 +36097,7 @@ module.exports = {
 
 
 /***/ }),
-/* 151 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -34047,7 +36204,7 @@ module.exports = {
 
 
 /***/ }),
-/* 152 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -34154,7 +36311,7 @@ module.exports = {
 
 
 /***/ }),
-/* 153 */
+/* 158 */
 /***/ (function(module, exports) {
 
 module.exports = (function () {
@@ -34217,73 +36374,73 @@ module.exports = (function () {
 })();
 
 /***/ }),
-/* 154 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(155);
-module.exports = __webpack_require__(343);
+__webpack_require__(160);
+module.exports = __webpack_require__(345);
 
 
 /***/ }),
-/* 155 */
+/* 160 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(157);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(162);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_axios__ = __webpack_require__(176);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_axios__ = __webpack_require__(181);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_vue_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__App_App_vue__ = __webpack_require__(177);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__App_App_vue__ = __webpack_require__(182);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__App_App_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__App_App_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_es6_promise_auto__ = __webpack_require__(188);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_es6_promise_auto__ = __webpack_require__(193);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_es6_promise_auto___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_es6_promise_auto__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_vuex__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_index_Index_vue__ = __webpack_require__(190);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_vuex__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_index_Index_vue__ = __webpack_require__(195);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_index_Index_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__components_index_Index_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue__ = __webpack_require__(195);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue__ = __webpack_require__(200);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__components_user_add_user_add_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue__ = __webpack_require__(200);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue__ = __webpack_require__(205);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__components_user_login_Login_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__vuex_store__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__components_user_profile_user_profile_vue__ = __webpack_require__(205);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__vuex_store__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__components_user_profile_user_profile_vue__ = __webpack_require__(210);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__components_user_profile_user_profile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11__components_user_profile_user_profile_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__components_user_view_user_view_vue__ = __webpack_require__(210);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__components_user_view_user_view_vue__ = __webpack_require__(215);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__components_user_view_user_view_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12__components_user_view_user_view_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__components_user_edit_user_edit_vue__ = __webpack_require__(216);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__components_user_edit_user_edit_vue__ = __webpack_require__(221);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__components_user_edit_user_edit_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13__components_user_edit_user_edit_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Forgetpassword_vue__ = __webpack_require__(221);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Forgetpassword_vue__ = __webpack_require__(226);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Forgetpassword_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14__components_user_forgetpassword_Forgetpassword_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_user_forgetpassword_Resetpassword_vue__ = __webpack_require__(226);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_user_forgetpassword_Resetpassword_vue__ = __webpack_require__(231);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_user_forgetpassword_Resetpassword_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15__components_user_forgetpassword_Resetpassword_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_not_found_component_not_found_component_vue__ = __webpack_require__(231);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_not_found_component_not_found_component_vue__ = __webpack_require__(236);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_not_found_component_not_found_component_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_16__components_not_found_component_not_found_component_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue__ = __webpack_require__(236);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue__ = __webpack_require__(241);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue__ = __webpack_require__(240);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue__ = __webpack_require__(245);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__components_consult_view_consult_view_vue__ = __webpack_require__(245);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__components_consult_view_consult_view_vue__ = __webpack_require__(250);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__components_consult_view_consult_view_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_19__components_consult_view_consult_view_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__components_consult_list_consult_list_vue__ = __webpack_require__(250);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__components_consult_list_consult_list_vue__ = __webpack_require__(255);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__components_consult_list_consult_list_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_20__components_consult_list_consult_list_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__components_consult_edit_consult_edit_vue__ = __webpack_require__(253);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__components_consult_edit_consult_edit_vue__ = __webpack_require__(258);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__components_consult_edit_consult_edit_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_21__components_consult_edit_consult_edit_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__components_message_send_message_vue__ = __webpack_require__(256);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__components_message_send_message_vue__ = __webpack_require__(261);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__components_message_send_message_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_22__components_message_send_message_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue__ = __webpack_require__(261);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue__ = __webpack_require__(267);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__components_graph_view_graph_vue__ = __webpack_require__(266);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__components_graph_view_graph_vue__ = __webpack_require__(272);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__components_graph_view_graph_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_24__components_graph_view_graph_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__components_consult_print_consult_print_vue__ = __webpack_require__(324);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__components_consult_print_consult_print_vue__ = __webpack_require__(326);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__components_consult_print_consult_print_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_25__components_consult_print_consult_print_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26_vuikit__ = __webpack_require__(329);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__vuikit_icons__ = __webpack_require__(330);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__vuikit_theme__ = __webpack_require__(331);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26_vuikit__ = __webpack_require__(331);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__vuikit_icons__ = __webpack_require__(332);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__vuikit_theme__ = __webpack_require__(333);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__vuikit_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_28__vuikit_theme__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29_vue_paginate__ = __webpack_require__(335);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29_vue_paginate__ = __webpack_require__(337);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_29_vue_paginate___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_29_vue_paginate__);
 
 
@@ -34398,6 +36555,10 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
         name: 'user-list',
         component: __WEBPACK_IMPORTED_MODULE_17__components_user_list_user_list_vue___default.a
     }, {
+        path: '/graph',
+        name: 'graph',
+        component: __WEBPACK_IMPORTED_MODULE_24__components_graph_view_graph_vue___default.a
+    }, {
         path: '/consults/add',
         name: 'consult-add',
         component: __WEBPACK_IMPORTED_MODULE_18__components_consult_add_consult_add_vue___default.a
@@ -34422,10 +36583,6 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
         name: 'consult-reply',
         component: __WEBPACK_IMPORTED_MODULE_23__components_message_order_reply_vue___default.a
     }, {
-        path: '/graph',
-        name: 'graph',
-        component: __WEBPACK_IMPORTED_MODULE_24__components_graph_view_graph_vue___default.a
-    }, {
         path: '/consult-print',
         name: 'consult-print',
         component: __WEBPACK_IMPORTED_MODULE_25__components_consult_print_consult_print_vue___default.a
@@ -34438,10 +36595,10 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.router = router;
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__webpack_require__(336), {
-    auth: __webpack_require__(340),
-    http: __webpack_require__(341),
-    router: __webpack_require__(342)
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__webpack_require__(338), {
+    auth: __webpack_require__(342),
+    http: __webpack_require__(343),
+    router: __webpack_require__(344)
 });
 
 __WEBPACK_IMPORTED_MODULE_4__App_App_vue___default.a.router = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.router;
@@ -34455,7 +36612,7 @@ new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
 });
 
 /***/ }),
-/* 156 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -34645,10 +36802,10 @@ new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(14)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14), __webpack_require__(16)))
 
 /***/ }),
-/* 157 */
+/* 162 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -37278,16 +39435,16 @@ if (inBrowser && window.Vue) {
 
 
 /***/ }),
-/* 158 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(6);
-var bind = __webpack_require__(20);
-var Axios = __webpack_require__(160);
-var defaults = __webpack_require__(15);
+var bind = __webpack_require__(22);
+var Axios = __webpack_require__(165);
+var defaults = __webpack_require__(17);
 
 /**
  * Create an instance of Axios
@@ -37320,15 +39477,15 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(24);
-axios.CancelToken = __webpack_require__(174);
-axios.isCancel = __webpack_require__(23);
+axios.Cancel = __webpack_require__(26);
+axios.CancelToken = __webpack_require__(179);
+axios.isCancel = __webpack_require__(25);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(175);
+axios.spread = __webpack_require__(180);
 
 module.exports = axios;
 
@@ -37337,7 +39494,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 159 */
+/* 164 */
 /***/ (function(module, exports) {
 
 /*!
@@ -37364,16 +39521,16 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 160 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(15);
+var defaults = __webpack_require__(17);
 var utils = __webpack_require__(6);
-var InterceptorManager = __webpack_require__(169);
-var dispatchRequest = __webpack_require__(170);
+var InterceptorManager = __webpack_require__(174);
+var dispatchRequest = __webpack_require__(175);
 
 /**
  * Create a new instance of Axios
@@ -37450,7 +39607,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 161 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37469,13 +39626,13 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 162 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var createError = __webpack_require__(22);
+var createError = __webpack_require__(24);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -37502,7 +39659,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 163 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37530,7 +39687,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 164 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37603,7 +39760,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 165 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37663,7 +39820,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 166 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37738,7 +39895,7 @@ module.exports = (
 
 
 /***/ }),
-/* 167 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37781,7 +39938,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 168 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37841,7 +39998,7 @@ module.exports = (
 
 
 /***/ }),
-/* 169 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37900,18 +40057,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 170 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(6);
-var transformData = __webpack_require__(171);
-var isCancel = __webpack_require__(23);
-var defaults = __webpack_require__(15);
-var isAbsoluteURL = __webpack_require__(172);
-var combineURLs = __webpack_require__(173);
+var transformData = __webpack_require__(176);
+var isCancel = __webpack_require__(25);
+var defaults = __webpack_require__(17);
+var isAbsoluteURL = __webpack_require__(177);
+var combineURLs = __webpack_require__(178);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -37993,7 +40150,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 171 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38020,7 +40177,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 172 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38041,7 +40198,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 173 */
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38062,13 +40219,13 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 174 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Cancel = __webpack_require__(24);
+var Cancel = __webpack_require__(26);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -38126,7 +40283,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 175 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38160,7 +40317,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 176 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38168,17 +40325,17 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof="fun
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):window.Vue&&window.axios&&Vue.use(o,window.axios)}();
 
 /***/ }),
-/* 177 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(178)
+  __webpack_require__(183)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(181)
+var __vue_script__ = __webpack_require__(186)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -38197,7 +40354,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/App/App.vue"
+Component.options.__file = "resources\\assets\\js\\App\\App.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -38206,9 +40363,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-dde2d99e", Component.options)
+    hotAPI.createRecord("data-v-c21df912", Component.options)
   } else {
-    hotAPI.reload("data-v-dde2d99e", Component.options)
+    hotAPI.reload("data-v-c21df912", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -38219,23 +40376,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 178 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(179);
+var content = __webpack_require__(184);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("ff301a74", content, false, {});
+var update = __webpack_require__(5)("1d15c444", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-dde2d99e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-dde2d99e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue");
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c21df912\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c21df912\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -38245,7 +40402,7 @@ if(false) {
 }
 
 /***/ }),
-/* 179 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -38259,7 +40416,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", 
 
 
 /***/ }),
-/* 180 */
+/* 185 */
 /***/ (function(module, exports) {
 
 /**
@@ -38292,12 +40449,12 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 181 */
+/* 186 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_navbar_NavBar_vue__ = __webpack_require__(182);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_navbar_NavBar_vue__ = __webpack_require__(187);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_navbar_NavBar_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_navbar_NavBar_vue__);
 
 // import axios from 'axios';
@@ -38308,7 +40465,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
-    template: __webpack_require__(187),
+    template: __webpack_require__(192),
     data: function data() {
         return {
             msg: 'Hello'
@@ -38325,17 +40482,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 182 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(183)
+  __webpack_require__(188)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(185)
+var __vue_script__ = __webpack_require__(190)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -38354,7 +40511,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/navbar/NavBar.vue"
+Component.options.__file = "resources\\assets\\js\\components\\navbar\\NavBar.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -38363,9 +40520,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-79f2ea30", Component.options)
+    hotAPI.createRecord("data-v-05909195", Component.options)
   } else {
-    hotAPI.reload("data-v-79f2ea30", Component.options)
+    hotAPI.reload("data-v-05909195", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -38376,23 +40533,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 183 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(184);
+var content = __webpack_require__(189);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("2f36cc2c", content, false, {});
+var update = __webpack_require__(5)("05d5a360", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-79f2ea30\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NavBar.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-79f2ea30\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NavBar.vue");
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-05909195\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NavBar.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-05909195\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NavBar.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -38402,7 +40559,7 @@ if(false) {
 }
 
 /***/ }),
-/* 184 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -38416,7 +40573,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 185 */
+/* 190 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -38428,7 +40585,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import { mapGetters } from 'vuex';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(186),
+    template: __webpack_require__(191),
     computed: {
         isLoggedIn: function isLoggedIn() {
             return this.$store.getters['isLoggedIn'];
@@ -38456,30 +40613,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 186 */
+/* 191 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"navbar\" class=\"uk-overflow-auto uk-background-muted\">\n    <vk-navbar v-if=\"isLoggedIn\" class=\"uk-navbar\">\n        <vk-navbar-nav>\n            <vk-navbar-nav-item icon=\"home\" title=\"MED E-CONSULTs\" href=\"../..#/\"></vk-navbar-nav-item>\n            <vk-navbar-item>\n                <router-link :to=\"{ name: 'add-user' }\" v-if=\"isRole(1)\">ADD USER</router-link>\n            </vk-navbar-item>\n            <vk-navbar-item>\n                    <router-link :to=\"{ name: 'consult-add' }\" v-if=\"isRole(3)\">CREATE CONSULT</router-link>\n            </vk-navbar-item>\n            <vk-navbar-item>\n                <router-link :to=\"{ name: 'user-list' }\" v-if=\"isRole(1)\">USER LIST</router-link>\n            </vk-navbar-item>\n            <vk-navbar-item>\n                    <router-link :to=\"{ name: 'consult-list' }\" v-if=\"isRole(1)|isRole(2)|isRole(3)\">CONSULT LIST</router-link>\n            </vk-navbar-item>\n        </vk-navbar-nav>\n        <vk-navbar-nav slot=\"right\">\n            <vk-navbar-item>\n                <router-link :to=\"{ name: 'profile' }\" >{{ user.first_name.toUpperCase() }} {{user.last_name.toUpperCase()}}</router-link>\n            </vk-navbar-item>\n            <vk-navbar-nav-item title=\"logout\" v-on:click=\"logout\">\n            </vk-navbar-nav-item>\n            <vk-navbar-nav-item icon=\"cog\"></vk-navbar-nav-item>\n        </vk-navbar-nav>\n    </vk-navbar>\n</div>";
+module.exports = "<div id=\"navbar\" class=\"uk-overflow-auto uk-background-muted\">\r\n    <vk-navbar v-if=\"isLoggedIn\" class=\"uk-navbar\">\r\n        <vk-navbar-nav>\r\n            <vk-navbar-nav-item icon=\"home\" title=\"MED E-CONSULTs\" href=\"../..#/\"></vk-navbar-nav-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'add-user' }\" v-if=\"isRole(1)\">ADD USER</router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'consult-add' }\" v-if=\"isRole(3)\">CREATE CONSULT</router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'user-list' }\" v-if=\"isRole(1)\">USER LIST</router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'consult-list' }\" v-if=\"isRole(1)|isRole(2)|isRole(3)\">SEARCH CONSULT\r\n                </router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'graph' }\">SUMMARY GRAPH</router-link>\r\n            </vk-navbar-item>\r\n        </vk-navbar-nav>\r\n        <vk-navbar-nav slot=\"right\">\r\n            <vk-navbar-item>\r\n                <router-link :to=\"{ name: 'profile' }\">{{ user.first_name.toUpperCase() }}\r\n                    {{user.last_name.toUpperCase()}}\r\n                </router-link>\r\n            </vk-navbar-item>\r\n            <vk-navbar-nav-item title=\"logout\" v-on:click=\"logout\">\r\n            </vk-navbar-nav-item>\r\n            <!--<vk-navbar-nav-item icon=\"cog\"></vk-navbar-nav-item>-->\r\n        </vk-navbar-nav>\r\n    </vk-navbar>\r\n</div>";
 
 /***/ }),
-/* 187 */
+/* 192 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"app\">\n\n  <nav-bar></nav-bar>\n\n  <div class=\"container\">\n    <div class=\"panel panel-default\">\n      <div class=\"panel-body\">\n        <router-view></router-view>\n      </div>\n    </div>\n  </div>\n<br/>\n</div>\n";
+module.exports = "<div id=\"app\">\r\n\r\n  <nav-bar></nav-bar>\r\n\r\n  <div class=\"container\">\r\n    <div class=\"panel panel-default\">\r\n      <div class=\"panel-body\">\r\n        <router-view></router-view>\r\n      </div>\r\n    </div>\r\n  </div>\r\n<br/>\r\n</div>\r\n";
 
 /***/ }),
-/* 188 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 // This file can be required in Browserify and Node.js for automatic polyfill
 // To use it:  require('es6-promise/auto');
 
-module.exports = __webpack_require__(189).polyfill();
+module.exports = __webpack_require__(194).polyfill();
 
 
 /***/ }),
-/* 189 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process, global) {/*!
@@ -39662,20 +41819,20 @@ return Promise$1;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14), __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16), __webpack_require__(14)))
 
 /***/ }),
-/* 190 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(191)
+  __webpack_require__(196)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(193)
+var __vue_script__ = __webpack_require__(198)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -39683,7 +41840,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-5efe4b24"
+var __vue_scopeId__ = "data-v-0e2807a1"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -39694,7 +41851,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/index/Index.vue"
+Component.options.__file = "resources\\assets\\js\\components\\index\\Index.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -39703,9 +41860,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5efe4b24", Component.options)
+    hotAPI.createRecord("data-v-0e2807a1", Component.options)
   } else {
-    hotAPI.reload("data-v-5efe4b24", Component.options)
+    hotAPI.reload("data-v-0e2807a1", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -39716,23 +41873,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 191 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(192);
+var content = __webpack_require__(197);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("d1d1c95a", content, false, {});
+var update = __webpack_require__(5)("05debe4e", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5efe4b24\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Index.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5efe4b24\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Index.vue");
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0e2807a1\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Index.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0e2807a1\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Index.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -39742,7 +41899,7 @@ if(false) {
 }
 
 /***/ }),
-/* 192 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -39750,13 +41907,13 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\n#index[data-v-5efe4b24] {\n    margin-left: 3%;\n    margin-right: 3%;\n}\nth[data-v-5efe4b24] {\n    font-size: large;\n}\n.title[data-v-5efe4b24] {\n    font-size: large;\n}\n.badge-bg-success[data-v-5efe4b24] {\n    background-color: #5cb85c;\n}\n.badge-bg-warning[data-v-5efe4b24] {\n    background-color: #ffae42;\n}\n", ""]);
+exports.push([module.i, "\n#index[data-v-0e2807a1] {\n    margin-left: 3%;\n    margin-right: 3%;\n}\nth[data-v-0e2807a1] {\n    font-size: large;\n}\n.title[data-v-0e2807a1] {\n    font-size: large;\n}\n.badge-bg-success[data-v-0e2807a1] {\n    background-color: #5cb85c;\n}\n.badge-bg-warning[data-v-0e2807a1] {\n    background-color: #ffae42;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 193 */
+/* 198 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -39767,7 +41924,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import loginService from './adminService.js';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(194),
+    template: __webpack_require__(199),
     mounted: function mounted() {
         this.loadConsultList();
     },
@@ -39853,23 +42010,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 194 */
+/* 199 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"index\">\n\n    <header>\n        <br/>\n        <h1 class=\"uk-text-center\">Welcome to MED E-CONSULTS</h1>\n    </header>\n    <section class=\"uk-container\">\n        <vk-grid class=\"uk-child-width-expand@s\">\n            <div class=\"title\">\n                <vk-tabs-vertical align=\"left\">\n                    <vk-tabs-item title=\"Draft\" v-if=\"isRole(3)\">\n                        <div class=\"uk-overflow-auto\">\n                            <table class=\"uk-table uk-table-middle uk-table-hover uk-table-divider\">\n                                <thead>\n                                <tr>\n                                    <th class=\"uk-width-small\">Consult Id</th>\n                                    <th>Patient</th>\n                                    <th>Creator</th>\n                                    <th>Date of Create</th>\n                                    <th>Status</th>\n                                </tr>\n                                </thead>\n                                <tbody>\n                                <tr v-for=\"consult in consultDraft\">\n                                    <td>{{consult.consult_id}}</td>\n                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>\n                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>\n                                    <td>{{consult.created_at}}</td>\n                                    <td><span class=\"uk-label uk-label-warning\">Draft</span></td>\n                                    <td>\n                                        <button v-on:click=\"viewConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-default\" type=\"button\">View\n                                        </button>\n                                    </td>\n                                    <td>\n                                        <button v-on:click=\"sendConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Send\n                                        </button>\n                                    </td>\n                                    <td>\n                                        <button v-on:click=\"deleteConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-danger\" type=\"button\">Delete\n                                        </button>\n                                    </td>\n                                </tr>\n                                </tbody>\n                            </table>\n                        </div>\n                    </vk-tabs-item>\n\n                    <vk-tabs-item title=\"Pending\" v-if=\"isRole(2)|isRole(3)\">\n                        <div class=\"uk-overflow-auto\">\n                            <table class=\"uk-table uk-table-middle uk-table-hover uk-table-divider\">\n                                <thead>\n                                <tr>\n                                    <th class=\"uk-width-small\">Consult Id</th>\n                                    <th>Patient</th>\n                                    <th>Creator</th>\n                                    <th>Date of Create</th>\n                                    <th>Status</th>\n                                </tr>\n                                </thead>\n                                <tbody>\n                                <tr v-for=\"consult in consultPending\">\n                                    <td>{{consult.consult_id}}</td>\n                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>\n                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>\n                                    <td>{{consult.created_at}}</td>\n                                    <td><span class=\"uk-label\">Pending</span></td>\n                                    <td>\n                                        <button v-on:click=\"viewConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-default\" type=\"button\">View\n                                        </button>\n                                    </td>\n                                    <td>\n                                        <button v-on:click=\"messageConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Message\n                                        </button>\n                                    </td>\n                                    <td>\n                                        <button v-on:click=\"replyConsult(consult.consult_id)\" v-if=\"isRole(2)\"\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Reply\n                                        </button>\n                                    </td>\n                                </tr>\n                                </tbody>\n                            </table>\n                        </div>\n                    </vk-tabs-item>\n\n                    <vk-tabs-item title=\"Done\" v-if=\"isRole(2)|isRole(3)\">\n                        <div class=\"uk-overflow-auto\">\n                            <table class=\"uk-table uk-table-middle uk-table-hover uk-table-divider\">\n                                <thead>\n                                <tr>\n                                    <th class=\"uk-width-small\">Consult Id</th>\n                                    <th>Patient</th>\n                                    <th>Creator</th>\n                                    <th>Date of Create</th>\n                                    <th>Status</th>\n                                </tr>\n                                </thead>\n                                <tbody>\n                                <tr v-for=\"consult in consultDone\">\n                                    <td>{{consult.consult_id}}</td>\n                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>\n                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>\n                                    <td>{{consult.created_at}}</td>\n                                    <td><span class=\"uk-label uk-label-success\">Done</span></td>\n                                    <td>\n                                        <button v-on:click=\"viewConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-default\" type=\"button\">View\n                                        </button>\n                                    </td>\n                                    <td>\n                                        <button v-on:click=\"messageConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Message\n                                        </button>\n                                    </td>\n                                    <td>\n                                        <button v-on:click=\"printConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Print\n                                        </button>\n                                    </td>\n                                </tr>\n                                </tbody>\n                            </table>\n                        </div>\n                    </vk-tabs-item>\n                </vk-tabs-vertical>\n            </div>\n        </vk-grid>\n    </section>\n</div>\n";
+module.exports = "<div id=\"index\">\r\n\r\n    <header>\r\n        <br/>\r\n        <h1 class=\"uk-text-center\">Welcome to MED E-CONSULTS</h1>\r\n    </header>\r\n    <section class=\"uk-container\">\r\n        <vk-grid class=\"uk-child-width-expand@s\">\r\n            <div class=\"title\">\r\n                <vk-tabs-vertical align=\"left\">\r\n                    <vk-tabs-item title=\"Draft\" v-if=\"isRole(3)\">\r\n                        <div class=\"uk-overflow-auto\">\r\n                            <table class=\"uk-table uk-table-middle uk-table-hover uk-table-divider\">\r\n                                <thead>\r\n                                <tr>\r\n                                    <th class=\"uk-width-small\">Consult Id</th>\r\n                                    <th>Patient</th>\r\n                                    <th>Creator</th>\r\n                                    <th>Date of Create</th>\r\n                                    <th>Status</th>\r\n                                </tr>\r\n                                </thead>\r\n                                <tbody>\r\n                                <tr v-for=\"consult in consultDraft\">\r\n                                    <td>{{consult.consult_id}}</td>\r\n                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>\r\n                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>\r\n                                    <td>{{consult.created_at}}</td>\r\n                                    <td><span class=\"uk-label uk-label-warning\">Draft</span></td>\r\n                                    <td>\r\n                                        <button v-on:click=\"viewConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-default\" type=\"button\">View\r\n                                        </button>\r\n                                    </td>\r\n                                    <td>\r\n                                        <button v-on:click=\"sendConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Send\r\n                                        </button>\r\n                                    </td>\r\n                                    <td>\r\n                                        <button v-on:click=\"deleteConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-danger\" type=\"button\">Delete\r\n                                        </button>\r\n                                    </td>\r\n                                </tr>\r\n                                </tbody>\r\n                            </table>\r\n                        </div>\r\n                    </vk-tabs-item>\r\n\r\n                    <vk-tabs-item title=\"Pending\" v-if=\"isRole(2)|isRole(3)\">\r\n                        <div class=\"uk-overflow-auto\">\r\n                            <table class=\"uk-table uk-table-middle uk-table-hover uk-table-divider\">\r\n                                <thead>\r\n                                <tr>\r\n                                    <th class=\"uk-width-small\">Consult Id</th>\r\n                                    <th>Patient</th>\r\n                                    <th>Creator</th>\r\n                                    <th>Date of Create</th>\r\n                                    <th>Status</th>\r\n                                </tr>\r\n                                </thead>\r\n                                <tbody>\r\n                                <tr v-for=\"consult in consultPending\">\r\n                                    <td>{{consult.consult_id}}</td>\r\n                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>\r\n                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>\r\n                                    <td>{{consult.created_at}}</td>\r\n                                    <td><span class=\"uk-label\">Pending</span></td>\r\n                                    <td>\r\n                                        <button v-on:click=\"viewConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-default\" type=\"button\">View\r\n                                        </button>\r\n                                    </td>\r\n                                    <td>\r\n                                        <button v-on:click=\"messageConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Message\r\n                                        </button>\r\n                                    </td>\r\n                                    <td>\r\n                                        <button v-on:click=\"replyConsult(consult.consult_id)\" v-if=\"isRole(2)\"\r\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Reply\r\n                                        </button>\r\n                                    </td>\r\n                                </tr>\r\n                                </tbody>\r\n                            </table>\r\n                        </div>\r\n                    </vk-tabs-item>\r\n\r\n                    <vk-tabs-item title=\"Done\" v-if=\"isRole(2)|isRole(3)\">\r\n                        <div class=\"uk-overflow-auto\">\r\n                            <table class=\"uk-table uk-table-middle uk-table-hover uk-table-divider\">\r\n                                <thead>\r\n                                <tr>\r\n                                    <th class=\"uk-width-small\">Consult Id</th>\r\n                                    <th>Patient</th>\r\n                                    <th>Creator</th>\r\n                                    <th>Date of Create</th>\r\n                                    <th>Status</th>\r\n                                </tr>\r\n                                </thead>\r\n                                <tbody>\r\n                                <tr v-for=\"consult in consultDone\">\r\n                                    <td>{{consult.consult_id}}</td>\r\n                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>\r\n                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>\r\n                                    <td>{{consult.created_at}}</td>\r\n                                    <td><span class=\"uk-label uk-label-success\">Done</span></td>\r\n                                    <td>\r\n                                        <button v-on:click=\"viewConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-default\" type=\"button\">View\r\n                                        </button>\r\n                                    </td>\r\n                                    <td>\r\n                                        <button v-on:click=\"messageConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Message\r\n                                        </button>\r\n                                    </td>\r\n                                    <td>\r\n                                        <button v-on:click=\"printConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Print\r\n                                        </button>\r\n                                    </td>\r\n                                </tr>\r\n                                </tbody>\r\n                            </table>\r\n                        </div>\r\n                    </vk-tabs-item>\r\n                </vk-tabs-vertical>\r\n            </div>\r\n        </vk-grid>\r\n    </section>\r\n</div>\r\n";
 
 /***/ }),
-/* 195 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(196)
+  __webpack_require__(201)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(198)
+var __vue_script__ = __webpack_require__(203)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -39888,7 +42045,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/user/add/user-add.vue"
+Component.options.__file = "resources\\assets\\js\\components\\user\\add\\user-add.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -39897,9 +42054,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-514e80ec", Component.options)
+    hotAPI.createRecord("data-v-72482524", Component.options)
   } else {
-    hotAPI.reload("data-v-514e80ec", Component.options)
+    hotAPI.reload("data-v-72482524", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -39910,23 +42067,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 196 */
+/* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(197);
+var content = __webpack_require__(202);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("10e6f665", content, false, {});
+var update = __webpack_require__(5)("c3a99ac0", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-514e80ec\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-add.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-514e80ec\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-add.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-72482524\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-add.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-72482524\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-add.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -39936,7 +42093,7 @@ if(false) {
 }
 
 /***/ }),
-/* 197 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -39950,21 +42107,21 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 198 */
+/* 203 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuejs_datepicker__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuejs_datepicker__ = __webpack_require__(18);
 
 
 
 // import {APIENDPOINT} from  '../../http-common.js';
 // import loginService from './adminService.js';
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(199),
+    template: __webpack_require__(204),
     components: {
         Datepicker: __WEBPACK_IMPORTED_MODULE_1_vuejs_datepicker__["a" /* default */]
     },
@@ -40061,151 +42218,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 199 */
-/***/ (function(module, exports) {
-
-module.exports = "<div id=\"register\">\n\n    <div class=\"uk-container uk-section\">\n\n        <div class=\"uk-width-3-5@m uk-align-center\">\n\n            <h1 class=\"uk-heading-primary\">Add User Account</h1>\n\n            <form autocomplete=\"off\" class=\"uk-form-horizontal\">\n\n                <h2 class=\"uk-heading-line\"><span>Account</span></h2>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Username</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.username\" class=\"uk-input\" type=\"text\" placeholder=\"Username\">\n                        <div class=\"uk-alert-danger\" uk-alert v-if=\"error.username\">\n                            <p v-if=\"error.username == 'required'\">Required</p>\n                            <p v-if=\"error.username == 'min'\">The username must have at least 4 characters</p>\n                            <p v-if=\"error.username == 'max'\">The username must not over 30 characters</p>\n                            <p v-if=\"error.username == 'not_unique'\">The username is already existing.</p>\n                            <p v-if=\"error.username == 'not_alpha_num'\">Username can be only alphabet and number</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Password</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.password\" class=\"uk-input\" type=\"password\" placeholder=\"Password\"\n                               id=\"password\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.password\">\n                            <p v-if=\"error.password == 'required'\">Required</p>\n                            <p v-if=\"error.password == 'min'\">The username must have at least 4 characters</p>\n                            <p v-if=\"error.password == 'max'\">The username must not over 30 characters</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Confirm Password</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.password_confirmation\" class=\"uk-input\" type=\"password\"\n                               placeholder=\"Confirm Password\"\n                               id=\"cpassword\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.password\">\n                            <p v-if=\"error.password == 'not_confirmed'\">The confirm password is not match</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin \">\n                    <label class=\"uk-form-label\"><h4>Role</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <label><input class=\"uk-checkbox\" value=\"1\" type=\"checkbox\" v-model=\"user.role\"> ADMIN</label>\n                        <label><input class=\"uk-checkbox\" value=\"2\" type=\"checkbox\" v-model=\"user.role\"> COUNSELOR</label>\n                        <label><input class=\"uk-checkbox\" value=\"3\" type=\"checkbox\" v-model=\"user.role\"> CONSULTEE</label>\n                        <div class=\"uk-alert-danger\" v-if=\"error.role\">\n                            <p v-if=\"error.role == 'required'\">Required</p>\n                            <p v-if=\"error.role == 'not_role'\">Something error</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>Personal Information</span></h2>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Name Title</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <select v-model=\"user.name_title\" class=\"uk-select\">\n                            <option value=\"\" disabled>Name Title</option>\n                            <option v-for=\"title in form.name_titles\" :value=\"title.title\">{{ title.title }}</option>\n                        </select>\n                        <div class=\"uk-alert-danger\" v-if=\"error.name_title\">\n                            <p v-if=\"error.name_title == 'required'\">Please select name title.</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>First Name</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.first_name\">\n                            <p v-if=\"error.first_name == 'required'\">Required</p>\n                            <p v-if=\"error.first_name == 'not_alpha'\">Only alphabets</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Last Name</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.last_name\">\n                            <p v-if=\"error.last_name == 'required'\">Required</p>\n                            <p v-if=\"error.last_name == 'not_alpha'\">Only alphabets</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Position</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.position\" class=\"uk-input\" type=\"text\" placeholder=\"Position\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.position\">\n                            <p v-if=\"error.last_name == 'required'\">Required</p>\n                            <p v-if=\"error.last_name == 'not_alpha'\">Only alphabets</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Gender</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <select v-model=\"user.gender\" class=\"uk-select\" placeholder=\"gender\">\n                            <option value=\"\" disabled>Gender</option>\n                            <option v-for=\"gender in form.genders\" :value=\"gender.gender\">{{ gender.gender }}</option>\n                        </select>\n                        <div class=\"uk-alert-danger\" v-if=\"error.gender\">\n                            <p v-if=\"error.gender == 'required'\">Please select gender.</p>\n                            <p v-if=\"error.gender == 'not_alpha'\">Something error</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Citizen ID</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.citizen_id\" class=\"uk-input\" type=\"text\" placeholder=\"Citizen Id\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.citizen_id\">\n                            <p v-if=\"error.citizen_id == 'required'\">Required</p>\n                            <p v-if=\"error.citizen_id == 'not_digits'\">Citizen id must be 13 digits</p>\n                            <p v-if=\"error.citizen_id == 'not_unique'\">This citizen id is not available.</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Date of Birth</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\"></datepicker>\n                        <div class=\"uk-alert-danger\" v-if=\"error.date_of_birth\">\n                            <p v-if=\"error.date_of_birth == 'required'\">Please select date of birth.</p>\n                            <p v-if=\"error.date_of_birth == 'not_date'\">Something error</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>Contact Information</span></h2>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>E-mail</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.email\">\n                            <p v-if=\"error.email == 'required'\">Required</p>\n                            <p v-if=\"error.email == 'not_email'\">The email pattern should be example@mail.com</p>\n                            <p v-if=\"error.email == 'not_unique'\">This email is not available</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Telephone Number</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.contact_number\" class=\"uk-input\" type=\"text\"\n                               placeholder=\"Telephone Number\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.contact_number\">\n                            <p v-if=\"error.contact_number == 'required'\">Required</p>\n                            <p v-if=\"error.contact_number == 'The contact number format is invalid.'\">\n                                The contact number format is invalid.</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Address</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.address\">\n                            <p v-if=\"error.address == 'required'\">Required</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>Workplace</span></h2>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Workplace</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.workplace\">\n                            <p v-if=\"error.workplace == 'required'\">Required</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>User Image (Optional)</span></h2>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Image</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <div class=\"uk-margin\" v-if=\"user.image\">\n                            <img :src=\"user.image\" width=\"1800\" height=\"1200\" alt=\"\" uk-img>\n                            <!--<img :src=\"user.image\" class=\"\" height=\"\" width=\"\">-->\n                        </div>\n                        <input type=\"file\" v-on:change=\"onImageChange\">\n                        <div class=\"uk-margin\">\n                            <div class=\"uk-alert-danger\" v-if=\"error.image\">\n                                <p v-if=\"error.image == 'not_image'\">Only.PNG and .JPG(JPEG) files are allowed.</p>\n                            </div>\n                        </div>\n                        <!--<input type=\"file\" v-on:change=\"onImageChange\" class=\"form-control\">-->\n                    </div>\n                </div>\n\n                <p uk-margin class=\"uk-margin-bottom uk-text-center\">\n                    <button @click=\"addUser\" type=\"button\" class=\"uk-button uk-button-primary\">Add</button>\n                    <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\n                </p>\n            </form>\n        </div>\n    </div>\n</div>\n";
-
-/***/ }),
-/* 200 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(201)
-}
-var normalizeComponent = __webpack_require__(3)
-/* script */
-var __vue_script__ = __webpack_require__(203)
-/* template */
-var __vue_template__ = null
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/user/login/Login.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-7b9e5f76", Component.options)
-  } else {
-    hotAPI.reload("data-v-7b9e5f76", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 201 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(202);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(5)("d1d6ecd6", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7b9e5f76\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Login.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7b9e5f76\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Login.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 202 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)(false);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 203 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
-
-
-// import {APIENDPOINT} from  '../../http-common.js';
-// import loginService from './adminService.js';
-/* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(204),
-    data: function data() {
-        return {
-            username: '',
-            password: '',
-            loginFail: false
-        };
-    },
-
-    methods: {
-        login: function login() {
-            var _this = this;
-
-            var payload = {
-                'username': this.username,
-                'password': this.password
-            };
-            console.log('login.vue : login method');
-            this.$store.dispatch('login', payload).then(function (response) {
-                console.log('login.vue : login passed');
-                _this.$router.push("/");
-            }, function (error) {
-                console.log('login.vue : login failed');
-                // console.log(error);
-                _this.loginFail = true;
-            });
-        }
-    },
-    computed: {}
-});
-
-/***/ }),
 /* 204 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"login\">\n    <div align=\"center\" class=\"uk-container\">\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\n        <h1>LOGIN</h1>\n        <form>\n            <div class=\"uk-alert-danger\" v-if=\"loginFail\">\n                <p>Username or password is incorrect.</p>\n            </div>\n\n            <div class=\"uk-margin\">\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"user\"></vk-icon></span>\n                    <input\n                            id=\"email\"\n                            class=\"uk-input form-control\"\n                            type=\"text\"\n                            v-model=\"username\"\n                            placeholder=\"Username\"\n                            required>\n                </div>\n            </div>\n            <div class=\"uk-margin\">\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\n                    <input\n                            id=\"password\"\n                            class=\"uk-input form-control\"\n                            type=\"password\"\n                            v-model=\"password\"\n                            placeholder=\"Password\"\n                            required>\n                </div>\n            </div>\n\n            <button @click=\"login\" type=\"button\" class=\"uk-button uk-button-default uk-button-small uk-button-primary\">Login\n            </button>\n            <br/>\n            <a href=\"/#/forgetpassword\" class=\"uk-position-bottom-center uk-margin-large-bottom\">Forget Password</a>\n\n        </form>\n    </div>\n\n</div>\n";
+module.exports = "<div id=\"register\">\r\n\r\n    <div class=\"uk-container uk-section\">\r\n\r\n        <div class=\"uk-width-3-5@m uk-align-center\">\r\n\r\n            <h1 class=\"uk-heading-primary\">Add User Account</h1>\r\n\r\n            <form autocomplete=\"off\" class=\"uk-form-horizontal\">\r\n\r\n                <h2 class=\"uk-heading-line\"><span>Account</span></h2>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Username</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.username\" class=\"uk-input\" type=\"text\" placeholder=\"Username\">\r\n                        <div class=\"uk-alert-danger\" uk-alert v-if=\"error.username\">\r\n                            <p v-if=\"error.username == 'required'\">Required</p>\r\n                            <p v-if=\"error.username == 'min'\">The username must have at least 4 characters</p>\r\n                            <p v-if=\"error.username == 'max'\">The username must not over 30 characters</p>\r\n                            <p v-if=\"error.username == 'not_unique'\">The username is already existing.</p>\r\n                            <p v-if=\"error.username == 'not_alpha_num'\">Username can be only alphabet and number</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Password</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.password\" class=\"uk-input\" type=\"password\" placeholder=\"Password\"\r\n                               id=\"password\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.password\">\r\n                            <p v-if=\"error.password == 'required'\">Required</p>\r\n                            <p v-if=\"error.password == 'min'\">The username must have at least 4 characters</p>\r\n                            <p v-if=\"error.password == 'max'\">The username must not over 30 characters</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Confirm Password</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.password_confirmation\" class=\"uk-input\" type=\"password\"\r\n                               placeholder=\"Confirm Password\"\r\n                               id=\"cpassword\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.password\">\r\n                            <p v-if=\"error.password == 'not_confirmed'\">The confirm password is not match</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin \">\r\n                    <label class=\"uk-form-label\"><h4>Role</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <label><input class=\"uk-checkbox\" value=\"1\" type=\"checkbox\" v-model=\"user.role\"> ADMIN</label>\r\n                        <label><input class=\"uk-checkbox\" value=\"2\" type=\"checkbox\" v-model=\"user.role\"> COUNSELOR</label>\r\n                        <label><input class=\"uk-checkbox\" value=\"3\" type=\"checkbox\" v-model=\"user.role\"> CONSULTEE</label>\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.role\">\r\n                            <p v-if=\"error.role == 'required'\">Required</p>\r\n                            <p v-if=\"error.role == 'not_role'\">Something error</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <h2 class=\"uk-heading-line\"><span>Personal Information</span></h2>\r\n\r\n                <div class=\"uk-margin uk-width-3-5@s\">\r\n                    <label class=\"uk-form-label\"><h4>Name Title</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <select v-model=\"user.name_title\" class=\"uk-select\">\r\n                            <option value=\"\" disabled>Name Title</option>\r\n                            <option v-for=\"title in form.name_titles\" :value=\"title.title\">{{ title.title }}</option>\r\n                        </select>\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.name_title\">\r\n                            <p v-if=\"error.name_title == 'required'\">Please select name title.</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>First Name</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.first_name\">\r\n                            <p v-if=\"error.first_name == 'required'\">Required</p>\r\n                            <p v-if=\"error.first_name == 'not_alpha'\">Only alphabets</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Last Name</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.last_name\">\r\n                            <p v-if=\"error.last_name == 'required'\">Required</p>\r\n                            <p v-if=\"error.last_name == 'not_alpha'\">Only alphabets</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Position</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.position\" class=\"uk-input\" type=\"text\" placeholder=\"Position\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.position\">\r\n                            <p v-if=\"error.last_name == 'required'\">Required</p>\r\n                            <p v-if=\"error.last_name == 'not_alpha'\">Only alphabets</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin uk-width-3-5@s\">\r\n                    <label class=\"uk-form-label\"><h4>Gender</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <select v-model=\"user.gender\" class=\"uk-select\" placeholder=\"gender\">\r\n                            <option value=\"\" disabled>Gender</option>\r\n                            <option v-for=\"gender in form.genders\" :value=\"gender.gender\">{{ gender.gender }}</option>\r\n                        </select>\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.gender\">\r\n                            <p v-if=\"error.gender == 'required'\">Please select gender.</p>\r\n                            <p v-if=\"error.gender == 'not_alpha'\">Something error</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Citizen ID</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.citizen_id\" class=\"uk-input\" type=\"text\" placeholder=\"Citizen Id\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.citizen_id\">\r\n                            <p v-if=\"error.citizen_id == 'required'\">Required</p>\r\n                            <p v-if=\"error.citizen_id == 'not_digits'\">Citizen id must be 13 digits</p>\r\n                            <p v-if=\"error.citizen_id == 'not_unique'\">This citizen id is not available.</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Date of Birth</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\"></datepicker>\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.date_of_birth\">\r\n                            <p v-if=\"error.date_of_birth == 'required'\">Please select date of birth.</p>\r\n                            <p v-if=\"error.date_of_birth == 'not_date'\">Something error</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <h2 class=\"uk-heading-line\"><span>Contact Information</span></h2>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>E-mail</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.email\">\r\n                            <p v-if=\"error.email == 'required'\">Required</p>\r\n                            <p v-if=\"error.email == 'not_email'\">The email pattern should be example@mail.com</p>\r\n                            <p v-if=\"error.email == 'not_unique'\">This email is not available</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Telephone Number</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.contact_number\" class=\"uk-input\" type=\"text\"\r\n                               placeholder=\"Telephone Number\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.contact_number\">\r\n                            <p v-if=\"error.contact_number == 'required'\">Required</p>\r\n                            <p v-if=\"error.contact_number == 'The contact number format is invalid.'\">\r\n                                The contact number format is invalid.</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Address</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.address\">\r\n                            <p v-if=\"error.address == 'required'\">Required</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <h2 class=\"uk-heading-line\"><span>Workplace</span></h2>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Workplace</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.workplace\">\r\n                            <p v-if=\"error.workplace == 'required'\">Required</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <h2 class=\"uk-heading-line\"><span>User Image (Optional)</span></h2>\r\n\r\n                <div class=\"uk-margin uk-width-3-5@s\">\r\n                    <label class=\"uk-form-label\"><h4>Image</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <div class=\"uk-margin\" v-if=\"user.image\">\r\n                            <img :src=\"user.image\" width=\"1800\" height=\"1200\" alt=\"\" uk-img>\r\n                            <!--<img :src=\"user.image\" class=\"\" height=\"\" width=\"\">-->\r\n                        </div>\r\n                        <input type=\"file\" v-on:change=\"onImageChange\">\r\n                        <div class=\"uk-margin\">\r\n                            <div class=\"uk-alert-danger\" v-if=\"error.image\">\r\n                                <p v-if=\"error.image == 'not_image'\">Only.PNG and .JPG(JPEG) files are allowed.</p>\r\n                            </div>\r\n                        </div>\r\n                        <!--<input type=\"file\" v-on:change=\"onImageChange\" class=\"form-control\">-->\r\n                    </div>\r\n                </div>\r\n\r\n                <p uk-margin class=\"uk-margin-bottom uk-text-center\">\r\n                    <button @click=\"addUser\" type=\"button\" class=\"uk-button uk-button-primary\">Add</button>\r\n                    <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\r\n                </p>\r\n            </form>\r\n        </div>\r\n    </div>\r\n</div>\r\n";
 
 /***/ }),
 /* 205 */
@@ -40237,7 +42253,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/user/profile/user-profile.vue"
+Component.options.__file = "resources\\assets\\js\\components\\user\\login\\Login.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -40246,9 +42262,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-c1cdfcec", Component.options)
+    hotAPI.createRecord("data-v-c924a148", Component.options)
   } else {
-    hotAPI.reload("data-v-c1cdfcec", Component.options)
+    hotAPI.reload("data-v-c924a148", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -40269,13 +42285,13 @@ var content = __webpack_require__(207);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("524e88e4", content, false, {});
+var update = __webpack_require__(5)("122dee40", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c1cdfcec\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-profile.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c1cdfcec\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-profile.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c924a148\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Login.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c924a148\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Login.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -40304,42 +42320,49 @@ exports.push([module.i, "", ""]);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vuex_store__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
 
-// import axios from 'axios';
+
 // import {APIENDPOINT} from  '../../http-common.js';
 // import loginService from './adminService.js';
-
-
 /* harmony default export */ __webpack_exports__["default"] = ({
     template: __webpack_require__(209),
     data: function data() {
-        return {};
+        return {
+            username: '',
+            password: '',
+            loginFail: false
+        };
     },
 
-    computed: {
-        user: function user() {
-            return this.$store.getters['currentUser'];
-        },
-        role: function role() {
-            return this.$store.getters['userRole'];
-        },
-        image_src: function image_src() {
-            return "../../images/users/" + this.$store.getters['currentUser'].image_name;
+    methods: {
+        login: function login() {
+            var _this = this;
+
+            var payload = {
+                'username': this.username,
+                'password': this.password
+            };
+            console.log('login.vue : login method');
+            this.$store.dispatch('login', payload).then(function (response) {
+                console.log('login.vue : login passed');
+                _this.$router.push("/");
+            }, function (error) {
+                console.log('login.vue : login failed');
+                // console.log(error);
+                _this.loginFail = true;
+            });
         }
     },
-    methods: {
-        editUser: function editUser(id) {
-            this.$router.push('/profile/edit/' + id);
-        }
-    }
+    computed: {}
 });
 
 /***/ }),
 /* 209 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"profile\">\n    <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\n        <!-- left column -->\n        <div>\n            <vk-grid class=\"uk-padding\">\n                <div>\n                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\n                    <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"user.image_name\">\n                    <img src=\"https://pixabay.com/photo-1633249/\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!user.image_name\">\n                </div>\n            </vk-grid>\n\n        </div>\n\n        <!-- center column -->\n        <div class=\"uk-width-1-2@s uk-align-left@s\">\n            <br/> <br/>\n            <div>\n                <ul style=\"list-style-type: none;\">\n                    <li><h1><span class=\"uk-text-bold\">{{ user.name_title.name_title }} {{ user.first_name.toUpperCase() }} {{\n                        user.last_name.toUpperCase() }}</span></h1>\n                    </li>\n                    <button v-on:click.stop=\"editUser(user.user_id)\" class=\"uk-button uk-button-default\">Edit Profile</button>\n                    <h4>\n                        <li id=\"citizen_id\"><span class=\"uk-text-bold\">Citizen ID:</span> {{ user.citizen_id }}</li>\n                        <li id=\"role\"><span class=\"uk-text-bold\">Role:</span>\n                            <span v-for=\"list in role\">\n                                <span v-if=\"list == '1'\">ADMIN </span><span v-if=\"list == '2'\">COUNSELOR </span><span v-if=\"list == '3'\">CONSULTEE </span>\n                            </span>\n                        </li>\n                        <li id=\"gender\"><span class=\"uk-text-bold\">Gender:</span> {{ user.gender }}</li>\n                        <li id=\"date_of_birth\"><span class=\"uk-text-bold\">Date of Birth:</span> {{ user.date_of_birth }}</li>\n\n                        <hr class=\"uk-description-list-divider\">\n                        <li><h4><span class=\"uk-text-bold\">WORKPLACE</span></h4></li>\n                        <li id=\"unit\">{{ user.workplace }}</li>\n                    </h4>\n                    <hr class=\"uk-description-list-divider\">\n                </ul>\n            </div>\n            <vk-grid>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4><span class=\"uk-text-bold\">CONTACT INFORMATION</span></h4></li>\n                        <h4>\n                            <li><span class=\"uk-text-bold\">Telephone</span></li>\n                            <li><span class=\"uk-text-bold\">Email</span></li>\n                            <li><span class=\"uk-text-bold\">Address</span></li>\n                        </h4>\n                    </ul>\n                </div>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4>&nbsp;</h4></li>\n                        <h4>\n                            <li id=\"contact_number\">{{ user.contact_number }}</li>\n                            <li id=\"email\">{{ user.email }}</li>\n                            <li id=\"address\">{{ user.address }}</li>\n                        </h4>\n                    </ul>\n                </div>\n            </vk-grid>\n        </div>\n\n        <!-- right column -->\n        <div class=\"uk-align-center@s\">\n            <vk-grid class=\"uk-padding-large\">\n            </vk-grid>\n        </div>\n\n    </vk-grid>\n</div>\n";
+module.exports = "<div class=\"login\">\r\n    <div align=\"center\" class=\"uk-container\">\r\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\r\n        <h1>LOGIN</h1>\r\n        <form>\r\n            <div class=\"uk-alert-danger\" v-if=\"loginFail\">\r\n                <p>Username or password is incorrect.</p>\r\n            </div>\r\n\r\n            <div class=\"uk-margin\">\r\n                <div class=\"uk-inline\">\r\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"user\"></vk-icon></span>\r\n                    <input\r\n                            id=\"email\"\r\n                            class=\"uk-input form-control\"\r\n                            type=\"text\"\r\n                            v-model=\"username\"\r\n                            placeholder=\"Username\"\r\n                            required>\r\n                </div>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <div class=\"uk-inline\">\r\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\r\n                    <input\r\n                            id=\"password\"\r\n                            class=\"uk-input form-control\"\r\n                            type=\"password\"\r\n                            v-model=\"password\"\r\n                            placeholder=\"Password\"\r\n                            required>\r\n                </div>\r\n            </div>\r\n\r\n            <button @click=\"login\" type=\"button\" class=\"uk-button uk-button-default uk-button-small uk-button-primary\">Login\r\n            </button>\r\n            <br/>\r\n            <a href=\"/#/forgetpassword\" class=\"uk-position-bottom-center uk-margin-large-bottom\">Forget Password</a>\r\n\r\n        </form>\r\n    </div>\r\n\r\n</div>\r\n";
 
 /***/ }),
 /* 210 */
@@ -40371,7 +42394,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/user/view/user-view.vue"
+Component.options.__file = "resources\\assets\\js\\components\\user\\profile\\user-profile.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -40380,9 +42403,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-b997150c", Component.options)
+    hotAPI.createRecord("data-v-02f70ba4", Component.options)
   } else {
-    hotAPI.reload("data-v-b997150c", Component.options)
+    hotAPI.reload("data-v-02f70ba4", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -40403,13 +42426,13 @@ var content = __webpack_require__(212);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("68d98378", content, false, {});
+var update = __webpack_require__(5)("785880ec", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b997150c\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-view.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b997150c\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-view.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-02f70ba4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-profile.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-02f70ba4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-profile.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -40438,7 +42461,7 @@ exports.push([module.i, "", ""]);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vuex_store__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vuex_store__ = __webpack_require__(19);
 
 // import axios from 'axios';
 // import {APIENDPOINT} from  '../../http-common.js';
@@ -40447,6 +42470,140 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     template: __webpack_require__(214),
+    data: function data() {
+        return {};
+    },
+
+    computed: {
+        user: function user() {
+            return this.$store.getters['currentUser'];
+        },
+        role: function role() {
+            return this.$store.getters['userRole'];
+        },
+        image_src: function image_src() {
+            return "../../images/users/" + this.$store.getters['currentUser'].image_name;
+        }
+    },
+    methods: {
+        editUser: function editUser(id) {
+            this.$router.push('/profile/edit/' + id);
+        }
+    }
+});
+
+/***/ }),
+/* 214 */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=\"profile\">\r\n    <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\r\n        <!-- left column -->\r\n        <div>\r\n            <vk-grid class=\"uk-padding\">\r\n                <div>\r\n                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\r\n                    <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"user.image_name\">\r\n                    <img src=\"https://pixabay.com/photo-1633249/\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!user.image_name\">\r\n                </div>\r\n            </vk-grid>\r\n\r\n        </div>\r\n\r\n        <!-- center column -->\r\n        <div class=\"uk-width-1-2@s uk-align-left@s\">\r\n            <br/> <br/>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h1><span class=\"uk-text-bold\">{{ user.name_title.name_title }} {{ user.first_name.toUpperCase() }} {{\r\n                        user.last_name.toUpperCase() }}</span></h1>\r\n                    </li>\r\n                    <button v-on:click.stop=\"editUser(user.user_id)\" class=\"uk-button uk-button-default\">Edit Profile</button>\r\n                    <h4>\r\n                        <li id=\"citizen_id\"><span class=\"uk-text-bold\">Citizen ID:</span> {{ user.citizen_id }}</li>\r\n                        <li id=\"role\"><span class=\"uk-text-bold\">Role:</span>\r\n                            <span v-for=\"list in role\">\r\n                                <span v-if=\"list == '1'\">ADMIN </span><span v-if=\"list == '2'\">COUNSELOR </span><span v-if=\"list == '3'\">CONSULTEE </span>\r\n                            </span>\r\n                        </li>\r\n                        <li id=\"gender\"><span class=\"uk-text-bold\">Gender:</span> {{ user.gender }}</li>\r\n                        <li id=\"date_of_birth\"><span class=\"uk-text-bold\">Date of Birth:</span> {{ user.date_of_birth }}</li>\r\n\r\n                        <hr class=\"uk-description-list-divider\">\r\n                        <li><h4><span class=\"uk-text-bold\">WORKPLACE</span></h4></li>\r\n                        <li id=\"unit\">{{ user.workplace }}</li>\r\n                    </h4>\r\n                    <hr class=\"uk-description-list-divider\">\r\n                </ul>\r\n            </div>\r\n            <vk-grid>\r\n                <div>\r\n                    <ul style=\"list-style-type: none;\">\r\n                        <li><h4><span class=\"uk-text-bold\">CONTACT INFORMATION</span></h4></li>\r\n                        <h4>\r\n                            <li><span class=\"uk-text-bold\">Telephone</span></li>\r\n                            <li><span class=\"uk-text-bold\">Email</span></li>\r\n                            <li><span class=\"uk-text-bold\">Address</span></li>\r\n                        </h4>\r\n                    </ul>\r\n                </div>\r\n                <div>\r\n                    <ul style=\"list-style-type: none;\">\r\n                        <li><h4>&nbsp;</h4></li>\r\n                        <h4>\r\n                            <li id=\"contact_number\">{{ user.contact_number }}</li>\r\n                            <li id=\"email\">{{ user.email }}</li>\r\n                            <li id=\"address\">{{ user.address }}</li>\r\n                        </h4>\r\n                    </ul>\r\n                </div>\r\n            </vk-grid>\r\n        </div>\r\n\r\n        <!-- right column -->\r\n        <div class=\"uk-align-center@s\">\r\n            <vk-grid class=\"uk-padding-large\">\r\n            </vk-grid>\r\n        </div>\r\n\r\n    </vk-grid>\r\n</div>\r\n";
+
+/***/ }),
+/* 215 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(216)
+}
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(218)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\user\\view\\user-view.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-284ba01a", Component.options)
+  } else {
+    hotAPI.reload("data-v-284ba01a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 216 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(217);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(5)("5036039e", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-284ba01a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-view.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-284ba01a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-view.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 217 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 218 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vuex_store__ = __webpack_require__(19);
+
+// import axios from 'axios';
+// import {APIENDPOINT} from  '../../http-common.js';
+// import loginService from './adminService.js';
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    template: __webpack_require__(219),
     data: function data() {
         return {};
     },
@@ -40468,29 +42625,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 214 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<div id=\"profile\">\n    <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\n        <!-- left column -->\n        <div>\n            <vk-grid class=\"uk-padding\">\n                <div>\n                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\n                    <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"currentViewUser.user.image_name\">\n                    <img src=\"" + __webpack_require__(215) + "\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!currentViewUser.user.image_name\">\n                    <button v-on:click.stop=\"editUser(currentViewUser.user.username)\"\n                            class=\"uk-button uk-button-default uk-align-center\">Edit Profile\n                    </button>\n                </div>\n            </vk-grid>\n\n        </div>\n\n        <!-- center column -->\n        <div class=\"uk-width-1-2@s uk-align-left@s\">\n            <br/> <br/>\n            <div>\n                <ul style=\"list-style-type: none;\">\n                    <li><h1>{{ currentViewUser.user.name_title.name_title }} {{ currentViewUser.user.first_name.toUpperCase() }} {{\n                        currentViewUser.user.last_name.toUpperCase() }}</h1></li>\n                    <h4>\n                        <li id=\"citizen_id\">{{ currentViewUser.user.citizen_id }}</li>\n                        <li id=\"role\">{{ role }}</li>\n                        <li id=\"gender\">{{ currentViewUser.user.gender }}</li>\n                        <li id=\"date_of_birth\">Date of Birth {{ currentViewUser.user.date_of_birth }}</li>\n\n                        <hr class=\"uk-description-list-divider\">\n                        <li><h4>WORK</h4></li>\n                        <li id=\"unit\">{{ currentViewUser.user.workplace }}</li>\n                    </h4>\n                    <hr class=\"uk-description-list-divider\">\n                </ul>\n            </div>\n            <vk-grid>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4>CONTACT INFORMATION</h4></li>\n                        <h4>\n                            <li>Telephone</li>\n                            <li>Email</li>\n                            <li>Address</li>\n                        </h4>\n                    </ul>\n                </div>\n                <div>\n                    <ul style=\"list-style-type: none;\">\n                        <li><h4>&nbsp;</h4></li>\n                        <h4>\n                            <li id=\"contact_number\">{{ currentViewUser.user.contact_number }}</li>\n                            <li id=\"email\">{{ currentViewUser.user.email }}</li>\n                            <li id=\"address\">{{ currentViewUser.user.address }}</li>\n                        </h4>\n                    </ul>\n                </div>\n            </vk-grid>\n        </div>\n\n        <!-- right column -->\n        <div class=\"uk-align-center@s\">\n            <vk-grid class=\"uk-padding-large\">\n            </vk-grid>\n        </div>\n\n    </vk-grid>\n</div>\n";
+module.exports = "<div id=\"profile\">\r\n    <vk-grid class=\"uk-child-width-expand@s\" uk-grid>\r\n        <!-- left column -->\r\n        <div>\r\n            <vk-grid class=\"uk-padding\">\r\n                <div>\r\n                    <!-- ใส่ width and height แล้วมันไม่ยอม fix ขนาดอะ งื้ออออ -->\r\n                    <img v-bind:src=\"image_src\" width=\"300\" height=\"400\" alt=\"\" v-if=\"currentViewUser.user.image_name\">\r\n                    <img src=\"" + __webpack_require__(220) + "\" width=\"300\" height=\"400\" alt=\"\" v-if=\"!currentViewUser.user.image_name\">\r\n                    <button v-on:click.stop=\"editUser(currentViewUser.user.username)\"\r\n                            class=\"uk-button uk-button-default uk-align-center\">Edit Profile\r\n                    </button>\r\n                </div>\r\n            </vk-grid>\r\n\r\n        </div>\r\n\r\n        <!-- center column -->\r\n        <div class=\"uk-width-1-2@s uk-align-left@s\">\r\n            <br/> <br/>\r\n            <div>\r\n                <ul style=\"list-style-type: none;\">\r\n                    <li><h1>{{ currentViewUser.user.name_title.name_title }} {{ currentViewUser.user.first_name.toUpperCase() }} {{\r\n                        currentViewUser.user.last_name.toUpperCase() }}</h1></li>\r\n                    <h4>\r\n                        <li id=\"citizen_id\">{{ currentViewUser.user.citizen_id }}</li>\r\n                        <li id=\"role\">{{ role }}</li>\r\n                        <li id=\"gender\">{{ currentViewUser.user.gender }}</li>\r\n                        <li id=\"date_of_birth\">Date of Birth {{ currentViewUser.user.date_of_birth }}</li>\r\n\r\n                        <hr class=\"uk-description-list-divider\">\r\n                        <li><h4>WORK</h4></li>\r\n                        <li id=\"unit\">{{ currentViewUser.user.workplace }}</li>\r\n                    </h4>\r\n                    <hr class=\"uk-description-list-divider\">\r\n                </ul>\r\n            </div>\r\n            <vk-grid>\r\n                <div>\r\n                    <ul style=\"list-style-type: none;\">\r\n                        <li><h4>CONTACT INFORMATION</h4></li>\r\n                        <h4>\r\n                            <li>Telephone</li>\r\n                            <li>Email</li>\r\n                            <li>Address</li>\r\n                        </h4>\r\n                    </ul>\r\n                </div>\r\n                <div>\r\n                    <ul style=\"list-style-type: none;\">\r\n                        <li><h4>&nbsp;</h4></li>\r\n                        <h4>\r\n                            <li id=\"contact_number\">{{ currentViewUser.user.contact_number }}</li>\r\n                            <li id=\"email\">{{ currentViewUser.user.email }}</li>\r\n                            <li id=\"address\">{{ currentViewUser.user.address }}</li>\r\n                        </h4>\r\n                    </ul>\r\n                </div>\r\n            </vk-grid>\r\n        </div>\r\n\r\n        <!-- right column -->\r\n        <div class=\"uk-align-center@s\">\r\n            <vk-grid class=\"uk-padding-large\">\r\n            </vk-grid>\r\n        </div>\r\n\r\n    </vk-grid>\r\n</div>\r\n";
 
 /***/ }),
-/* 215 */
+/* 220 */
 /***/ (function(module, exports) {
 
 module.exports = "/images/user.png?065c1b76bda66d87c6c556e9afc4c356";
 
 /***/ }),
-/* 216 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(217)
+  __webpack_require__(222)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(219)
+var __vue_script__ = __webpack_require__(224)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -40509,7 +42666,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/user/edit/user-edit.vue"
+Component.options.__file = "resources\\assets\\js\\components\\user\\edit\\user-edit.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -40518,9 +42675,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-d9c365f8", Component.options)
+    hotAPI.createRecord("data-v-183577a4", Component.options)
   } else {
-    hotAPI.reload("data-v-d9c365f8", Component.options)
+    hotAPI.reload("data-v-183577a4", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -40531,23 +42688,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 217 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(218);
+var content = __webpack_require__(223);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("b9cc291a", content, false, {});
+var update = __webpack_require__(5)("2e881aed", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-d9c365f8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-edit.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-d9c365f8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-edit.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-183577a4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-edit.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-183577a4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./user-edit.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -40557,7 +42714,7 @@ if(false) {
 }
 
 /***/ }),
-/* 218 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -40571,12 +42728,12 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 219 */
+/* 224 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuejs_datepicker__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuejs_datepicker__ = __webpack_require__(18);
 
 // import axios from 'axios';
 // import {APIENDPOINT} from  '../../http-common.js';
@@ -40584,7 +42741,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(220),
+    template: __webpack_require__(225),
     components: {
         Datepicker: __WEBPACK_IMPORTED_MODULE_0_vuejs_datepicker__["a" /* default */]
     },
@@ -40690,148 +42847,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 220 */
-/***/ (function(module, exports) {
-
-module.exports = "<div id=\"edit\">\n\n    <div class=\"uk-container uk-section\">\n\n        <div class=\"uk-width-3-5@m uk-align-center\">\n\n            <h1 class=\"uk-heading-primary\">Edit Profile</h1>\n\n            <form autocomplete=\"off\" class=\"uk-form-horizontal\">\n\n                <div v-if=\"isRole(1)\">\n                    <h2 class=\"uk-heading-line\"><span>Account</span></h2>\n\n                    <div class=\"uk-margin \">\n                        <label class=\"uk-form-label\"><h4>Role</h4></label>\n                        <div class=\"uk-form-controls\">\n                            <label><input class=\"uk-checkbox\" value=\"1\" type=\"checkbox\" v-model=\"edited_user.role\"> ADMIN</label>\n                            <label><input class=\"uk-checkbox\" value=\"2\" type=\"checkbox\" v-model=\"edited_user.role\"> COUNSELOR</label>\n                            <label><input class=\"uk-checkbox\" value=\"3\" type=\"checkbox\" v-model=\"edited_user.role\"> CONSULTEE</label>\n                            <div class=\"uk-alert-danger\" v-if=\"error.role\">\n                                <p v-if=\"error.role == 'required'\">Required</p>\n                                <p v-if=\"error.role == 'not_role'\">Something error</p>\n                            </div>\n                        </div>\n                    </div>\n\n                </div>\n\n                <!--<div class=\"uk-margin uk-width-3-5@s\">-->\n                    <!--<label class=\"uk-form-label\"><h4>Role</h4></label>-->\n                    <!--<div class=\"uk-form-controls\">-->\n                        <!--<select v-model=\"user.role\" class=\"uk-select\" >-->\n                            <!--<option value=\"\" disabled selected>Role</option>-->\n                            <!--<option v-for=\"role in form.roles\" :value=\"role.role\">{{ role.role }}</option>-->\n                        <!--</select>-->\n                        <!--<div class=\"uk-alert-danger\" v-if=\"error.role\">-->\n                            <!--<p v-if=\"error.role == 'required'\">Required</p>-->\n                            <!--<p v-if=\"error.role == 'alpha'\">Something error</p>-->\n                        <!--</div>-->\n                    <!--</div>-->\n                <!--</div>-->\n\n                <h2 class=\"uk-heading-line\"><span>Personal Information</span></h2>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Name Title</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <select v-model=\"edited_user.name_title\" class=\"uk-select\">\n                            <option value=\"\" disabled>Name Title</option>\n                            <option v-for=\"title in form.name_titles\" :value=\"title.title\" :selected=\"edited_user.name_title == title.title ? true : false\">{{ title.title }}</option>\n                        </select>\n                        <div class=\"uk-alert-danger\" v-if=\"error.name_title\">\n                            <p v-if=\"error.name_title == 'required'\">Required</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>First Name</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.first_name\">\n                            <p v-if=\"error.first_name == 'required'\">Required</p>\n                            <p v-if=\"error.first_name == 'not_alpha'\">Only alphabets</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Last Name</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.last_name\">\n                            <p v-if=\"error.last_name == 'required'\">Required</p>\n                            <p v-if=\"error.last_name == 'not_alpha'\">Only alphabets</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Gender</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <select v-model=\"edited_user.gender\" class=\"uk-select\" placeholder=\"gender\">\n                            <option value=\"\" disabled>Gender</option>\n                            <option v-for=\"gender in form.genders\" :value=\"gender.gender\">{{ gender.gender }}</option>\n                        </select>\n                        <div class=\"uk-alert-danger\" v-if=\"error.gender\">\n                            <p v-if=\"error.gender == 'required'\">Required</p>\n                            <p v-if=\"error.gender == 'not_alpha'\">Something error</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Citizen ID</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.citizen_id\" class=\"uk-input\" type=\"number\" placeholder=\"Citizen Id\" disabled>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Date of Birth</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\" :value=\"edited_user.date_of_birth\"></datepicker>\n                        <div class=\"uk-alert-danger\" v-if=\"error.date\">\n                            <p v-if=\"error.date == 'required'\">Required</p>\n                            <p v-if=\"error.date == 'not_date'\">Something error</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>Contact Information</span></h2>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>E-mail</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.email\">\n                            <p v-if=\"error.email == 'required'\">Required</p>\n                            <p v-if=\"error.email == 'not_email'\">The input E-mail is not in E-mail pattern</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Telephone Number</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.contact_number\" class=\"uk-input\" type=\"text\"\n                               placeholder=\"Telephone Number\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.contact_number\">\n                            <p v-if=\"error.contact_number == 'required'\">Required</p>\n                            <p v-if=\"error.contact_number == 'The contact number format is invalid.'\">\n                                The contact number format is invalid.</p>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Address</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.address\">\n                            <p v-if=\"error.address == 'required'\">Required</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>Workplace</span></h2>\n\n                <div class=\"uk-margin\">\n                    <label class=\"uk-form-label\"><h4>Workplace</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <input v-model=\"edited_user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\n                        <div class=\"uk-alert-danger\" v-if=\"error.workplace\">\n                            <p v-if=\"error.workplace == 'required'\">Required</p>\n                        </div>\n                    </div>\n                </div>\n\n                <h2 class=\"uk-heading-line\"><span>User Image (Optional)</span></h2>\n\n                <div class=\"uk-margin uk-width-3-5@s\">\n                    <label class=\"uk-form-label\"><h4>Image</h4></label>\n                    <div class=\"uk-form-controls\">\n                        <div class=\"uk-margin\" v-if=\"edited_user.image\">\n                            <img :src=\"edited_user.image\" width=\"1800\" height=\"1200\" alt=\"\" uk-img>\n                            <!--<img :src=\"user.image\" class=\"\" height=\"\" width=\"\">-->\n                        </div>\n                        <input type=\"file\" v-on:change=\"onImageChange\">\n                        <div class=\"uk-margin\">\n                            <div class=\"uk-alert-danger\" v-if=\"error.image\">\n                                <p v-if=\"error.image == 'not_image'\">Only allow JPG and PNG file</p>\n                            </div>\n                        </div>\n                        <!--<input type=\"file\" v-on:change=\"onImageChange\" class=\"form-control\">-->\n                    </div>\n                </div>\n\n                <p uk-margin class=\"uk-margin-bottom uk-text-center\">\n                    <button @click=\"updateUser\" type=\"button\" class=\"uk-button uk-button-primary\">Update</button>\n                    <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\n                </p>\n            </form>\n        </div>\n    </div>\n</div>\n";
-
-/***/ }),
-/* 221 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(222)
-}
-var normalizeComponent = __webpack_require__(3)
-/* script */
-var __vue_script__ = __webpack_require__(224)
-/* template */
-var __vue_template__ = null
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/user/forgetpassword/Forgetpassword.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-203146bc", Component.options)
-  } else {
-    hotAPI.reload("data-v-203146bc", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 222 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(223);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(5)("1d04f998", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-203146bc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Forgetpassword.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-203146bc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Forgetpassword.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 223 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(4)(false);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 224 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-
-// import axios from 'axios';
-// import {APIENDPOINT} from  '../../http-common.js';
-// import loginService from './adminService.js';
-/* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(225),
-    data: function data() {
-        return {
-            email: '',
-            error: {
-                email: ''
-            }
-        };
-    },
-
-    methods: {
-        sendRequest: function sendRequest() {
-            var _this = this;
-
-            var payload = this.email;
-            // alert('sent request');
-            this.$store.dispatch('sendRequest', payload).then(function (response) {
-                if (!!response.data.message && response.data.message === "mail sent") {
-                    alert("reset password email sent");
-                    console.log(response);
-                    _this.$router.push("/");
-                } else {
-                    console.log(response);
-                    _this.error = response.data;
-                }
-            });
-        }
-    }
-});
-
-/***/ }),
 /* 225 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=forgetpassword>\n    <div align=\"center\">\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\n        <h1>Forget Password</h1>\n        <form autocomplete=\"off\">\n\n            <div class=\"uk-margin\">\n                <div class=\"uk-alert-danger\" v-if=\"error.email\">\n                    <p v-if=\"error.email == 'required'\">Required</p>\n                    <p v-if=\"error.email == 'not_exist'\">This email is not registered.</p>\n                    <p v-if=\"error.email == 'not_email'\">The email pattern should be example@mail.com</p>\n                </div>\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"mail\"></vk-icon></span>\n                    <input id=\"email\" class=\"uk-input form-control\" type=\"email\" placeholder=\"example@mail.com\"\n                           v-model=\"email\" required>\n                </div>\n            </div>\n            <button class=\"uk-button uk-button-default uk-button-small uk-button-primary\"\n                    v-on:click=\"sendRequest()\">Submit\n            </button>\n            <br/>\n\n        </form>\n    </div>\n</div>";
+module.exports = "<div id=\"edit\">\r\n\r\n    <div class=\"uk-container uk-section\">\r\n\r\n        <div class=\"uk-width-3-5@m uk-align-center\">\r\n\r\n            <h1 class=\"uk-heading-primary\">Edit Profile</h1>\r\n\r\n            <form autocomplete=\"off\" class=\"uk-form-horizontal\">\r\n\r\n                <div v-if=\"isRole(1)\">\r\n                    <h2 class=\"uk-heading-line\"><span>Account</span></h2>\r\n\r\n                    <div class=\"uk-margin \">\r\n                        <label class=\"uk-form-label\"><h4>Role</h4></label>\r\n                        <div class=\"uk-form-controls\">\r\n                            <label><input class=\"uk-checkbox\" value=\"1\" type=\"checkbox\" v-model=\"edited_user.role\"> ADMIN</label>\r\n                            <label><input class=\"uk-checkbox\" value=\"2\" type=\"checkbox\" v-model=\"edited_user.role\"> COUNSELOR</label>\r\n                            <label><input class=\"uk-checkbox\" value=\"3\" type=\"checkbox\" v-model=\"edited_user.role\"> CONSULTEE</label>\r\n                            <div class=\"uk-alert-danger\" v-if=\"error.role\">\r\n                                <p v-if=\"error.role == 'required'\">Required</p>\r\n                                <p v-if=\"error.role == 'not_role'\">Something error</p>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n\r\n                </div>\r\n\r\n                <!--<div class=\"uk-margin uk-width-3-5@s\">-->\r\n                    <!--<label class=\"uk-form-label\"><h4>Role</h4></label>-->\r\n                    <!--<div class=\"uk-form-controls\">-->\r\n                        <!--<select v-model=\"user.role\" class=\"uk-select\" >-->\r\n                            <!--<option value=\"\" disabled selected>Role</option>-->\r\n                            <!--<option v-for=\"role in form.roles\" :value=\"role.role\">{{ role.role }}</option>-->\r\n                        <!--</select>-->\r\n                        <!--<div class=\"uk-alert-danger\" v-if=\"error.role\">-->\r\n                            <!--<p v-if=\"error.role == 'required'\">Required</p>-->\r\n                            <!--<p v-if=\"error.role == 'alpha'\">Something error</p>-->\r\n                        <!--</div>-->\r\n                    <!--</div>-->\r\n                <!--</div>-->\r\n\r\n                <h2 class=\"uk-heading-line\"><span>Personal Information</span></h2>\r\n\r\n                <div class=\"uk-margin uk-width-3-5@s\">\r\n                    <label class=\"uk-form-label\"><h4>Name Title</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <select v-model=\"edited_user.name_title\" class=\"uk-select\">\r\n                            <option value=\"\" disabled>Name Title</option>\r\n                            <option v-for=\"title in form.name_titles\" :value=\"title.title\" :selected=\"edited_user.name_title == title.title ? true : false\">{{ title.title }}</option>\r\n                        </select>\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.name_title\">\r\n                            <p v-if=\"error.name_title == 'required'\">Required</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>First Name</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"edited_user.first_name\" class=\"uk-input\" type=\"text\" placeholder=\"First Name\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.first_name\">\r\n                            <p v-if=\"error.first_name == 'required'\">Required</p>\r\n                            <p v-if=\"error.first_name == 'not_alpha'\">Only alphabets</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Last Name</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"edited_user.last_name\" class=\"uk-input\" type=\"text\" placeholder=\"Last Name\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.last_name\">\r\n                            <p v-if=\"error.last_name == 'required'\">Required</p>\r\n                            <p v-if=\"error.last_name == 'not_alpha'\">Only alphabets</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin uk-width-3-5@s\">\r\n                    <label class=\"uk-form-label\"><h4>Gender</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <select v-model=\"edited_user.gender\" class=\"uk-select\" placeholder=\"gender\">\r\n                            <option value=\"\" disabled>Gender</option>\r\n                            <option v-for=\"gender in form.genders\" :value=\"gender.gender\">{{ gender.gender }}</option>\r\n                        </select>\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.gender\">\r\n                            <p v-if=\"error.gender == 'required'\">Required</p>\r\n                            <p v-if=\"error.gender == 'not_alpha'\">Something error</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Citizen ID</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"edited_user.citizen_id\" class=\"uk-input\" type=\"number\" placeholder=\"Citizen Id\" disabled>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Date of Birth</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <datepicker v-model=\"date\" v-bind:onclick=\"dob()\" :inline=\"true\" :value=\"edited_user.date_of_birth\"></datepicker>\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.date\">\r\n                            <p v-if=\"error.date == 'required'\">Required</p>\r\n                            <p v-if=\"error.date == 'not_date'\">Something error</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <h2 class=\"uk-heading-line\"><span>Contact Information</span></h2>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>E-mail</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"edited_user.email\" class=\"uk-input\" type=\"email\" placeholder=\"Email\" id=\"email\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.email\">\r\n                            <p v-if=\"error.email == 'required'\">Required</p>\r\n                            <p v-if=\"error.email == 'not_email'\">The input E-mail is not in E-mail pattern</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Telephone Number</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"edited_user.contact_number\" class=\"uk-input\" type=\"text\"\r\n                               placeholder=\"Telephone Number\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.contact_number\">\r\n                            <p v-if=\"error.contact_number == 'required'\">Required</p>\r\n                            <p v-if=\"error.contact_number == 'The contact number format is invalid.'\">\r\n                                The contact number format is invalid.</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Address</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"edited_user.address\" class=\"uk-input\" type=\"text\" placeholder=\"Address\" id=\"address\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.address\">\r\n                            <p v-if=\"error.address == 'required'\">Required</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <h2 class=\"uk-heading-line\"><span>Workplace</span></h2>\r\n\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label\"><h4>Workplace</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <input v-model=\"edited_user.workplace\" class=\"uk-input\" type=\"text\" placeholder=\"Workplace\">\r\n                        <div class=\"uk-alert-danger\" v-if=\"error.workplace\">\r\n                            <p v-if=\"error.workplace == 'required'\">Required</p>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <h2 class=\"uk-heading-line\"><span>User Image (Optional)</span></h2>\r\n\r\n                <div class=\"uk-margin uk-width-3-5@s\">\r\n                    <label class=\"uk-form-label\"><h4>Image</h4></label>\r\n                    <div class=\"uk-form-controls\">\r\n                        <div class=\"uk-margin\" v-if=\"edited_user.image\">\r\n                            <img :src=\"edited_user.image\" width=\"1800\" height=\"1200\" alt=\"\" uk-img>\r\n                            <!--<img :src=\"user.image\" class=\"\" height=\"\" width=\"\">-->\r\n                        </div>\r\n                        <input type=\"file\" v-on:change=\"onImageChange\">\r\n                        <div class=\"uk-margin\">\r\n                            <div class=\"uk-alert-danger\" v-if=\"error.image\">\r\n                                <p v-if=\"error.image == 'not_image'\">Only allow JPG and PNG file</p>\r\n                            </div>\r\n                        </div>\r\n                        <!--<input type=\"file\" v-on:change=\"onImageChange\" class=\"form-control\">-->\r\n                    </div>\r\n                </div>\r\n\r\n                <p uk-margin class=\"uk-margin-bottom uk-text-center\">\r\n                    <button @click=\"updateUser\" type=\"button\" class=\"uk-button uk-button-primary\">Update</button>\r\n                    <a class=\"uk-button uk-button-danger\" href=\"../..#/index\">Cancel</a>\r\n                </p>\r\n            </form>\r\n        </div>\r\n    </div>\r\n</div>\r\n";
 
 /***/ }),
 /* 226 */
@@ -40863,7 +42882,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/user/forgetpassword/Resetpassword.vue"
+Component.options.__file = "resources\\assets\\js\\components\\user\\forgetpassword\\Forgetpassword.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -40872,9 +42891,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-23701fc0", Component.options)
+    hotAPI.createRecord("data-v-f12cbb7c", Component.options)
   } else {
-    hotAPI.reload("data-v-23701fc0", Component.options)
+    hotAPI.reload("data-v-f12cbb7c", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -40895,13 +42914,13 @@ var content = __webpack_require__(228);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("3dbf5faa", content, false, {});
+var update = __webpack_require__(5)("5c75c36b", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-23701fc0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Resetpassword.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-23701fc0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Resetpassword.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-f12cbb7c\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Forgetpassword.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-f12cbb7c\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Forgetpassword.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -40936,6 +42955,144 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import loginService from './adminService.js';
 /* harmony default export */ __webpack_exports__["default"] = ({
     template: __webpack_require__(230),
+    data: function data() {
+        return {
+            email: '',
+            error: {
+                email: ''
+            }
+        };
+    },
+
+    methods: {
+        sendRequest: function sendRequest() {
+            var _this = this;
+
+            var payload = this.email;
+            // alert('sent request');
+            this.$store.dispatch('sendRequest', payload).then(function (response) {
+                if (!!response.data.message && response.data.message === "mail sent") {
+                    alert("reset password email sent");
+                    console.log(response);
+                    _this.$router.push("/");
+                } else {
+                    console.log(response);
+                    _this.error = response.data;
+                }
+            });
+        }
+    }
+});
+
+/***/ }),
+/* 230 */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=forgetpassword>\r\n    <div align=\"center\">\r\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\r\n        <h1>Forget Password</h1>\r\n        <form autocomplete=\"off\">\r\n\r\n            <div class=\"uk-margin\">\r\n                <div class=\"uk-alert-danger\" v-if=\"error.email\">\r\n                    <p v-if=\"error.email == 'required'\">Required</p>\r\n                    <p v-if=\"error.email == 'not_exist'\">This email is not registered.</p>\r\n                    <p v-if=\"error.email == 'not_email'\">The email pattern should be example@mail.com</p>\r\n                </div>\r\n                <div class=\"uk-inline\">\r\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"mail\"></vk-icon></span>\r\n                    <input id=\"email\" class=\"uk-input form-control\" type=\"email\" placeholder=\"example@mail.com\"\r\n                           v-model=\"email\" required>\r\n                </div>\r\n            </div>\r\n            <button class=\"uk-button uk-button-default uk-button-small uk-button-primary\"\r\n                    v-on:click=\"sendRequest()\">Submit\r\n            </button>\r\n            <br/>\r\n\r\n        </form>\r\n    </div>\r\n</div>";
+
+/***/ }),
+/* 231 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(232)
+}
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(234)
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\user\\forgetpassword\\Resetpassword.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5482b3c0", Component.options)
+  } else {
+    hotAPI.reload("data-v-5482b3c0", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 232 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(233);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(5)("7e7a5350", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5482b3c0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Resetpassword.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5482b3c0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./Resetpassword.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 233 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 234 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+
+// import axios from 'axios';
+// import {APIENDPOINT} from  '../../http-common.js';
+// import loginService from './adminService.js';
+/* harmony default export */ __webpack_exports__["default"] = ({
+    template: __webpack_require__(235),
     data: function data() {
         return {
             requestId: this.$route.query.request_id,
@@ -40976,23 +43133,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 230 */
+/* 235 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=resetpassword>\n    <div align=\"center\">\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\n        <h1>Reset Password</h1>\n        <form autocomplete=\"off\">\n\n            <div class=\"uk-margin\">\n                <div class=\"uk-alert-danger\" v-if=\"error.password\">\n                    <p v-if=\"error.password == 'required'\">Required</p>\n                    <p v-if=\"error.password == 'not_confirmed'\">Password confirmation does not match</p>\n                </div>\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\n                    <input id=\"password\" class=\"uk-input form-control\" type=\"password\" placeholder=\"New Password\" v-model=\"password\" required>\n                </div>\n            </div>\n            <div class=\"uk-margin\">\n                <div class=\"uk-inline\">\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\n                    <input id=\"confirmed_password\" class=\"uk-input form-control\" type=\"password\" placeholder=\"Confirm New Password\" v-model=\"password_confirmation\" required>\n                </div>\n            </div>\n            <button class=\"uk-button uk-button-default uk-button-small uk-button-primary\" v-on:click=\"updatePassword\">Submit</button>\n            <br/>\n        </form>\n    </div>\n</div>";
+module.exports = "<div id=resetpassword>\r\n    <div align=\"center\">\r\n        <div class=\"section\" style=\"margin-top:10%;\"></div>\r\n        <h1>Reset Password</h1>\r\n        <form autocomplete=\"off\">\r\n\r\n            <div class=\"uk-margin\">\r\n                <div class=\"uk-alert-danger\" v-if=\"error.password\">\r\n                    <p v-if=\"error.password == 'required'\">Required</p>\r\n                    <p v-if=\"error.password == 'not_confirmed'\">Password confirmation does not match</p>\r\n                </div>\r\n                <div class=\"uk-inline\">\r\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\r\n                    <input id=\"password\" class=\"uk-input form-control\" type=\"password\" placeholder=\"New Password\" v-model=\"password\" required>\r\n                </div>\r\n            </div>\r\n            <div class=\"uk-margin\">\r\n                <div class=\"uk-inline\">\r\n                    <span class=\"uk-form-icon\"><vk-icon icon=\"lock\"></vk-icon></span>\r\n                    <input id=\"confirmed_password\" class=\"uk-input form-control\" type=\"password\" placeholder=\"Confirm New Password\" v-model=\"password_confirmation\" required>\r\n                </div>\r\n            </div>\r\n            <button class=\"uk-button uk-button-default uk-button-small uk-button-primary\" v-on:click=\"updatePassword\">Submit</button>\r\n            <br/>\r\n        </form>\r\n    </div>\r\n</div>";
 
 /***/ }),
-/* 231 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(232)
+  __webpack_require__(237)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(234)
+var __vue_script__ = __webpack_require__(239)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -41011,7 +43168,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/not-found-component/not-found-component.vue"
+Component.options.__file = "resources\\assets\\js\\components\\not-found-component\\not-found-component.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -41020,9 +43177,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-43590a1a", Component.options)
+    hotAPI.createRecord("data-v-f1545be6", Component.options)
   } else {
-    hotAPI.reload("data-v-43590a1a", Component.options)
+    hotAPI.reload("data-v-f1545be6", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -41033,23 +43190,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 232 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(233);
+var content = __webpack_require__(238);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("9dcb08ca", content, false, {});
+var update = __webpack_require__(5)("2e8a6daa", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-43590a1a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./not-found-component.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-43590a1a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./not-found-component.vue");
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-f1545be6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./not-found-component.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-f1545be6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./not-found-component.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -41059,7 +43216,7 @@ if(false) {
 }
 
 /***/ }),
-/* 233 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -41073,7 +43230,7 @@ exports.push([module.i, "", ""]);
 
 
 /***/ }),
-/* 234 */
+/* 239 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -41085,23 +43242,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import { mapGetters } from 'vuex';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(235)
+    template: __webpack_require__(240)
 });
 
 /***/ }),
-/* 235 */
+/* 240 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"not-found-conpinent\">\n    404 - page not found\n    <br>\n    <router-link to=\"/\">>>Home<<</router-link>\n</div>";
+module.exports = "<div id=\"not-found-conpinent\">\r\n    404 - page not found\r\n    <br>\r\n    <router-link to=\"/\">>>Home<<</router-link>\r\n</div>";
 
 /***/ }),
-/* 236 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(237)
+var __vue_script__ = __webpack_require__(242)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -41120,7 +43277,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/user/list/user-list.vue"
+Component.options.__file = "resources\\assets\\js\\components\\user\\list\\user-list.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -41129,9 +43286,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-46d7552c", Component.options)
+    hotAPI.createRecord("data-v-68230068", Component.options)
   } else {
-    hotAPI.reload("data-v-46d7552c", Component.options)
+    hotAPI.reload("data-v-68230068", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -41142,12 +43299,12 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 237 */
+/* 242 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
 
 
@@ -41155,7 +43312,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // import loginService from './adminService.js';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(238),
+    template: __webpack_require__(243),
     data: function data() {
         return {
             paginate: ['users'],
@@ -41200,29 +43357,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 238 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<div id=\"user-list\">\n\n    <div class=\"uk-container uk-section\">\n\n        <div class=\"uk-width-3-5@m uk-align-center\">\n\n            <h1 class=\"uk-heading-primary\">User List</h1>\n\n            <div>\n                <vk-grid class=\"uk-text-center\">\n                    <form class=\"uk-search uk-search-default uk-width-expand@s\">\n                        <!--<span class=\"uk-search-icon\"><vk-icon icon=\"search\"></vk-icon></span>-->\n                        <input class=\"uk-search-input\" type=\"search\" v-model=\"keyword\"\n                               placeholder=\"Input keyword to search here\">\n                    </form>\n                    <button class=\"uk-button uk-button-primary uk-width-auto@s\" v-on:click=\"search()\">Search</button>\n                </vk-grid>\n                <!--<div class=\"uk-text-center uk-width-1-1\">-->\n                <!--<form class=\"uk-search uk-search-default uk-width-expand@s\">-->\n                <!--<span class=\"uk-search-icon\"><vk-icon icon=\"search\"></vk-icon></span>-->\n                <!--<input class=\"uk-search-input\" type=\"search\" placeholder=\"Search...\">-->\n                <!--</form>-->\n                <!--<button class=\"uk-button uk-button-primary uk-width-auto@s\">Search</button>-->\n                <!--</div>-->\n\n                <br>\n\n                <paginate name=\"users\" :list=\"users\" :per=\"10\"\n                          class=\"uk-list uk-list-large uk-list-divider uk-width-1-1\">\n                    <!--<ul class=\"uk-list uk-list-large uk-list-divider uk-width-1-1\">-->\n                    <li v-for=\"user in paginated('users')\">\n                        <vk-grid gutter=\"small\" class=\"uk-child-width-expand@s\">\n                                <div class=\"uk-child-width-auto@s\">\n                                    <img class=\"uk-border-circle uk-child-width-1-5\"\n                                         :src=\"'images/users/' + user.user.image_name\" v-if=\"user.user.image_name\">\n                                    <img class=\"uk-border-circle uk-child-width-1-5\" src=\"" + __webpack_require__(239) + "\"\n                                         v-if=\"!user.user.image_name\">\n                                </div>\n                                <div class=\"uk-child-width-expand@s\">\n                                    <span class=\"uk-text-bold\">{{ user.user.name_title }} {{ user.user.first_name }} {{ user.user.last_name }}</span><br>\n                                    <span class=\"uk-text\"><span class=\"uk-text-bold\">Citizen ID:</span> {{ user.user.citizen_id }}</span><br>\n                                    <span class=\"uk-text\"><span class=\"uk-text-bold\">Role:</span>\n                                    <span v-for=\"role in user.role\">\n                                        <span v-if=\"role == '1'\">ADMIN </span>\n                                        <span v-if=\"role == '2'\">COUNSELOR </span>\n                                        <span v-if=\"role == '3'\">CONSULTEE </span>\n                                    </span>\n                                </span><br>\n                                </div>\n                                <div class=\"uk-child-width-auto@s\">\n                                    <div class=\"uk-button-group uk-align-right\">\n                                        <button v-on:click=\"selectUser(user.user_id)\"\n                                                class=\"uk-button uk-button-primary \">View\n                                        </button>\n                                        <button v-on:click=\"editUser(user.user_id)\"\n                                                class=\"uk-button uk-button-secondary \">Edit\n                                        </button>\n                                        <button v-on:click=\"deleteUser(user.user_id)\"\n                                                class=\"uk-button uk-button-default \">Delete\n                                        </button>\n                                    </div>\n                                </div>\n                        </vk-grid>\n                    </li>\n                    <!--</ul>-->\n                </paginate>\n            </div>\n        </div>\n    </div>\n</div>\n<!--<ul class=\"uk-pagination uk-flex-center\" uk-margin>-->\n<!--<li><a href=\"uk-active\"><span uk-pagination-previous></span></a></li>-->\n<!--<li><a href=\"#\">1</a></li>-->\n<!--<li class=\"uk-disabled\"><span>...</span></li>-->\n<!--<li><a href=\"#\">5</a></li>-->\n<!--<li><a href=\"#\">6</a></li>-->\n<!--<li class=\"#\"><span>7</span></li>-->\n<!--<li><a href=\"#\">8</a></li>-->\n<!--<li><a href=\"#\"><span uk-pagination-next></span></a></li>-->\n<!--</ul>-->\n\n<!--<paginate name=\"users\" :list=\"users\" :per=\"10\">-->\n<!--<div v-for=\"user in paginated('users')\">-->\n<!--<router-link :to=\"{ name: 'user', params: { id: user.user_id }}\">-->\n<!--<div class=\"uk-width-auto\">-->\n<!--<img class=\"uk-border-circle\" width=\"40\" height=\"40\" src=\"user.png\">-->\n<!--<span class=\"uk-text-large\">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>-->\n<!--<span class=\"uk-text-muted\">&nbsp;&nbsp;&nbsp;Doctor</span>-->\n<!--</div>-->\n<!--</router-link>-->\n<!--</div>-->\n<!--</paginate>-->\n<paginate-links for=\"users\" :show-step-links=\"true\" :hide-single-page=\"true\" :limit=\"10\"></paginate-links>\n\n</div>";
+module.exports = "<div id=\"user-list\">\r\n\r\n    <div class=\"uk-container uk-section\">\r\n\r\n        <div class=\"uk-width-3-5@m uk-align-center\">\r\n\r\n            <h1 class=\"uk-heading-primary\">User List</h1>\r\n\r\n            <div>\r\n                <vk-grid class=\"uk-text-center\">\r\n                    <form class=\"uk-search uk-search-default uk-width-expand@s\">\r\n                        <!--<span class=\"uk-search-icon\"><vk-icon icon=\"search\"></vk-icon></span>-->\r\n                        <input class=\"uk-search-input\" type=\"search\" v-model=\"keyword\"\r\n                               placeholder=\"Input keyword to search here\">\r\n                    </form>\r\n                    <button class=\"uk-button uk-button-primary uk-width-auto@s\" v-on:click=\"search()\">Search</button>\r\n                </vk-grid>\r\n                <!--<div class=\"uk-text-center uk-width-1-1\">-->\r\n                <!--<form class=\"uk-search uk-search-default uk-width-expand@s\">-->\r\n                <!--<span class=\"uk-search-icon\"><vk-icon icon=\"search\"></vk-icon></span>-->\r\n                <!--<input class=\"uk-search-input\" type=\"search\" placeholder=\"Search...\">-->\r\n                <!--</form>-->\r\n                <!--<button class=\"uk-button uk-button-primary uk-width-auto@s\">Search</button>-->\r\n                <!--</div>-->\r\n\r\n                <br>\r\n\r\n                <paginate name=\"users\" :list=\"users\" :per=\"10\"\r\n                          class=\"uk-list uk-list-large uk-list-divider uk-width-1-1\">\r\n                    <!--<ul class=\"uk-list uk-list-large uk-list-divider uk-width-1-1\">-->\r\n                    <li v-for=\"user in paginated('users')\">\r\n                        <vk-grid gutter=\"small\" class=\"uk-child-width-expand@s\">\r\n                                <div class=\"uk-child-width-auto@s\">\r\n                                    <img class=\"uk-border-circle uk-child-width-1-5\"\r\n                                         :src=\"'images/users/' + user.user.image_name\" v-if=\"user.user.image_name\">\r\n                                    <img class=\"uk-border-circle uk-child-width-1-5\" src=\"" + __webpack_require__(244) + "\"\r\n                                         v-if=\"!user.user.image_name\">\r\n                                </div>\r\n                                <div class=\"uk-child-width-expand@s\">\r\n                                    <span class=\"uk-text-bold\">{{ user.user.name_title }} {{ user.user.first_name }} {{ user.user.last_name }}</span><br>\r\n                                    <span class=\"uk-text\"><span class=\"uk-text-bold\">Citizen ID:</span> {{ user.user.citizen_id }}</span><br>\r\n                                    <span class=\"uk-text\"><span class=\"uk-text-bold\">Role:</span>\r\n                                    <span v-for=\"role in user.role\">\r\n                                        <span v-if=\"role == '1'\">ADMIN </span>\r\n                                        <span v-if=\"role == '2'\">COUNSELOR </span>\r\n                                        <span v-if=\"role == '3'\">CONSULTEE </span>\r\n                                    </span>\r\n                                </span><br>\r\n                                </div>\r\n                                <div class=\"uk-child-width-auto@s\">\r\n                                    <div class=\"uk-button-group uk-align-right\">\r\n                                        <button v-on:click=\"selectUser(user.user_id)\"\r\n                                                class=\"uk-button uk-button-primary \">View\r\n                                        </button>\r\n                                        <button v-on:click=\"editUser(user.user_id)\"\r\n                                                class=\"uk-button uk-button-secondary \">Edit\r\n                                        </button>\r\n                                        <button v-on:click=\"deleteUser(user.user_id)\"\r\n                                                class=\"uk-button uk-button-default \">Delete\r\n                                        </button>\r\n                                    </div>\r\n                                </div>\r\n                        </vk-grid>\r\n                    </li>\r\n                    <!--</ul>-->\r\n                </paginate>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>\r\n<!--<ul class=\"uk-pagination uk-flex-center\" uk-margin>-->\r\n<!--<li><a href=\"uk-active\"><span uk-pagination-previous></span></a></li>-->\r\n<!--<li><a href=\"#\">1</a></li>-->\r\n<!--<li class=\"uk-disabled\"><span>...</span></li>-->\r\n<!--<li><a href=\"#\">5</a></li>-->\r\n<!--<li><a href=\"#\">6</a></li>-->\r\n<!--<li class=\"#\"><span>7</span></li>-->\r\n<!--<li><a href=\"#\">8</a></li>-->\r\n<!--<li><a href=\"#\"><span uk-pagination-next></span></a></li>-->\r\n<!--</ul>-->\r\n\r\n<!--<paginate name=\"users\" :list=\"users\" :per=\"10\">-->\r\n<!--<div v-for=\"user in paginated('users')\">-->\r\n<!--<router-link :to=\"{ name: 'user', params: { id: user.user_id }}\">-->\r\n<!--<div class=\"uk-width-auto\">-->\r\n<!--<img class=\"uk-border-circle\" width=\"40\" height=\"40\" src=\"user.png\">-->\r\n<!--<span class=\"uk-text-large\">&nbsp;&nbsp;&nbsp;Mr. Firstname Lastname</span>-->\r\n<!--<span class=\"uk-text-muted\">&nbsp;&nbsp;&nbsp;Doctor</span>-->\r\n<!--</div>-->\r\n<!--</router-link>-->\r\n<!--</div>-->\r\n<!--</paginate>-->\r\n<paginate-links for=\"users\" :show-step-links=\"true\" :hide-single-page=\"true\" :limit=\"10\"></paginate-links>\r\n\r\n</div>";
 
 /***/ }),
-/* 239 */
+/* 244 */
 /***/ (function(module, exports) {
 
 module.exports = "/images/user.png?065c1b76bda66d87c6c556e9afc4c356";
 
 /***/ }),
-/* 240 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(241)
+  __webpack_require__(246)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(243)
+var __vue_script__ = __webpack_require__(248)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -41230,7 +43387,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-cebafd30"
+var __vue_scopeId__ = "data-v-4ec549e4"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -41241,7 +43398,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/consult/add/consult-add.vue"
+Component.options.__file = "resources\\assets\\js\\components\\consult\\add\\consult-add.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -41250,9 +43407,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-cebafd30", Component.options)
+    hotAPI.createRecord("data-v-4ec549e4", Component.options)
   } else {
-    hotAPI.reload("data-v-cebafd30", Component.options)
+    hotAPI.reload("data-v-4ec549e4", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -41263,23 +43420,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 241 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(242);
+var content = __webpack_require__(247);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("5efef5a9", content, false, {});
+var update = __webpack_require__(5)("56612c74", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-cebafd30\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-add.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-cebafd30\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-add.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4ec549e4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-add.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4ec549e4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-add.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -41289,7 +43446,7 @@ if(false) {
 }
 
 /***/ }),
-/* 242 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -41297,26 +43454,26 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\n#personalinfo[data-v-cebafd30],#medicalinfo[data-v-cebafd30],#recordinfo[data-v-cebafd30],#consultinfo[data-v-cebafd30] {\n    padding: 2%;\n}\n.unit input[data-v-cebafd30]::-webkit-input-placeholder {\n  /* WebKit browsers */\n  text-align: right;\n}\n.unit input[data-v-cebafd30]:-ms-input-placeholder {\n  /* Internet Explorer 10 */\n  text-align: right;\n}\n.unit input[data-v-cebafd30]::-ms-input-placeholder {\n  text-align: right;\n}\n.unit input[data-v-cebafd30]::placeholder {\n  text-align: right;\n}\n.sticky[data-v-cebafd30] {\n  position: -webkit-sticky; /* Safari */\n  position: sticky;\n  top: 0;\n}\n", ""]);
+exports.push([module.i, "\n#personalinfo[data-v-4ec549e4],#medicalinfo[data-v-4ec549e4],#recordinfo[data-v-4ec549e4],#consultinfo[data-v-4ec549e4] {\r\n    padding: 2%;\n}\n.unit input[data-v-4ec549e4]::-webkit-input-placeholder {\r\n  /* WebKit browsers */\r\n  text-align: right;\n}\n.unit input[data-v-4ec549e4]:-ms-input-placeholder {\r\n  /* Internet Explorer 10 */\r\n  text-align: right;\n}\n.unit input[data-v-4ec549e4]::-ms-input-placeholder {\r\n  text-align: right;\n}\n.unit input[data-v-4ec549e4]::placeholder {\r\n  text-align: right;\n}\n.sticky[data-v-4ec549e4] {\r\n  position: -webkit-sticky; /* Safari */\r\n  position: sticky;\r\n  top: 0;\n}\r\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 243 */
+/* 248 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuejs_datepicker__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuejs_datepicker__ = __webpack_require__(18);
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(244),
+    template: __webpack_require__(249),
 
     data: function data() {
         return {
@@ -41365,23 +43522,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 244 */
+/* 249 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"consult-add\">\n        <div class=\"uk-container\">\n            <vk-grid class=\"uk-grid-small\">\n            <div class=\"uk-width-1-5@m\">\n                <br/>\n                <h1 class=\"uk-heading-primary sticky\">Create Consult Form</h1>\n            </div>\n\n            <div class=\"uk-width-expand@m\">\n            <form class=\"uk-margin-large\">\n            <br/>\n            <div id=\"personalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <!-- <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Create Date</label>\n                                <div class=\"uk-form-controls\">\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                </div>\n                        </div> -->\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\n                            <div class=\"uk-form-controls\">\n                                <input v-model=\"consult.first_name\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\n                                <input v-model=\"consult.last_name\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"Last name\">\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\n                                <div class=\"uk-form-controls\">\n                                    <input v-model=\"consult.dob\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \n                            <div class=\"uk-form-controls\">\n                                    <label><input v-model=\"consult.gender\" value=\"Male\" class=\"uk-radio\" type=\"radio\" name=\"Male\" checked> Male</label>\n                                    <label><input v-model=\"consult.gender\" value=\"Female\" class=\"uk-radio\" type=\"radio\" name=\"Female\"> Female</label>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                            <div class=\"uk-form-controls\">\n                                <textarea  v-model=\"consult.address\" class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Address\"></textarea>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\n                                <div class=\"uk-form-controls\">\n                                    <input v-model=\"consult.primary_doctor\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\n                                </div>\n                        </div>\n                </div>\n            </div>\n                <!-- Medical Information -->\n                <br/>\n                <div id=\"medicalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                    </div>\n                <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\n                                <div class=\"uk-form-controls\">\n                                    <input v-model=\"consult.health_condition\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"\">\n                                </div>\n                        </div>\n                    <div class=\"uk-margin\">\n                            <!-- patient’s diagnosis here -->\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                            <div class=\"uk-form-width-medium\">\n                                <input v-model=\"consult.med_dx\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" list=\"disease\">\n                                <datalist id=\"disease\">\n                                        <option value=\"Alzheimer’s disease\"></option> <!-- ฮัลไซเมอร์ -->\n                                        <option value=\"Amyotrophic lateral sclerosis (ALS)\"></option> <!-- กล้ามเนื้ออ่อนแรง -->\n                                        <option value=\"Arthritis\"></option> <!--โรคข้ออักเสบ-->\n                                        <option value=\"Attention deficit hyperactivity disorder (ADHD)\"></option> <!--โรคสมาธิสั้น-->\n                                        <option value=\"Autism spectrum disorder (ASD)\"></option> <!--โรคออทิสติก-->\n                                        <option value=\"Bell’s palsy\"></option> <!--โรคใบหน้าเบี้ยว-->\n                                        <option value=\"Bipolar disorder\"></option> <!-- โรคใบโพล่าร์ -->\n                                        <option value=\"Birth defects\"></option> <!--โรคพิการตั้งแต่กำเนิด-->\n                                        <option value=\"Cerebral palsy\"></option> <!--โรคสมองพิการ-->\n                                        <object value=\"Chronic kidney disease\"></object> <!--โรคไตเรื้อรัง-->\n                                        <option value=\"Chronic pain\"></option> <!--โรคปวดเรื้อรัง-->\n                                        <option value=\"Chronic pancreatitis\"></option> <!--โรคตับอ่อนอัพเสบเรื้อรัง-->\n                                        <option value=\"Chronic traumatic encephalopathy (CTE)\"></option> <!--โรคโรคบาดเจ็บของสมอง CTE-->\n                                        <option value=\"Clotting/bleeding disorders\"></option> <!--โรคการแข็งตัวของเลือดผิดปกติ-->\n                                        <option value=\"Conductive Hearing Loss\"></option> <!--การสูญเสียการได้ยินชนิดการนำเสียงบกพร่อง-->\n                                        <option value=\"Coronary artery disease\"></option> <!-- โรคหลอดเลือดหัวใจตีบตัน  -->\n                                        <option value=\"Crohn’s disease\"></option> <!--โรคโครห์น-->\n                                        <option value=\"Depression\"></option> <!--ภาวะซึมเศร้า-->\n                                        <option value=\"Diabetes mellitus\"></option> <!-- โรคเบาหวาน  -->\n                                        <option value=\"Down syndrome\"></option> <!--ดาวน์ซินโดรม-->\n                                        <option value=\"Eczema\"></option> <!--โรคผิวหนังอักเสบ-->\n                                        <option value=\"Epilepsy\"></option> <!--โรคลมชัก-->\n                                        <option value=\"Fetal alcohol syndrome (FAS)\"></option> <!--กลุ่มอาการทารกในครรภ์ได้รับแอลกอฮอล์-->\n                                        <option value=\"Fibromyalgia\"></option> <!--โรคไฟโบรมัยอัลเจีย-->\n                                        <option value=\"Hemochromatosis (HHC)\"></option> <!--ภาวะเหล็กเกิน-->\n                                        <option value=\"Hemophilia\"></option> <!--โรคเลือดไหลไม่หยุด-->\n                                        <option value=\"High blood pressure\"></option> <!-- โรคความดันโลหิตสูง -->\n                                        <option value=\"Inflammatory bowel disease (IBD)\"></option> <!--โรคลำไส้อักเสบเรื้อรัง/โรคไอบีดี -->\n                                        <option value=\"Insomnia\"></option> <!--โรคนอนไม่หลับ-->\n                                        <option value=\"Liver disease\"></option> <!--โรคตับ-->\n                                        <option value=\"Lung Cancer\"></option> <!-- โรคมะเร็งปอด  -->\n                                        <option value=\"Obesity\"></option> <!-- โรคอ้วนลงพุง -->    \n                                        <option value=\"Psoriasis\"></option> <!--โรคสะเก็ดเงิน-->\n                                        <option value=\"Pulmonary Emphysema\"></option> <!-- ถุงลมโป่งพอง --> \n                                        <option value=\"Sickle cell anemia\"></option> <!--โรคเม็ดเลือดแดงรูปเคียว-->\n                                        <option value=\"Sleep disorders\"></option> <!--โรคนอนไม่หลับ-->\n                                        <option value=\"Systemic lupus erythematosus (SLE)\"></option> <!--โรคแพ้ภูมิตัวเอง-->\n                                        <option value=\"Stroke\"></option> <!-- โรคหลอดเลือดสมอง -->   \n                                        <option value=\"Temporomandibular joint (TMJ) disorder\"></option> <!--โรคข้อต่อขากรรไกรผิดปกติ-->\n                                        <option value=\"Thalassemia\"></option> <!--ธาลัสซีเมีย-->\n                                        <option value=\"Vision impairment\"></option> <!--ภาวะความบกพร่องทางการมองเห็น-->\n                                  </datalist>\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                            <div class=\"uk-form-controls\">\n                                <input v-model=\"consult.med_bw\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"kg\" min=\"0\" max=\"200\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input v-model=\"consult.med_bmi\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input v-model=\"consult.med_t\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"°C\" min=\"0\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input v-model=\"consult.med_fbs\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                            <div class=\"uk-form-controls unit\">\n                                <input v-model=\"consult.med_cr\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"Cr\" min=\"0\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                            <div class=\"uk-form-controls\">\n                                <input v-model=\"consult.med_clearance\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                            <div class=\"uk-form-controls\">\n                                <input v-model=\"consult.med_stage\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\n                            </div>\n                    </div>\n                </div>\n                </div>\n                <br/>\n                <!-- Record -->\n                <div id=\"recordinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input v-model=\"consult.rec01_date\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input v-model=\"consult.rec01_fbs\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"consult.rec01_bp1\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"consult.rec01_bp2\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"consult.rec01_p\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\" min=\"0\">\n                                    </div>\n                            </div>\n                    </div>\n\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input v-model=\"consult.rec02_date\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input v-model=\"consult.rec02_fbs\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"consult.rec02_bp1\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"consult.rec02_bp2\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\n                                    </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"consult.rec02_p\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\" min=\"0\">\n                                    </div>\n                            </div>\n                    </div>\n                </div>\n    \n                <!-- Consult Request -->\n                <br/>\n                <div id=\"consultinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                    </div>\n                    <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea v-model=\"consult.consult_complain\" class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Chief Complain\"></textarea>\n                                </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea v-model=\"consult.consult_plan\" class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Assessment and Plan\"></textarea>\n                                </div>\n                        </div>\n                        <!--<div class=\"uk-margin\">-->\n                            <!--&lt;!&ndash; Not Require &ndash;&gt;-->\n                            <!--<label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>-->\n                            <!--<div class=\"uk-form-controls\">-->\n                                <!--<textarea v-model=\"consult.HERE\" class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Progress notes\"></textarea>-->\n                            <!--</div>-->\n                    <!--</div>-->\n                </div>\n                </div>\n            </form>\n            </div>\n            <div class=\"uk-width-1-5@m\">\n                \n            </div>\n        </vk-grid>\n        <br/><br/>\n        <div class=\"uk-margin-bottom uk-text-center\">\n                <button @click=\"saveConsult\" type=\"button\" class=\"uk-button uk-button-primary\">Save as Draft</button>\n                <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Cancel</a>\n        </div>\n        <br/>\n        </div>\n    </div>";
+module.exports = "<div id=\"consult-add\">\r\n        <div class=\"uk-container\">\r\n            <vk-grid class=\"uk-grid-small\">\r\n            <div class=\"uk-width-1-5@m\">\r\n                <br/>\r\n                <h1 class=\"uk-heading-primary sticky\">Create Consult Form</h1>\r\n            </div>\r\n\r\n            <div class=\"uk-width-expand@m\">\r\n            <form class=\"uk-margin-large\">\r\n            <br/>\r\n            <div id=\"personalinfo\">\r\n                    <div class=\"uk-text-left\">\r\n                        <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\r\n                    </div>\r\n                <div class=\"uk-form-horizontal\">\r\n                        <!-- <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Create Date</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\r\n                                </div>\r\n                        </div> -->\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's name</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <input v-model=\"consult.first_name\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\r\n                                <input v-model=\"consult.last_name\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"Last name\">\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Birth</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input v-model=\"consult.dob\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\r\n                                </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>               \r\n                            <div class=\"uk-form-controls\">\r\n                                    <label><input v-model=\"consult.gender\" value=\"Male\" class=\"uk-radio\" type=\"radio\" name=\"Male\" checked> Male</label>\r\n                                    <label><input v-model=\"consult.gender\" value=\"Female\" class=\"uk-radio\" type=\"radio\" name=\"Female\"> Female</label>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <textarea  v-model=\"consult.address\" class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Address\"></textarea>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary Doctor</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input v-model=\"consult.primary_doctor\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\r\n                                </div>\r\n                        </div>\r\n                </div>\r\n            </div>\r\n                <!-- Medical Information -->\r\n                <br/>\r\n                <div id=\"medicalinfo\">\r\n                    <div class=\"uk-text-left\">\r\n                        <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\r\n                    </div>\r\n                <div class=\"uk-form-horizontal\">\r\n                        <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health Condition</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input v-model=\"consult.health_condition\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" placeholder=\"\">\r\n                                </div>\r\n                        </div>\r\n                    <div class=\"uk-margin\">\r\n                            <!-- patient’s diagnosis here -->\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\r\n                            <div class=\"uk-form-controls uk-form-width-medium\">\r\n                                <input v-model=\"consult.med_dx\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\" list=\"disease\">\r\n                                <datalist id=\"disease\">\r\n                                        <option value=\"Alzheimer’s disease\"></option> <!-- ฮัลไซเมอร์ -->\r\n                                        <option value=\"Amyotrophic lateral sclerosis (ALS)\"></option> <!-- กล้ามเนื้ออ่อนแรง -->\r\n                                        <option value=\"Arthritis\"></option> <!--โรคข้ออักเสบ-->\r\n                                        <option value=\"Attention deficit hyperactivity disorder (ADHD)\"></option> <!--โรคสมาธิสั้น-->\r\n                                        <option value=\"Autism spectrum disorder (ASD)\"></option> <!--โรคออทิสติก-->\r\n                                        <option value=\"Bell’s palsy\"></option> <!--โรคใบหน้าเบี้ยว-->\r\n                                        <option value=\"Bipolar disorder\"></option> <!-- โรคใบโพล่าร์ -->\r\n                                        <option value=\"Birth defects\"></option> <!--โรคพิการตั้งแต่กำเนิด-->\r\n                                        <option value=\"Cerebral palsy\"></option> <!--โรคสมองพิการ-->\r\n                                        <object value=\"Chronic kidney disease\"></object> <!--โรคไตเรื้อรัง-->\r\n                                        <option value=\"Chronic pain\"></option> <!--โรคปวดเรื้อรัง-->\r\n                                        <option value=\"Chronic pancreatitis\"></option> <!--โรคตับอ่อนอัพเสบเรื้อรัง-->\r\n                                        <option value=\"Chronic traumatic encephalopathy (CTE)\"></option> <!--โรคโรคบาดเจ็บของสมอง CTE-->\r\n                                        <option value=\"Clotting/bleeding disorders\"></option> <!--โรคการแข็งตัวของเลือดผิดปกติ-->\r\n                                        <option value=\"Conductive Hearing Loss\"></option> <!--การสูญเสียการได้ยินชนิดการนำเสียงบกพร่อง-->\r\n                                        <option value=\"Coronary artery disease\"></option> <!-- โรคหลอดเลือดหัวใจตีบตัน  -->\r\n                                        <option value=\"Crohn’s disease\"></option> <!--โรคโครห์น-->\r\n                                        <option value=\"Depression\"></option> <!--ภาวะซึมเศร้า-->\r\n                                        <option value=\"Diabetes mellitus\"></option> <!-- โรคเบาหวาน  -->\r\n                                        <option value=\"Down syndrome\"></option> <!--ดาวน์ซินโดรม-->\r\n                                        <option value=\"Eczema\"></option> <!--โรคผิวหนังอักเสบ-->\r\n                                        <option value=\"Epilepsy\"></option> <!--โรคลมชัก-->\r\n                                        <option value=\"Fetal alcohol syndrome (FAS)\"></option> <!--กลุ่มอาการทารกในครรภ์ได้รับแอลกอฮอล์-->\r\n                                        <option value=\"Fibromyalgia\"></option> <!--โรคไฟโบรมัยอัลเจีย-->\r\n                                        <option value=\"Hemochromatosis (HHC)\"></option> <!--ภาวะเหล็กเกิน-->\r\n                                        <option value=\"Hemophilia\"></option> <!--โรคเลือดไหลไม่หยุด-->\r\n                                        <option value=\"High blood pressure\"></option> <!-- โรคความดันโลหิตสูง -->\r\n                                        <option value=\"Inflammatory bowel disease (IBD)\"></option> <!--โรคลำไส้อักเสบเรื้อรัง/โรคไอบีดี -->\r\n                                        <option value=\"Insomnia\"></option> <!--โรคนอนไม่หลับ-->\r\n                                        <option value=\"Liver disease\"></option> <!--โรคตับ-->\r\n                                        <option value=\"Lung Cancer\"></option> <!-- โรคมะเร็งปอด  -->\r\n                                        <option value=\"Obesity\"></option> <!-- โรคอ้วนลงพุง -->    \r\n                                        <option value=\"Psoriasis\"></option> <!--โรคสะเก็ดเงิน-->\r\n                                        <option value=\"Pulmonary Emphysema\"></option> <!-- ถุงลมโป่งพอง --> \r\n                                        <option value=\"Sickle cell anemia\"></option> <!--โรคเม็ดเลือดแดงรูปเคียว-->\r\n                                        <option value=\"Sleep disorders\"></option> <!--โรคนอนไม่หลับ-->\r\n                                        <option value=\"Systemic lupus erythematosus (SLE)\"></option> <!--โรคแพ้ภูมิตัวเอง-->\r\n                                        <option value=\"Stroke\"></option> <!-- โรคหลอดเลือดสมอง -->   \r\n                                        <option value=\"Temporomandibular joint (TMJ) disorder\"></option> <!--โรคข้อต่อขากรรไกรผิดปกติ-->\r\n                                        <option value=\"Thalassemia\"></option> <!--ธาลัสซีเมีย-->\r\n                                        <option value=\"Vision impairment\"></option> <!--ภาวะความบกพร่องทางการมองเห็น-->\r\n                                  </datalist>\r\n                            </div>\r\n                    </div>\r\n                    <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <input v-model=\"consult.med_bw\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"kg\" min=\"0\" max=\"200\">\r\n                            </div>\r\n                    </div>\r\n                    <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\r\n                            <div class=\"uk-form-controls unit\">\r\n                                <input v-model=\"consult.med_bmi\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\r\n                            </div>\r\n                    </div>\r\n                    <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\r\n                            <div class=\"uk-form-controls unit\">\r\n                                <input v-model=\"consult.med_t\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"°C\" min=\"0\">\r\n                            </div>\r\n                    </div>\r\n                    <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                            <div class=\"uk-form-controls unit\">\r\n                                <input v-model=\"consult.med_fbs\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\r\n                            </div>\r\n                    </div>\r\n                    <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\r\n                            <div class=\"uk-form-controls unit\">\r\n                                <input v-model=\"consult.med_cr\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"Cr\" min=\"0\">\r\n                            </div>\r\n                    </div>\r\n                    <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <input v-model=\"consult.med_clearance\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\r\n                            </div>\r\n                    </div>\r\n                    <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <input v-model=\"consult.med_stage\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\r\n                            </div>\r\n                    </div>\r\n                </div>\r\n                </div>\r\n                <br/>\r\n                <!-- Record -->\r\n                <div id=\"recordinfo\">\r\n                    <div class=\"uk-text-left\">\r\n                        <h2 class=\"uk-heading-line\"><span>Record</span></h2>\r\n                    </div>\r\n                    <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\r\n                    </div>\r\n                    <div class=\"uk-form-horizontal unit\">\r\n                            <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\r\n                                    <div class=\"uk-form-controls \">\r\n                                        <input v-model=\"consult.rec01_date\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\r\n                                    </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                    <div class=\"uk-form-controls \">\r\n                                        <input v-model=\"consult.rec01_fbs\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\r\n                                    </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"consult.rec01_bp1\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\r\n                                    </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"consult.rec01_bp2\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\r\n                                    </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"consult.rec01_p\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\" min=\"0\">\r\n                                    </div>\r\n                            </div>\r\n                    </div>\r\n\r\n                    <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\r\n                    </div>\r\n                    <div class=\"uk-form-horizontal unit\">\r\n                            <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of Diagnosis</label>\r\n                                    <div class=\"uk-form-controls \">\r\n                                        <input v-model=\"consult.rec02_date\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\r\n                                    </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                    <div class=\"uk-form-controls \">\r\n                                        <input v-model=\"consult.rec02_fbs\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\r\n                                    </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"consult.rec02_bp1\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\r\n                                    </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"consult.rec02_bp2\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\r\n                                    </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"consult.rec02_p\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\" min=\"0\">\r\n                                    </div>\r\n                            </div>\r\n                    </div>\r\n                </div>\r\n    \r\n                <!-- Consult Request -->\r\n                <br/>\r\n                <div id=\"consultinfo\">\r\n                    <div class=\"uk-text-left\">\r\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\r\n                    </div>\r\n                    <div class=\"uk-form-horizontal\">\r\n                        <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief Complain</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <textarea v-model=\"consult.consult_complain\" class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Chief Complain\"></textarea>\r\n                                </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and plan</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <textarea v-model=\"consult.consult_plan\" class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Assessment and Plan\"></textarea>\r\n                                </div>\r\n                        </div>\r\n                        <!--<div class=\"uk-margin\">-->\r\n                            <!--&lt;!&ndash; Not Require &ndash;&gt;-->\r\n                            <!--<label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>-->\r\n                            <!--<div class=\"uk-form-controls\">-->\r\n                                <!--<textarea v-model=\"consult.HERE\" class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\" placeholder=\"Progress notes\"></textarea>-->\r\n                            <!--</div>-->\r\n                    <!--</div>-->\r\n                </div>\r\n                </div>\r\n            </form>\r\n            </div>\r\n            <div class=\"uk-width-1-5@m\">\r\n                \r\n            </div>\r\n        </vk-grid>\r\n        <br/><br/>\r\n        <div class=\"uk-margin-bottom uk-text-center\">\r\n                <button @click=\"saveConsult\" type=\"button\" class=\"uk-button uk-button-primary\">Save as Draft</button>\r\n                <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Cancel</a>\r\n        </div>\r\n        <br/>\r\n        </div>\r\n    </div>";
 
 /***/ }),
-/* 245 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(246)
+  __webpack_require__(251)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(248)
+var __vue_script__ = __webpack_require__(253)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -41389,7 +43546,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-9b73e9b4"
+var __vue_scopeId__ = "data-v-7f285a06"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -41400,7 +43557,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/consult/view/consult-view.vue"
+Component.options.__file = "resources\\assets\\js\\components\\consult\\view\\consult-view.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -41409,9 +43566,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-9b73e9b4", Component.options)
+    hotAPI.createRecord("data-v-7f285a06", Component.options)
   } else {
-    hotAPI.reload("data-v-9b73e9b4", Component.options)
+    hotAPI.reload("data-v-7f285a06", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -41422,23 +43579,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 246 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(247);
+var content = __webpack_require__(252);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("e6f6a014", content, false, {});
+var update = __webpack_require__(5)("20ef509c", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-9b73e9b4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-view.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-9b73e9b4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-view.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7f285a06\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-view.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7f285a06\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-view.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -41448,7 +43605,7 @@ if(false) {
 }
 
 /***/ }),
-/* 247 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -41462,14 +43619,14 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 248 */
+/* 253 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(249),
+    template: __webpack_require__(254),
     data: function data() {
         return {};
     },
@@ -41504,14 +43661,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$router.push('/consults/' + consult_id + '/edit');
         },
         sendConsult: function sendConsult(consult_id) {
-            var _this = this;
-
             var payload = consult_id;
             var r = confirm('Are you sure?');
             if (r == true) {
                 this.$store.dispatch('getSendConsult', payload).then(function (response) {
-                    console.log('Consult sent successfully');
-                    _this.loadConsultList();
+                    alert('Consult sent successfully');
+                    // this.loadConsultList();
                 }, function (error) {
                     console.log('Delete consult error');
                 });
@@ -41535,19 +43690,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 249 */
+/* 254 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"consult-view\">\n    <div class=\"uk-container\">\n        <vk-grid class=\"uk-grid-small\">\n            <div class=\"uk-width-1-5@m\">\n                <br/>\n                <p class=\"uk-label uk-label-warning sticky\">Consult ID {{currentConsult.consult_id}}</p>\n            </div>\n\n            <div class=\"uk-width-expand@m\">\n                <form class=\"uk-margin-large\">\n                    <br/>\n                    <div id=\"personalinfo\">\n                        <div class=\"uk-text-left\">\n                            <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                        </div>\n                        <div class=\"uk-form-horizontal\">\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's\n                                    name</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.patient_firstname}} {{currentConsult.patient_lastname}}</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                    Birth</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.patient_dob}}</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.patient_gender}}</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\"\n                                       for=\"form-horizontal-text\">Address</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>\n                                        {{currentConsult.patient_address}}\n                                    </p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary\n                                    Doctor</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.primary_doctor}}</p>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <!-- Medical Information -->\n                    <br/>\n                    <div id=\"medicalinfo\">\n                        <div class=\"uk-text-left\">\n                            <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                        </div>\n                        <div class=\"uk-form-horizontal\">\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health\n                                    Condition</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.health_condition}}</p>\n                                </div>\n                            </div>\n                            <!--<div class=\"uk-margin\">-->\n                            <!--<label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>-->\n                            <!--<div class=\"uk-form-controls\">-->\n                            <!--<p>{{currentConsult.HERE}}</p>-->\n                            <!--</div>-->\n                            <!--</div>-->\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.med_dx}}</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.med_bw}} kg</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                                <div class=\"uk-form-controls unit\">\n                                    <p>{{currentConsult.med_bmi}}</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                                <div class=\"uk-form-controls unit\">\n                                    <p>{{currentConsult.med_t}} °C</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                <div class=\"uk-form-controls unit\">\n                                    <p>{{currentConsult.med_fbs}} mg%</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                                <div class=\"uk-form-controls unit\">\n                                    <p>{{currentConsult.med_cr}} Cr</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.med_clearance}}</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.med_stage}}</p>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <br/>\n                    <!-- Record -->\n                    <div id=\"recordinfo\">\n                        <div class=\"uk-text-left\">\n                            <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD\n                                1</label>\n                        </div>\n                        <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                    Diagnosis</label>\n                                <div class=\"uk-form-controls \">\n                                    <p>{{currentConsult.rec01_date}}</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                <div class=\"uk-form-controls \">\n                                    <p>{{currentConsult.rec01_fbs}} mg%</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.rec01_bp1}} mmHg</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.rec01_bp2}} mmHg</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.rec01_p}} /min</p>\n                                </div>\n                            </div>\n                        </div>\n\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD\n                                2</label>\n                        </div>\n                        <div class=\"uk-form-horizontal unit\">\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                    Diagnosis</label>\n                                <div class=\"uk-form-controls \">\n                                    <p>{{currentConsult.rec02_date}}</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                <div class=\"uk-form-controls \">\n                                    <p>{{currentConsult.rec02_fbs}} mg%</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.rec02_bp1}} mmHg</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.rec02_bp2}} mmHg</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.rec02_p}} /min</p>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n\n                    <!-- Consult Request -->\n                    <br/>\n                    <div id=\"consultinfo\">\n                        <div class=\"uk-text-left\">\n                            <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                        </div>\n                        <div class=\"uk-form-horizontal\">\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief\n                                    Complain</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.consult_complain}}</p>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and\n                                    plan</label>\n                                <div class=\"uk-form-controls\">\n                                    <p>{{currentConsult.consult_plan}}</p>\n                                </div>\n                            </div>\n                            <!--<div class=\"uk-margin\">-->\n                            <!--&lt;!&ndash; Not Require &ndash;&gt;-->\n                            <!--<label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>-->\n                            <!--<div class=\"uk-form-controls\">-->\n                            <!--<p>{{currentConsult.HERE}}</p>-->\n                            <!--</div>-->\n                            <!--</div>-->\n\n                            <div id=\"consultinfo\">\n                                <div class=\"uk-text-left\">\n                                    <h2 class=\"uk-heading-line uk-text-danger\"><span><b>Consult Order</b></span></h2>\n                                </div>\n                                <div class=\"uk-form-horizontal\">\n                                    <div class=\"uk-margin\">\n                                        <label class=\"uk-form-label uk-text-uppercase\"\n                                               for=\"form-horizontal-text\">Order</label>\n                                        <div class=\"uk-form-controls\">\n                                            <p>{{currentConsult.consult_order}}</p>\n                                        </div>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </form>\n            </div>\n            <div class=\"uk-width-1-5@m\">\n            </div>\n        </vk-grid>\n        <br/><br/>\n\n        <!-- Hide on print and done consult -->\n        <div class=\"uk-margin-bottom uk-text-center\">\n            <!-- Draft Status : Edit btn avaliable ,else disable -->\n            <button v-on:click=\"editConsult(currentConsult.consult_id)\"\n                    v-if=\"isDraft()\"\n                    type=\"button\"\n                    class=\"uk-button uk-button-secondary\">Edit\n            </button>\n            <button v-on:click=\"sendConsult(currentConsult.consult_id)\"\n                    v-if=\"isDraft()\"\n                    type=\"button\"\n                    class=\"uk-button uk-button-primary uk-width-small\">Send\n            </button>\n            <button v-on:click=\"messageConsult(currentConsult.consult_id)\"\n                    v-if=\"isPending() || isDone()\"\n                    type=\"button\"\n                    class=\"uk-button uk-button-secondary\">Message\n            </button>\n            <button v-on:click=\"printConsult(currentConsult.consult_id)\"\n                    v-if=\"isDone()\"\n                    type=\"button\"\n                    class=\"uk-button uk-button-primary uk-width-small\">Print\n            </button>\n            <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Back</a>\n        </div>\n        <br/>\n    </div>\n</div>";
+module.exports = "<div id=\"consult-view\">\r\n    <div class=\"uk-container\">\r\n        <vk-grid class=\"uk-grid-small\">\r\n            <div class=\"uk-width-1-5@m\">\r\n                <br/>\r\n                <p class=\"uk-label uk-label-warning sticky\">Consult ID {{currentConsult.consult_id}}</p>\r\n            </div>\r\n\r\n            <div class=\"uk-width-expand@m\">\r\n                <form class=\"uk-margin-large\">\r\n                    <br/>\r\n                    <div id=\"personalinfo\">\r\n                        <div class=\"uk-text-left\">\r\n                            <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\r\n                        </div>\r\n                        <div class=\"uk-form-horizontal\">\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's\r\n                                    name</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.patient_firstname}} {{currentConsult.patient_lastname}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                    Birth</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.patient_dob}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.patient_gender}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\"\r\n                                       for=\"form-horizontal-text\">Address</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>\r\n                                        {{currentConsult.patient_address}}\r\n                                    </p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary\r\n                                    Doctor</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.primary_doctor}}</p>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <!-- Medical Information -->\r\n                    <br/>\r\n                    <div id=\"medicalinfo\">\r\n                        <div class=\"uk-text-left\">\r\n                            <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\r\n                        </div>\r\n                        <div class=\"uk-form-horizontal\">\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health\r\n                                    Condition</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.health_condition}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <!--<div class=\"uk-margin\">-->\r\n                            <!--<label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>-->\r\n                            <!--<div class=\"uk-form-controls\">-->\r\n                            <!--<p>{{currentConsult.HERE}}</p>-->\r\n                            <!--</div>-->\r\n                            <!--</div>-->\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.med_dx}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.med_bw}} kg</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\r\n                                <div class=\"uk-form-controls unit\">\r\n                                    <p>{{currentConsult.med_bmi}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\r\n                                <div class=\"uk-form-controls unit\">\r\n                                    <p>{{currentConsult.med_t}} °C</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                <div class=\"uk-form-controls unit\">\r\n                                    <p>{{currentConsult.med_fbs}} mg%</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\r\n                                <div class=\"uk-form-controls unit\">\r\n                                    <p>{{currentConsult.med_cr}} Cr</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.med_clearance}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.med_stage}}</p>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <br/>\r\n                    <!-- Record -->\r\n                    <div id=\"recordinfo\">\r\n                        <div class=\"uk-text-left\">\r\n                            <h2 class=\"uk-heading-line\"><span>Record</span></h2>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD\r\n                                1</label>\r\n                        </div>\r\n                        <div class=\"uk-form-horizontal unit\">\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                    Diagnosis</label>\r\n                                <div class=\"uk-form-controls \">\r\n                                    <p>{{currentConsult.rec01_date}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                <div class=\"uk-form-controls \">\r\n                                    <p>{{currentConsult.rec01_fbs}} mg%</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.rec01_bp1}} mmHg</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.rec01_bp2}} mmHg</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.rec01_p}} /min</p>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD\r\n                                2</label>\r\n                        </div>\r\n                        <div class=\"uk-form-horizontal unit\">\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                    Diagnosis</label>\r\n                                <div class=\"uk-form-controls \">\r\n                                    <p>{{currentConsult.rec02_date}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                <div class=\"uk-form-controls \">\r\n                                    <p>{{currentConsult.rec02_fbs}} mg%</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.rec02_bp1}} mmHg</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.rec02_bp2}} mmHg</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.rec02_p}} /min</p>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n\r\n                    <!-- Consult Request -->\r\n                    <br/>\r\n                    <div id=\"consultinfo\">\r\n                        <div class=\"uk-text-left\">\r\n                            <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\r\n                        </div>\r\n                        <div class=\"uk-form-horizontal\">\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief\r\n                                    Complain</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.consult_complain}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and\r\n                                    plan</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <p>{{currentConsult.consult_plan}}</p>\r\n                                </div>\r\n                            </div>\r\n                            <!--<div class=\"uk-margin\">-->\r\n                            <!--&lt;!&ndash; Not Require &ndash;&gt;-->\r\n                            <!--<label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress notes</label>-->\r\n                            <!--<div class=\"uk-form-controls\">-->\r\n                            <!--<p>{{currentConsult.HERE}}</p>-->\r\n                            <!--</div>-->\r\n                            <!--</div>-->\r\n\r\n                            <div id=\"consultinfo\">\r\n                                <div class=\"uk-text-left\">\r\n                                    <h2 class=\"uk-heading-line uk-text-danger\"><span><b>Consult Order</b></span></h2>\r\n                                </div>\r\n                                <div class=\"uk-form-horizontal\">\r\n                                    <div class=\"uk-margin\">\r\n                                        <label class=\"uk-form-label uk-text-uppercase\"\r\n                                               for=\"form-horizontal-text\">Order</label>\r\n                                        <div class=\"uk-form-controls\">\r\n                                            <p>{{currentConsult.consult_order}}</p>\r\n                                        </div>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </form>\r\n            </div>\r\n            <div class=\"uk-width-1-5@m\">\r\n            </div>\r\n        </vk-grid>\r\n        <br/><br/>\r\n\r\n        <!-- Hide on print and done consult -->\r\n        <div class=\"uk-margin-bottom uk-text-center\">\r\n            <!-- Draft Status : Edit btn avaliable ,else disable -->\r\n            <button v-on:click=\"editConsult(currentConsult.consult_id)\"\r\n                    v-if=\"isDraft()\"\r\n                    type=\"button\"\r\n                    class=\"uk-button uk-button-secondary\">Edit\r\n            </button>\r\n            <button v-on:click=\"sendConsult(currentConsult.consult_id)\"\r\n                    v-if=\"isDraft()\"\r\n                    type=\"button\"\r\n                    class=\"uk-button uk-button-primary uk-width-small\">Send\r\n            </button>\r\n            <button v-on:click=\"messageConsult(currentConsult.consult_id)\"\r\n                    v-if=\"isPending() || isDone()\"\r\n                    type=\"button\"\r\n                    class=\"uk-button uk-button-secondary\">Message\r\n            </button>\r\n            <button v-on:click=\"printConsult(currentConsult.consult_id)\"\r\n                    v-if=\"isDone()\"\r\n                    type=\"button\"\r\n                    class=\"uk-button uk-button-primary uk-width-small\">Print\r\n            </button>\r\n            <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Back</a>\r\n        </div>\r\n        <br/>\r\n    </div>\r\n</div>";
 
 /***/ }),
-/* 250 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(251)
+var __vue_script__ = __webpack_require__(256)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -41566,7 +43721,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/consult/list/consult-list.vue"
+Component.options.__file = "resources\\assets\\js\\components\\consult\\list\\consult-list.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -41575,9 +43730,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-2ed5f7c6", Component.options)
+    hotAPI.createRecord("data-v-088f72b4", Component.options)
   } else {
-    hotAPI.reload("data-v-2ed5f7c6", Component.options)
+    hotAPI.reload("data-v-088f72b4", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -41588,14 +43743,14 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 251 */
+/* 256 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(252),
+    template: __webpack_require__(257),
     data: function data() {
         return {
             keyword: ''
@@ -41643,19 +43798,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 252 */
+/* 257 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"consult-list\">\n    <header>\n        <br/>\n        <h1 class=\"uk-text-center\">E-CONSULTS LIST</h1>\n    </header>\n    <section class=\"uk-container\">\n        <section class=\"uk-container\">\n            <vk-grid class=\"uk-child-width-expand@s uk-text-center\">\n                <div class=\"uk-width-auto@s\"></div>\n                <div class=\"uk-margin\">\n                    <form class=\"uk-search uk-search-default uk-width-1-2@s\">\n                        <input v-model=\"keyword\" class=\"uk-search-input\" type=\"search\" placeholder=\"Search...\">\n                    </form>\n                    <button class=\"uk-button uk-button-primary uk-width-auto@l uk-width-1-5@m\" v-on:click=\"searchConsults\">\n                        <vk-icon icon=\"search\"></vk-icon>\n                    </button>\n                </div>\n                <div class=\"uk-width-auto@s\"></div>\n            </vk-grid>\n        </section>\n        <vk-grid class=\"uk-child-width-expand@s\">\n            <div>\n                <vk-tabs-vertical align=\"left\">\n                    <vk-tabs-item title=\"Done\">\n                        <div class=\"uk-overflow-auto\">\n                            <table class=\"uk-table uk-table-middle uk-table-hover uk-table-divider\">\n                                <thead>\n                                <tr>\n                                    <th class=\"uk-width-small\">Consult Id</th>\n                                    <th>Patient</th>\n                                    <th>Creator</th>\n                                    <th>Date of Create</th>\n                                    <th>Status</th>\n                                </tr>\n                                </thead>\n                                <tbody>\n                                <tr v-for=\"consult in consultDone\">\n                                    <td>{{consult.consult_id}}</td>\n                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>\n                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>\n                                    <td>{{consult.created_at}}</td>\n                                    <td><span class=\"uk-label uk-label-success\">Done</span></td>\n                                    <td>\n                                        <button v-on:click=\"viewConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-default\" type=\"button\">View\n                                        </button>\n                                    </td>\n                                    <td>\n                                        <button v-on:click=\"messageConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Message\n                                        </button>\n                                    </td>\n                                    <td>\n                                        <button v-on:click=\"printConsult(consult.consult_id)\"\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Print\n                                        </button>\n                                    </td>\n                                </tr>\n                                </tbody>\n                            </table>\n                        </div>\n                    </vk-tabs-item>\n                </vk-tabs-vertical>\n            </div>\n        </vk-grid>\n    </section>\n</div>";
+module.exports = "<div id=\"consult-list\">\r\n    <header>\r\n        <br/>\r\n        <h1 class=\"uk-text-center\">E-CONSULTS LIST</h1>\r\n    </header>\r\n    <section class=\"uk-container\">\r\n        <section class=\"uk-container\">\r\n            <vk-grid class=\"uk-child-width-expand@s uk-text-center\">\r\n                <div class=\"uk-width-auto@s\"></div>\r\n                <div class=\"uk-margin\">\r\n                    <form class=\"uk-search uk-search-default uk-width-1-2@s\">\r\n                        <input v-model=\"keyword\" class=\"uk-search-input\" type=\"search\" placeholder=\"Search...\">\r\n                    </form>\r\n                    <button class=\"uk-button uk-button-primary uk-width-auto@l uk-width-1-5@m\" v-on:click=\"searchConsults\">\r\n                        <vk-icon icon=\"search\"></vk-icon>\r\n                    </button>\r\n                </div>\r\n                <div class=\"uk-width-auto@s\"></div>\r\n            </vk-grid>\r\n        </section>\r\n        <vk-grid class=\"uk-child-width-expand@s\">\r\n            <div>\r\n                <vk-tabs-vertical align=\"left\">\r\n                    <vk-tabs-item title=\"Done\">\r\n                        <div class=\"uk-overflow-auto\">\r\n                            <table class=\"uk-table uk-table-middle uk-table-hover uk-table-divider\">\r\n                                <thead>\r\n                                <tr>\r\n                                    <th class=\"uk-width-small\">Consult Id</th>\r\n                                    <th>Patient</th>\r\n                                    <th>Creator</th>\r\n                                    <th>Date of Create</th>\r\n                                    <th>Status</th>\r\n                                </tr>\r\n                                </thead>\r\n                                <tbody>\r\n                                <tr v-for=\"consult in consultDone\">\r\n                                    <td>{{consult.consult_id}}</td>\r\n                                    <td>{{consult.patient_firstname}} {{consult.patient_lastname}}</td>\r\n                                    <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>\r\n                                    <td>{{consult.created_at}}</td>\r\n                                    <td><span class=\"uk-label uk-label-success\">Done</span></td>\r\n                                    <td>\r\n                                        <button v-on:click=\"viewConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-default\" type=\"button\">View\r\n                                        </button>\r\n                                    </td>\r\n                                    <td>\r\n                                        <button v-on:click=\"messageConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Message\r\n                                        </button>\r\n                                    </td>\r\n                                    <td>\r\n                                        <button v-on:click=\"printConsult(consult.consult_id)\"\r\n                                                class=\"uk-button uk-button-primary\" type=\"button\">Print\r\n                                        </button>\r\n                                    </td>\r\n                                </tr>\r\n                                </tbody>\r\n                            </table>\r\n                        </div>\r\n                    </vk-tabs-item>\r\n                </vk-tabs-vertical>\r\n            </div>\r\n        </vk-grid>\r\n    </section>\r\n</div>";
 
 /***/ }),
-/* 253 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(254)
+var __vue_script__ = __webpack_require__(259)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -41674,7 +43829,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/consult/edit/consult-edit.vue"
+Component.options.__file = "resources\\assets\\js\\components\\consult\\edit\\consult-edit.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -41683,9 +43838,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-571e6746", Component.options)
+    hotAPI.createRecord("data-v-2400b626", Component.options)
   } else {
-    hotAPI.reload("data-v-571e6746", Component.options)
+    hotAPI.reload("data-v-2400b626", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -41696,14 +43851,14 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 254 */
+/* 259 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(255),
+    template: __webpack_require__(260),
     data: function data() {
         return {
             form: {},
@@ -41799,23 +43954,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 255 */
+/* 260 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"consult-add\">\n    <div class=\"uk-container\">\n        <vk-grid class=\"uk-grid-small\">\n            <div class=\"uk-width-1-5@m\">\n                <br/>\n                <h1 class=\"uk-heading-primary sticky\">Edit Draft Consult</h1>\n            </div>\n\n            <div class=\"uk-width-expand@m\">\n                <form class=\"uk-margin-large\">\n                    <br/>\n                    <div id=\"personalinfo\">\n                        <div class=\"uk-text-left\">\n                            <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                        </div>\n                        <div class=\"uk-form-horizontal\">\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's\n                                    name</label>\n                                <div class=\"uk-form-controls\">\n                                    <input v-model=\"currentConsult.patient_firstname\"\n                                           class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\"\n                                           placeholder=\"First name\">\n                                    <input v-model=\"currentConsult.patient_lastname\"\n                                           class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\"\n                                           placeholder=\"Last name\">\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                    Birth</label>\n                                <div class=\"uk-form-controls\">\n                                    <input v-model=\"currentConsult.patient_dob\" class=\"uk-input uk-form-width-medium\"\n                                           id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>\n                                <div class=\"uk-form-controls\">\n                                    <label><input v-model=\"currentConsult.patient_gender\" value=\"Male\" class=\"uk-radio\"\n                                                  type=\"radio\" name=\"Male\" checked> Male</label>\n                                    <label><input v-model=\"currentConsult.patient_gender\" value=\"Female\"\n                                                  class=\"uk-radio\" type=\"radio\" name=\"Female\"> Female</label>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\"\n                                       for=\"form-horizontal-text\">Address</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea v-model=\"currentConsult.patient_address\"\n                                              class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\"\n                                              placeholder=\"Address\"></textarea>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary\n                                    Doctor</label>\n                                <div class=\"uk-form-controls\">\n                                    <input v-model=\"currentConsult.primary_doctor\" class=\"uk-input uk-form-width-medium\"\n                                           id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <!-- Medical Information -->\n                    <br/>\n                    <div id=\"medicalinfo\">\n                        <div class=\"uk-text-left\">\n                            <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                        </div>\n                        <div class=\"uk-form-horizontal\">\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health\n                                    Condition</label>\n                                <div class=\"uk-form-controls\">\n                                    <input v-model=\"currentConsult.health_condition\"\n                                           class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\"\n                                           placeholder=\"\">\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <!-- patient’s diagnosis here -->\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                                <div class=\"uk-form-width-medium\">\n                                    <input v-model=\"currentConsult.med_dx\" class=\"uk-input uk-form-width-medium\"\n                                           id=\"form-horizontal-text\" type=\"text\" list=\"disease\">\n                                    <datalist id=\"disease\">\n                                        <option value=\"Alzheimer’s disease\"></option> <!-- ฮัลไซเมอร์ -->\n                                        <option value=\"Amyotrophic lateral sclerosis (ALS)\"></option>\n                                        <!-- กล้ามเนื้ออ่อนแรง -->\n                                        <option value=\"Arthritis\"></option> <!--โรคข้ออักเสบ-->\n                                        <option value=\"Attention deficit hyperactivity disorder (ADHD)\"></option>\n                                        <!--โรคสมาธิสั้น-->\n                                        <option value=\"Autism spectrum disorder (ASD)\"></option> <!--โรคออทิสติก-->\n                                        <option value=\"Bell’s palsy\"></option> <!--โรคใบหน้าเบี้ยว-->\n                                        <option value=\"Bipolar disorder\"></option> <!-- โรคใบโพล่าร์ -->\n                                        <option value=\"Birth defects\"></option> <!--โรคพิการตั้งแต่กำเนิด-->\n                                        <option value=\"Cerebral palsy\"></option> <!--โรคสมองพิการ-->\n                                        <object value=\"Chronic kidney disease\"></object> <!--โรคไตเรื้อรัง-->\n                                        <option value=\"Chronic pain\"></option> <!--โรคปวดเรื้อรัง-->\n                                        <option value=\"Chronic pancreatitis\"></option> <!--โรคตับอ่อนอัพเสบเรื้อรัง-->\n                                        <option value=\"Chronic traumatic encephalopathy (CTE)\"></option>\n                                        <!--โรคโรคบาดเจ็บของสมอง CTE-->\n                                        <option value=\"Clotting/bleeding disorders\"></option>\n                                        <!--โรคการแข็งตัวของเลือดผิดปกติ-->\n                                        <option value=\"Conductive Hearing Loss\"></option>\n                                        <!--การสูญเสียการได้ยินชนิดการนำเสียงบกพร่อง-->\n                                        <option value=\"Coronary artery disease\"></option>\n                                        <!-- โรคหลอดเลือดหัวใจตีบตัน  -->\n                                        <option value=\"Crohn’s disease\"></option> <!--โรคโครห์น-->\n                                        <option value=\"Depression\"></option> <!--ภาวะซึมเศร้า-->\n                                        <option value=\"Diabetes mellitus\"></option> <!-- โรคเบาหวาน  -->\n                                        <option value=\"Down syndrome\"></option> <!--ดาวน์ซินโดรม-->\n                                        <option value=\"Eczema\"></option> <!--โรคผิวหนังอักเสบ-->\n                                        <option value=\"Epilepsy\"></option> <!--โรคลมชัก-->\n                                        <option value=\"Fetal alcohol syndrome (FAS)\"></option>\n                                        <!--กลุ่มอาการทารกในครรภ์ได้รับแอลกอฮอล์-->\n                                        <option value=\"Fibromyalgia\"></option> <!--โรคไฟโบรมัยอัลเจีย-->\n                                        <option value=\"Hemochromatosis (HHC)\"></option> <!--ภาวะเหล็กเกิน-->\n                                        <option value=\"Hemophilia\"></option> <!--โรคเลือดไหลไม่หยุด-->\n                                        <option value=\"High blood pressure\"></option> <!-- โรคความดันโลหิตสูง -->\n                                        <option value=\"Inflammatory bowel disease (IBD)\"></option>\n                                        <!--โรคลำไส้อักเสบเรื้อรัง/โรคไอบีดี -->\n                                        <option value=\"Insomnia\"></option> <!--โรคนอนไม่หลับ-->\n                                        <option value=\"Liver disease\"></option> <!--โรคตับ-->\n                                        <option value=\"Lung Cancer\"></option> <!-- โรคมะเร็งปอด  -->\n                                        <option value=\"Obesity\"></option> <!-- โรคอ้วนลงพุง -->\n                                        <option value=\"Psoriasis\"></option> <!--โรคสะเก็ดเงิน-->\n                                        <option value=\"Pulmonary Emphysema\"></option> <!-- ถุงลมโป่งพอง -->\n                                        <option value=\"Sickle cell anemia\"></option> <!--โรคเม็ดเลือดแดงรูปเคียว-->\n                                        <option value=\"Sleep disorders\"></option> <!--โรคนอนไม่หลับ-->\n                                        <option value=\"Systemic lupus erythematosus (SLE)\"></option>\n                                        <!--โรคแพ้ภูมิตัวเอง-->\n                                        <option value=\"Stroke\"></option> <!-- โรคหลอดเลือดสมอง -->\n                                        <option value=\"Temporomandibular joint (TMJ) disorder\"></option>\n                                        <!--โรคข้อต่อขากรรไกรผิดปกติ-->\n                                        <option value=\"Thalassemia\"></option> <!--ธาลัสซีเมีย-->\n                                        <option value=\"Vision impairment\"></option> <!--ภาวะความบกพร่องทางการมองเห็น-->\n                                    </datalist>\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                                <div class=\"uk-form-controls\">\n                                    <input v-model=\"currentConsult.med_bw\" class=\"uk-input uk-form-width-medium\"\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"kg\" min=\"0\">\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                                <div class=\"uk-form-controls unit\">\n                                    <input v-model=\"currentConsult.med_bmi\" class=\"uk-input uk-form-width-medium\"\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                                <div class=\"uk-form-controls unit\">\n                                    <input v-model=\"currentConsult.med_t\" class=\"uk-input uk-form-width-medium\"\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"°C\" min=\"0\">\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                <div class=\"uk-form-controls unit\">\n                                    <input v-model=\"currentConsult.med_fbs\" class=\"uk-input uk-form-width-medium\"\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                                <div class=\"uk-form-controls unit\">\n                                    <input v-model=\"currentConsult.med_cr\" class=\"uk-input uk-form-width-medium\"\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"Cr\" min=\"0\">\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                                <div class=\"uk-form-controls\">\n                                    <input v-model=\"currentConsult.med_clearance\" class=\"uk-input uk-form-width-medium\"\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\n                                </div>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                                <div class=\"uk-form-controls\">\n                                    <input v-model=\"currentConsult.med_stage\" class=\"uk-input uk-form-width-medium\"\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\n                                </div>\n                            </div>\n                        </div>\n                        <br/>\n                        <!-- Record -->\n                        <div id=\"recordinfo\">\n                            <div class=\"uk-text-left\">\n                                <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                            </div>\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD\n                                    1</label>\n                            </div>\n                            <div class=\"uk-form-horizontal unit\">\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                        Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input v-model=\"currentConsult.rec01_date\" class=\"uk-input uk-form-width-medium\"\n                                               id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input v-model=\"currentConsult.rec01_fbs\" class=\"uk-input uk-form-width-medium\"\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"currentConsult.rec01_bp1\" class=\"uk-input uk-form-width-medium\"\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"currentConsult.rec01_bp2\" class=\"uk-input uk-form-width-medium\"\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"currentConsult.rec01_p\" class=\"uk-input uk-form-width-medium\"\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\" min=\"0\">\n                                    </div>\n                                </div>\n                            </div>\n\n                            <div class=\"uk-margin\">\n                                <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD\n                                    2</label>\n                            </div>\n                            <div class=\"uk-form-horizontal unit\">\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                        Diagnosis</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input v-model=\"currentConsult.rec02_date\" class=\"uk-input uk-form-width-medium\"\n                                               id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                    <div class=\"uk-form-controls \">\n                                        <input v-model=\"currentConsult.rec02_fbs\" class=\"uk-input uk-form-width-medium\"\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"currentConsult.rec02_bp1\" class=\"uk-input uk-form-width-medium\"\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"currentConsult.rec02_bp2\" class=\"uk-input uk-form-width-medium\"\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                    <div class=\"uk-form-controls\">\n                                        <input v-model=\"currentConsult.rec02_p\" class=\"uk-input uk-form-width-medium\"\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\" min=\"0\">\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n\n                        <!-- Consult Request -->\n                        <br/>\n                        <div id=\"consultinfo\">\n                            <div class=\"uk-text-left\">\n                                <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                            </div>\n                            <div class=\"uk-form-horizontal\">\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief\n                                        Complain</label>\n                                    <div class=\"uk-form-controls\">\n                                    <textarea v-model=\"currentConsult.consult_complain\"\n                                              class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\"\n                                              placeholder=\"Chief Complain\"></textarea>\n                                    </div>\n                                </div>\n                                <div class=\"uk-margin\">\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment\n                                        and\n                                        plan</label>\n                                    <div class=\"uk-form-controls\">\n                                    <textarea v-model=\"currentConsult.consult_plan\"\n                                              class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\"\n                                              placeholder=\"Assessment and Plan\"></textarea>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                </form>\n            </div>\n            <div class=\"uk-width-1-5@m\">\n\n            </div>\n        </vk-grid>\n        <br/><br/>\n        <div class=\"uk-margin-bottom uk-text-center\">\n            <button v-on:click=\"saveConsult(currentConsult.consult_id)\" type=\"button\"\n                    class=\"uk-button uk-button-secondary uk-width-small\">Save\n            </button>\n            <button v-on:click=\"sendConsult(currentConsult.consult_id)\" type=\"button\"\n                    class=\"uk-button uk-button-primary uk-width-small\">Send\n            </button>\n            <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Cancel</a>\n        </div>\n        <br/>\n    </div>\n</div>";
+module.exports = "<div id=\"consult-add\">\r\n    <div class=\"uk-container\">\r\n        <vk-grid class=\"uk-grid-small\">\r\n            <div class=\"uk-width-1-5@m\">\r\n                <br/>\r\n                <h1 class=\"uk-heading-primary sticky\">Edit Draft Consult</h1>\r\n            </div>\r\n\r\n            <div class=\"uk-width-expand@m\">\r\n                <form class=\"uk-margin-large\">\r\n                    <br/>\r\n                    <div id=\"personalinfo\">\r\n                        <div class=\"uk-text-left\">\r\n                            <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\r\n                        </div>\r\n                        <div class=\"uk-form-horizontal\">\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's\r\n                                    name</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input v-model=\"currentConsult.patient_firstname\"\r\n                                           class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\"\r\n                                           placeholder=\"First name\">\r\n                                    <input v-model=\"currentConsult.patient_lastname\"\r\n                                           class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\"\r\n                                           placeholder=\"Last name\">\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                    Birth</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input v-model=\"currentConsult.patient_dob\" class=\"uk-input uk-form-width-medium\"\r\n                                           id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <label><input v-model=\"currentConsult.patient_gender\" value=\"Male\" class=\"uk-radio\"\r\n                                                  type=\"radio\" name=\"Male\" checked> Male</label>\r\n                                    <label><input v-model=\"currentConsult.patient_gender\" value=\"Female\"\r\n                                                  class=\"uk-radio\" type=\"radio\" name=\"Female\"> Female</label>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\"\r\n                                       for=\"form-horizontal-text\">Address</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <textarea v-model=\"currentConsult.patient_address\"\r\n                                              class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\"\r\n                                              placeholder=\"Address\"></textarea>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary\r\n                                    Doctor</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input v-model=\"currentConsult.primary_doctor\" class=\"uk-input uk-form-width-medium\"\r\n                                           id=\"form-horizontal-text\" type=\"text\" placeholder=\"First name\">\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <!-- Medical Information -->\r\n                    <br/>\r\n                    <div id=\"medicalinfo\">\r\n                        <div class=\"uk-text-left\">\r\n                            <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\r\n                        </div>\r\n                        <div class=\"uk-form-horizontal\">\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health\r\n                                    Condition</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input v-model=\"currentConsult.health_condition\"\r\n                                           class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"text\"\r\n                                           placeholder=\"\">\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <!-- patient’s diagnosis here -->\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\r\n                                <div class=\"uk-form-width-medium\">\r\n                                    <input v-model=\"currentConsult.med_dx\" class=\"uk-input uk-form-width-medium\"\r\n                                           id=\"form-horizontal-text\" type=\"text\" list=\"disease\">\r\n                                    <datalist id=\"disease\">\r\n                                        <option value=\"Alzheimer’s disease\"></option> <!-- ฮัลไซเมอร์ -->\r\n                                        <option value=\"Amyotrophic lateral sclerosis (ALS)\"></option>\r\n                                        <!-- กล้ามเนื้ออ่อนแรง -->\r\n                                        <option value=\"Arthritis\"></option> <!--โรคข้ออักเสบ-->\r\n                                        <option value=\"Attention deficit hyperactivity disorder (ADHD)\"></option>\r\n                                        <!--โรคสมาธิสั้น-->\r\n                                        <option value=\"Autism spectrum disorder (ASD)\"></option> <!--โรคออทิสติก-->\r\n                                        <option value=\"Bell’s palsy\"></option> <!--โรคใบหน้าเบี้ยว-->\r\n                                        <option value=\"Bipolar disorder\"></option> <!-- โรคใบโพล่าร์ -->\r\n                                        <option value=\"Birth defects\"></option> <!--โรคพิการตั้งแต่กำเนิด-->\r\n                                        <option value=\"Cerebral palsy\"></option> <!--โรคสมองพิการ-->\r\n                                        <object value=\"Chronic kidney disease\"></object> <!--โรคไตเรื้อรัง-->\r\n                                        <option value=\"Chronic pain\"></option> <!--โรคปวดเรื้อรัง-->\r\n                                        <option value=\"Chronic pancreatitis\"></option> <!--โรคตับอ่อนอัพเสบเรื้อรัง-->\r\n                                        <option value=\"Chronic traumatic encephalopathy (CTE)\"></option>\r\n                                        <!--โรคโรคบาดเจ็บของสมอง CTE-->\r\n                                        <option value=\"Clotting/bleeding disorders\"></option>\r\n                                        <!--โรคการแข็งตัวของเลือดผิดปกติ-->\r\n                                        <option value=\"Conductive Hearing Loss\"></option>\r\n                                        <!--การสูญเสียการได้ยินชนิดการนำเสียงบกพร่อง-->\r\n                                        <option value=\"Coronary artery disease\"></option>\r\n                                        <!-- โรคหลอดเลือดหัวใจตีบตัน  -->\r\n                                        <option value=\"Crohn’s disease\"></option> <!--โรคโครห์น-->\r\n                                        <option value=\"Depression\"></option> <!--ภาวะซึมเศร้า-->\r\n                                        <option value=\"Diabetes mellitus\"></option> <!-- โรคเบาหวาน  -->\r\n                                        <option value=\"Down syndrome\"></option> <!--ดาวน์ซินโดรม-->\r\n                                        <option value=\"Eczema\"></option> <!--โรคผิวหนังอักเสบ-->\r\n                                        <option value=\"Epilepsy\"></option> <!--โรคลมชัก-->\r\n                                        <option value=\"Fetal alcohol syndrome (FAS)\"></option>\r\n                                        <!--กลุ่มอาการทารกในครรภ์ได้รับแอลกอฮอล์-->\r\n                                        <option value=\"Fibromyalgia\"></option> <!--โรคไฟโบรมัยอัลเจีย-->\r\n                                        <option value=\"Hemochromatosis (HHC)\"></option> <!--ภาวะเหล็กเกิน-->\r\n                                        <option value=\"Hemophilia\"></option> <!--โรคเลือดไหลไม่หยุด-->\r\n                                        <option value=\"High blood pressure\"></option> <!-- โรคความดันโลหิตสูง -->\r\n                                        <option value=\"Inflammatory bowel disease (IBD)\"></option>\r\n                                        <!--โรคลำไส้อักเสบเรื้อรัง/โรคไอบีดี -->\r\n                                        <option value=\"Insomnia\"></option> <!--โรคนอนไม่หลับ-->\r\n                                        <option value=\"Liver disease\"></option> <!--โรคตับ-->\r\n                                        <option value=\"Lung Cancer\"></option> <!-- โรคมะเร็งปอด  -->\r\n                                        <option value=\"Obesity\"></option> <!-- โรคอ้วนลงพุง -->\r\n                                        <option value=\"Psoriasis\"></option> <!--โรคสะเก็ดเงิน-->\r\n                                        <option value=\"Pulmonary Emphysema\"></option> <!-- ถุงลมโป่งพอง -->\r\n                                        <option value=\"Sickle cell anemia\"></option> <!--โรคเม็ดเลือดแดงรูปเคียว-->\r\n                                        <option value=\"Sleep disorders\"></option> <!--โรคนอนไม่หลับ-->\r\n                                        <option value=\"Systemic lupus erythematosus (SLE)\"></option>\r\n                                        <!--โรคแพ้ภูมิตัวเอง-->\r\n                                        <option value=\"Stroke\"></option> <!-- โรคหลอดเลือดสมอง -->\r\n                                        <option value=\"Temporomandibular joint (TMJ) disorder\"></option>\r\n                                        <!--โรคข้อต่อขากรรไกรผิดปกติ-->\r\n                                        <option value=\"Thalassemia\"></option> <!--ธาลัสซีเมีย-->\r\n                                        <option value=\"Vision impairment\"></option> <!--ภาวะความบกพร่องทางการมองเห็น-->\r\n                                    </datalist>\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input v-model=\"currentConsult.med_bw\" class=\"uk-input uk-form-width-medium\"\r\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"kg\" min=\"0\">\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\r\n                                <div class=\"uk-form-controls unit\">\r\n                                    <input v-model=\"currentConsult.med_bmi\" class=\"uk-input uk-form-width-medium\"\r\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\r\n                                <div class=\"uk-form-controls unit\">\r\n                                    <input v-model=\"currentConsult.med_t\" class=\"uk-input uk-form-width-medium\"\r\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"°C\" min=\"0\">\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                <div class=\"uk-form-controls unit\">\r\n                                    <input v-model=\"currentConsult.med_fbs\" class=\"uk-input uk-form-width-medium\"\r\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\r\n                                <div class=\"uk-form-controls unit\">\r\n                                    <input v-model=\"currentConsult.med_cr\" class=\"uk-input uk-form-width-medium\"\r\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"Cr\" min=\"0\">\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input v-model=\"currentConsult.med_clearance\" class=\"uk-input uk-form-width-medium\"\r\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\r\n                                </div>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <input v-model=\"currentConsult.med_stage\" class=\"uk-input uk-form-width-medium\"\r\n                                           id=\"form-horizontal-text\" type=\"number\" placeholder=\"\" min=\"0\">\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                        <br/>\r\n                        <!-- Record -->\r\n                        <div id=\"recordinfo\">\r\n                            <div class=\"uk-text-left\">\r\n                                <h2 class=\"uk-heading-line\"><span>Record</span></h2>\r\n                            </div>\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD\r\n                                    1</label>\r\n                            </div>\r\n                            <div class=\"uk-form-horizontal unit\">\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                        Diagnosis</label>\r\n                                    <div class=\"uk-form-controls \">\r\n                                        <input v-model=\"currentConsult.rec01_date\" class=\"uk-input uk-form-width-medium\"\r\n                                               id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                    <div class=\"uk-form-controls \">\r\n                                        <input v-model=\"currentConsult.rec01_fbs\" class=\"uk-input uk-form-width-medium\"\r\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"currentConsult.rec01_bp1\" class=\"uk-input uk-form-width-medium\"\r\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"currentConsult.rec01_bp2\" class=\"uk-input uk-form-width-medium\"\r\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"currentConsult.rec01_p\" class=\"uk-input uk-form-width-medium\"\r\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\" min=\"0\">\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n\r\n                            <div class=\"uk-margin\">\r\n                                <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD\r\n                                    2</label>\r\n                            </div>\r\n                            <div class=\"uk-form-horizontal unit\">\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                        Diagnosis</label>\r\n                                    <div class=\"uk-form-controls \">\r\n                                        <input v-model=\"currentConsult.rec02_date\" class=\"uk-input uk-form-width-medium\"\r\n                                               id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                    <div class=\"uk-form-controls \">\r\n                                        <input v-model=\"currentConsult.rec02_fbs\" class=\"uk-input uk-form-width-medium\"\r\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mg%\" min=\"0\">\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"currentConsult.rec02_bp1\" class=\"uk-input uk-form-width-medium\"\r\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"currentConsult.rec02_bp2\" class=\"uk-input uk-form-width-medium\"\r\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"mmHg\" min=\"0\">\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                        <input v-model=\"currentConsult.rec02_p\" class=\"uk-input uk-form-width-medium\"\r\n                                               id=\"form-horizontal-text\" type=\"number\" placeholder=\"/min\" min=\"0\">\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n\r\n                        <!-- Consult Request -->\r\n                        <br/>\r\n                        <div id=\"consultinfo\">\r\n                            <div class=\"uk-text-left\">\r\n                                <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\r\n                            </div>\r\n                            <div class=\"uk-form-horizontal\">\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief\r\n                                        Complain</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                    <textarea v-model=\"currentConsult.consult_complain\"\r\n                                              class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\"\r\n                                              placeholder=\"Chief Complain\"></textarea>\r\n                                    </div>\r\n                                </div>\r\n                                <div class=\"uk-margin\">\r\n                                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment\r\n                                        and\r\n                                        plan</label>\r\n                                    <div class=\"uk-form-controls\">\r\n                                    <textarea v-model=\"currentConsult.consult_plan\"\r\n                                              class=\"uk-textarea uk-form-width-large\" id=\"form-horizontal-text\" rows=\"5\"\r\n                                              placeholder=\"Assessment and Plan\"></textarea>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                </form>\r\n            </div>\r\n            <div class=\"uk-width-1-5@m\">\r\n\r\n            </div>\r\n        </vk-grid>\r\n        <br/><br/>\r\n        <div class=\"uk-margin-bottom uk-text-center\">\r\n            <button v-on:click=\"saveConsult(currentConsult.consult_id)\" type=\"button\"\r\n                    class=\"uk-button uk-button-secondary uk-width-small\">Save\r\n            </button>\r\n            <button v-on:click=\"sendConsult(currentConsult.consult_id)\" type=\"button\"\r\n                    class=\"uk-button uk-button-primary uk-width-small\">Send\r\n            </button>\r\n            <a class=\"uk-button uk-button-danger uk-width-small\" href=\"../..#/\">Cancel</a>\r\n        </div>\r\n        <br/>\r\n    </div>\r\n</div>";
 
 /***/ }),
-/* 256 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(257)
+  __webpack_require__(262)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(259)
+var __vue_script__ = __webpack_require__(264)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -41823,7 +43978,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-2733d7c2"
+var __vue_scopeId__ = "data-v-0f45f93f"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -41834,7 +43989,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/message/send/message.vue"
+Component.options.__file = "resources\\assets\\js\\components\\message\\send\\message.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -41843,9 +43998,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-2733d7c2", Component.options)
+    hotAPI.createRecord("data-v-0f45f93f", Component.options)
   } else {
-    hotAPI.reload("data-v-2733d7c2", Component.options)
+    hotAPI.reload("data-v-0f45f93f", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -41856,23 +44011,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 257 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(258);
+var content = __webpack_require__(263);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("8fcf35a0", content, false, {});
+var update = __webpack_require__(5)("74a6d266", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2733d7c2\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./message.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2733d7c2\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./message.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0f45f93f\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./message.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0f45f93f\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./message.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -41882,7 +44037,7 @@ if(false) {
 }
 
 /***/ }),
-/* 258 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -41890,27 +44045,27 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\n#message[data-v-2733d7c2] {\n    overflow: hidden;\n}\n.crop[data-v-2733d7c2] {\n    margin-right: 1%;\n}\n.vertical-divider[data-v-2733d7c2] {\n    border-left: 2px solid #F8F8F8;\n    max-height: 100%;\n    margin-top: 20px;\n    margin-bottom: 20px;\n}\n.upload[data-v-2733d7c2] {\n    margin-top: 30px;\n}\n.scrollbox[data-v-2733d7c2] {\n    overflow: auto;\n    max-height: 80vh;\n}\nhtml[data-v-2733d7c2], body[data-v-2733d7c2] {\n    background: #e5e5e5;\n    font-family: 'Lato', sans-serif;\n    margin: 0px auto;\n}\n[data-v-2733d7c2]::-moz-selection {\n    background: rgba(82, 179, 217, 0.3);\n    color: inherit;\n}\n[data-v-2733d7c2]::selection {\n    background: rgba(82, 179, 217, 0.3);\n    color: inherit;\n}\na[data-v-2733d7c2] {\n    color: rgba(82, 179, 217, 0.9);\n}\n\n/* M E N U */\n.menu[data-v-2733d7c2] {\n    position: fixed;\n    top: 0px;\n    left: 0px;\n    right: 0px;\n    width: 100%;\n    height: 50px;\n    background: rgba(82, 179, 217, 0.9);\n    z-index: 100;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.back[data-v-2733d7c2] {\n    position: absolute;\n    width: 90px;\n    height: 50px;\n    top: 0px;\n    left: 0px;\n    color: #fff;\n    line-height: 50px;\n    font-size: 30px;\n    padding-left: 10px;\n    cursor: pointer;\n}\n.back img[data-v-2733d7c2] {\n    position: absolute;\n    top: 5px;\n    left: 30px;\n    width: 40px;\n    height: 40px;\n    background-color: rgba(255, 255, 255, 0.98);\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    margin-left: 15px;\n}\n.back[data-v-2733d7c2]:active {\n    background: rgba(255, 255, 255, 0.2);\n}\n.name[data-v-2733d7c2] {\n    position: absolute;\n    top: 3px;\n    left: 110px;\n    font-family: 'Lato';\n    font-size: 25px;\n    font-weight: 300;\n    color: rgba(255, 255, 255, 0.98);\n    cursor: default;\n}\n.last[data-v-2733d7c2] {\n    position: absolute;\n    top: 30px;\n    left: 115px;\n    font-family: 'Lato';\n    font-size: 11px;\n    font-weight: 400;\n    color: rgba(255, 255, 255, 0.6);\n    cursor: default;\n}\n\n/* M E S S A G E S */\n.chat[data-v-2733d7c2] {\n    list-style: none;\n    background: none;\n    margin: 0;\n    padding: 0 0 50px 0;\n    margin-top: 30px;\n    margin-bottom: 20px;\n}\n.chat li[data-v-2733d7c2] {\n    padding: 0.5rem;\n    overflow: hidden;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.chat .avatar[data-v-2733d7c2] {\n    width: 40px;\n    height: 40px;\n    position: relative;\n    display: block;\n    z-index: 2;\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    background-color: rgba(255, 255, 255, 0.9);\n}\n.chat .avatar img[data-v-2733d7c2] {\n    width: 40px;\n    height: 40px;\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    background-color: rgba(255, 255, 255, 0.9);\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.chat .day[data-v-2733d7c2] {\n    position: relative;\n    display: block;\n    text-align: center;\n    color: #c0c0c0;\n    height: 20px;\n    text-shadow: 7px 0px 0px #e5e5e5, 6px 0px 0px #e5e5e5, 5px 0px 0px #e5e5e5, 4px 0px 0px #e5e5e5, 3px 0px 0px #e5e5e5, 2px 0px 0px #e5e5e5, 1px 0px 0px #e5e5e5, 1px 0px 0px #e5e5e5, 0px 0px 0px #e5e5e5, -1px 0px 0px #e5e5e5, -2px 0px 0px #e5e5e5, -3px 0px 0px #e5e5e5, -4px 0px 0px #e5e5e5, -5px 0px 0px #e5e5e5, -6px 0px 0px #e5e5e5, -7px 0px 0px #e5e5e5;\n    -webkit-box-shadow: inset 20px 0px 0px #e5e5e5, inset -20px 0px 0px #e5e5e5, inset 0px -2px 0px #d7d7d7;\n            box-shadow: inset 20px 0px 0px #e5e5e5, inset -20px 0px 0px #e5e5e5, inset 0px -2px 0px #d7d7d7;\n    line-height: 38px;\n    margin-top: 5px;\n    margin-bottom: 20px;\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.other .msg[data-v-2733d7c2] {\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n    border-top-left-radius: 0px;\n    -webkit-box-shadow: -1px 2px 0px #D4D4D4;\n            box-shadow: -1px 2px 0px #D4D4D4;\n}\n.other[data-v-2733d7c2]:before {\n    content: \"\";\n    position: relative;\n    top: 0px;\n    right: 0px;\n    left: 40px;\n    width: 0px;\n    height: 0px;\n    border: 5px solid #fff;\n    border-left-color: transparent;\n    border-bottom-color: transparent;\n}\n.self[data-v-2733d7c2] {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n    -webkit-box-align: end;\n        -ms-flex-align: end;\n            align-items: flex-end;\n}\n.self .msg[data-v-2733d7c2] {\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n    border-bottom-right-radius: 0px;\n    -webkit-box-shadow: 1px 2px 0px #D4D4D4;\n            box-shadow: 1px 2px 0px #D4D4D4;\n}\n.self .avatar[data-v-2733d7c2] {\n    -webkit-box-ordinal-group: 3;\n        -ms-flex-order: 2;\n            order: 2;\n}\n.self .avatar[data-v-2733d7c2]:after {\n    content: \"\";\n    position: relative;\n    display: inline-block;\n    bottom: 19px;\n    right: 0px;\n    width: 0px;\n    height: 0px;\n    border: 5px solid #fff;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    -webkit-box-shadow: 0px 2px 0px #D4D4D4;\n            box-shadow: 0px 2px 0px #D4D4D4;\n}\n.msg[data-v-2733d7c2] {\n    background: white;\n    min-width: 50px;\n    padding: 10px;\n    border-radius: 2px;\n    -webkit-box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);\n            box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);\n    max-width: 300px;\n    word-wrap: break-word;\n}\n.msg p[data-v-2733d7c2] {\n    font-size: 0.8rem;\n    margin: 0 0 0.2rem 0;\n    color: #777;\n}\n.msg img[data-v-2733d7c2] {\n    position: relative;\n    display: block;\n    width: 450px;\n    border-radius: 5px;\n    -webkit-box-shadow: 0px 0px 3px #eee;\n            box-shadow: 0px 0px 3px #eee;\n    -webkit-transition: all .4s cubic-bezier(0.565, -0.260, 0.255, 1.410);\n    transition: all .4s cubic-bezier(0.565, -0.260, 0.255, 1.410);\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n@media screen and (max-width: 800px) {\n.msg img[data-v-2733d7c2] {\n        width: 300px;\n}\n}\n@media screen and (max-width: 550px) {\n.msg img[data-v-2733d7c2] {\n        width: 200px;\n}\n}\n.msg time[data-v-2733d7c2] {\n    font-size: 0.7rem;\n    color: #ccc;\n    margin-top: 3px;\n    float: right;\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.msg time[data-v-2733d7c2]:before {\n    content: \"\\F017\";\n    color: #ddd;\n    font-family: FontAwesome;\n    display: inline-block;\n    margin-right: 4px;\n}\n[data-v-2733d7c2]::-webkit-scrollbar {\n    min-width: 12px;\n    width: 12px;\n    max-width: 12px;\n    min-height: 12px;\n    height: 12px;\n    max-height: 12px;\n    background: #e5e5e5;\n    -webkit-box-shadow: inset 0px 50px 0px rgba(82, 179, 217, 0.9), inset 0px -52px 0px #fafafa;\n            box-shadow: inset 0px 50px 0px rgba(82, 179, 217, 0.9), inset 0px -52px 0px #fafafa;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-thumb {\n    background: #bbb;\n    border: none;\n    border-radius: 100px;\n    border: solid 3px #e5e5e5;\n    -webkit-box-shadow: inset 0px 0px 3px #999;\n            box-shadow: inset 0px 0px 3px #999;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-thumb:hover {\n    background: #b0b0b0;\n    -webkit-box-shadow: inset 0px 0px 3px #888;\n            box-shadow: inset 0px 0px 3px #888;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-thumb:active {\n    background: #aaa;\n    -webkit-box-shadow: inset 0px 0px 3px #7f7f7f;\n            box-shadow: inset 0px 0px 3px #7f7f7f;\n}\n[data-v-2733d7c2]::-webkit-scrollbar-button {\n    display: block;\n    height: 26px;\n}\n\n/* T Y P E */\nchatbox[data-v-2733d7c2] {\n    position: fixed;\n    bottom: 0px;\n    left: 0px;\n    right: 0px;\n    width: 100%;\n    height: 50px;\n    z-index: 99;\n    background: #c0c0c0;\n    border: none;\n    outline: none;\n    padding-left: 55px;\n    padding-right: 55px;\n    color: #666;\n    font-weight: 400;\n    font-size: 15px;\n}\n@media only screen and (max-width: 360px) {\n#message-box[data-v-2733d7c2] {\n        max-width: 185px;\n}\n}\n@media only screen and (max-width: 567px) and (min-width: 361px) {\n#message-box[data-v-2733d7c2] {\n        max-width: 70%;\n}\n}\n@media only screen and (max-width: 767px) and (min-width: 568px) {\n#message-box[data-v-2733d7c2] {\n        max-width: 220px;\n}\n}\n@media only screen and (max-width: 812px) and (min-width: 768px) {\n#message-box[data-v-2733d7c2] {\n        max-width: 85%;\n}\n}\n@media only screen and (min-width: 813px) and (max-width: 1024px) {\n#message-box[data-v-2733d7c2] {\n        max-width: 300px;\n}\n}\n@media only screen and (min-width: 1025px) {\n#message-box[data-v-2733d7c2] {\n        max-width: 500px;\n}\n}\n#send-btn[data-v-2733d7c2] {\n    margin-top: 7px;\n}\n", ""]);
+exports.push([module.i, "\n.my-gallery a img[data-v-0f45f93f]{\n    width: 100%;\n}\n#message[data-v-0f45f93f] {\n    overflow: hidden;\n}\n.crop[data-v-0f45f93f] {\n    margin-right: 1%;\n}\n.vertical-divider[data-v-0f45f93f] {\n    border-left: 2px solid #F8F8F8;\n    max-height: 100%;\n    margin-top: 20px;\n    margin-bottom: 20px;\n}\n.upload[data-v-0f45f93f] {\n    margin-top: 30px;\n}\n.scrollbox[data-v-0f45f93f] {\n    overflow: auto;\n    max-height: 80vh;\n}\nhtml[data-v-0f45f93f], body[data-v-0f45f93f] {\n    background: #e5e5e5;\n    font-family: 'Lato', sans-serif;\n    margin: 0px auto;\n}\n[data-v-0f45f93f]::-moz-selection {\n    background: rgba(82, 179, 217, 0.3);\n    color: inherit;\n}\n[data-v-0f45f93f]::selection {\n    background: rgba(82, 179, 217, 0.3);\n    color: inherit;\n}\na[data-v-0f45f93f] {\n    color: rgba(82, 179, 217, 0.9);\n}\n\n/* M E N U */\n.menu[data-v-0f45f93f] {\n    position: fixed;\n    top: 0px;\n    left: 0px;\n    right: 0px;\n    width: 100%;\n    height: 50px;\n    background: rgba(82, 179, 217, 0.9);\n    z-index: 100;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.back[data-v-0f45f93f] {\n    position: absolute;\n    width: 90px;\n    height: 50px;\n    top: 0px;\n    left: 0px;\n    color: #fff;\n    line-height: 50px;\n    font-size: 30px;\n    padding-left: 10px;\n    cursor: pointer;\n}\n.back img[data-v-0f45f93f] {\n    position: absolute;\n    top: 5px;\n    left: 30px;\n    width: 40px;\n    height: 40px;\n    background-color: rgba(255, 255, 255, 0.98);\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    margin-left: 15px;\n}\n.back[data-v-0f45f93f]:active {\n    background: rgba(255, 255, 255, 0.2);\n}\n.name[data-v-0f45f93f] {\n    position: absolute;\n    top: 3px;\n    left: 110px;\n    font-family: 'Lato';\n    font-size: 25px;\n    font-weight: 300;\n    color: rgba(255, 255, 255, 0.98);\n    cursor: default;\n}\n.last[data-v-0f45f93f] {\n    position: absolute;\n    top: 30px;\n    left: 115px;\n    font-family: 'Lato';\n    font-size: 11px;\n    font-weight: 400;\n    color: rgba(255, 255, 255, 0.6);\n    cursor: default;\n}\n\n/* M E S S A G E S */\n.chat[data-v-0f45f93f] {\n    list-style: none;\n    background: none;\n    margin: 0;\n    padding: 0 0 50px 0;\n    margin-top: 30px;\n    margin-bottom: 20px;\n}\n.chat li[data-v-0f45f93f] {\n    padding: 0.5rem;\n    overflow: hidden;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n}\n.chat .avatar[data-v-0f45f93f] {\n    width: 40px;\n    height: 40px;\n    position: relative;\n    display: block;\n    z-index: 2;\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    background-color: rgba(255, 255, 255, 0.9);\n}\n.chat .avatar img[data-v-0f45f93f] {\n    width: 40px;\n    height: 40px;\n    border-radius: 100%;\n    -webkit-border-radius: 100%;\n    -moz-border-radius: 100%;\n    -ms-border-radius: 100%;\n    background-color: rgba(255, 255, 255, 0.9);\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.chat .day[data-v-0f45f93f] {\n    position: relative;\n    display: block;\n    text-align: center;\n    color: #c0c0c0;\n    height: 20px;\n    text-shadow: 7px 0px 0px #e5e5e5, 6px 0px 0px #e5e5e5, 5px 0px 0px #e5e5e5, 4px 0px 0px #e5e5e5, 3px 0px 0px #e5e5e5, 2px 0px 0px #e5e5e5, 1px 0px 0px #e5e5e5, 1px 0px 0px #e5e5e5, 0px 0px 0px #e5e5e5, -1px 0px 0px #e5e5e5, -2px 0px 0px #e5e5e5, -3px 0px 0px #e5e5e5, -4px 0px 0px #e5e5e5, -5px 0px 0px #e5e5e5, -6px 0px 0px #e5e5e5, -7px 0px 0px #e5e5e5;\n    -webkit-box-shadow: inset 20px 0px 0px #e5e5e5, inset -20px 0px 0px #e5e5e5, inset 0px -2px 0px #d7d7d7;\n            box-shadow: inset 20px 0px 0px #e5e5e5, inset -20px 0px 0px #e5e5e5, inset 0px -2px 0px #d7d7d7;\n    line-height: 38px;\n    margin-top: 5px;\n    margin-bottom: 20px;\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.other .msg[data-v-0f45f93f] {\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n    border-top-left-radius: 0px;\n    -webkit-box-shadow: -1px 2px 0px #D4D4D4;\n            box-shadow: -1px 2px 0px #D4D4D4;\n}\n.other[data-v-0f45f93f]:before {\n    content: \"\";\n    position: relative;\n    top: 0px;\n    right: 0px;\n    left: 40px;\n    width: 0px;\n    height: 0px;\n    border: 5px solid #fff;\n    border-left-color: transparent;\n    border-bottom-color: transparent;\n}\n.self[data-v-0f45f93f] {\n    -webkit-box-pack: end;\n        -ms-flex-pack: end;\n            justify-content: flex-end;\n    -webkit-box-align: end;\n        -ms-flex-align: end;\n            align-items: flex-end;\n}\n.self .msg[data-v-0f45f93f] {\n    -webkit-box-ordinal-group: 2;\n        -ms-flex-order: 1;\n            order: 1;\n    border-bottom-right-radius: 0px;\n    -webkit-box-shadow: 1px 2px 0px #D4D4D4;\n            box-shadow: 1px 2px 0px #D4D4D4;\n}\n.self .avatar[data-v-0f45f93f] {\n    -webkit-box-ordinal-group: 3;\n        -ms-flex-order: 2;\n            order: 2;\n}\n.self .avatar[data-v-0f45f93f]:after {\n    content: \"\";\n    position: relative;\n    display: inline-block;\n    bottom: 19px;\n    right: 0px;\n    width: 0px;\n    height: 0px;\n    border: 5px solid #fff;\n    border-right-color: transparent;\n    border-top-color: transparent;\n    -webkit-box-shadow: 0px 2px 0px #D4D4D4;\n            box-shadow: 0px 2px 0px #D4D4D4;\n}\n.msg[data-v-0f45f93f] {\n    background: white;\n    min-width: 50px;\n    padding: 10px;\n    border-radius: 2px;\n    -webkit-box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);\n            box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);\n    max-width: 300px;\n    word-wrap: break-word;\n}\n.msg p[data-v-0f45f93f] {\n    font-size: 0.8rem;\n    margin: 0 0 0.2rem 0;\n    color: #777;\n}\n.msg img[data-v-0f45f93f] {\n    position: relative;\n    display: block;\n    width: 450px;\n    border-radius: 5px;\n    -webkit-box-shadow: 0px 0px 3px #eee;\n            box-shadow: 0px 0px 3px #eee;\n    -webkit-transition: all .4s cubic-bezier(0.565, -0.260, 0.255, 1.410);\n    transition: all .4s cubic-bezier(0.565, -0.260, 0.255, 1.410);\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n@media screen and (max-width: 800px) {\n.msg img[data-v-0f45f93f] {\n        width: 300px;\n}\n}\n@media screen and (max-width: 550px) {\n.msg img[data-v-0f45f93f] {\n        width: 200px;\n}\n}\n.msg time[data-v-0f45f93f] {\n    font-size: 0.7rem;\n    color: #ccc;\n    margin-top: 3px;\n    float: right;\n    cursor: default;\n    -webkit-touch-callout: none;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n}\n.msg time[data-v-0f45f93f]:before {\n    content: \"\\F017\";\n    color: #ddd;\n    font-family: FontAwesome;\n    display: inline-block;\n    margin-right: 4px;\n}\n[data-v-0f45f93f]::-webkit-scrollbar {\n    min-width: 12px;\n    width: 12px;\n    max-width: 12px;\n    min-height: 12px;\n    height: 12px;\n    max-height: 12px;\n    background: #e5e5e5;\n    -webkit-box-shadow: inset 0px 50px 0px rgba(82, 179, 217, 0.9), inset 0px -52px 0px #fafafa;\n            box-shadow: inset 0px 50px 0px rgba(82, 179, 217, 0.9), inset 0px -52px 0px #fafafa;\n}\n[data-v-0f45f93f]::-webkit-scrollbar-thumb {\n    background: #bbb;\n    border: none;\n    border-radius: 100px;\n    border: solid 3px #e5e5e5;\n    -webkit-box-shadow: inset 0px 0px 3px #999;\n            box-shadow: inset 0px 0px 3px #999;\n}\n[data-v-0f45f93f]::-webkit-scrollbar-thumb:hover {\n    background: #b0b0b0;\n    -webkit-box-shadow: inset 0px 0px 3px #888;\n            box-shadow: inset 0px 0px 3px #888;\n}\n[data-v-0f45f93f]::-webkit-scrollbar-thumb:active {\n    background: #aaa;\n    -webkit-box-shadow: inset 0px 0px 3px #7f7f7f;\n            box-shadow: inset 0px 0px 3px #7f7f7f;\n}\n[data-v-0f45f93f]::-webkit-scrollbar-button {\n    display: block;\n    height: 26px;\n}\n\n/* T Y P E */\nchatbox[data-v-0f45f93f] {\n    position: fixed;\n    bottom: 0px;\n    left: 0px;\n    right: 0px;\n    width: 100%;\n    height: 50px;\n    z-index: 99;\n    background: #c0c0c0;\n    border: none;\n    outline: none;\n    padding-left: 55px;\n    padding-right: 55px;\n    color: #666;\n    font-weight: 400;\n    font-size: 15px;\n}\n@media only screen and (max-width: 360px) {\n#message-box[data-v-0f45f93f] {\n        max-width: 185px;\n}\n}\n@media only screen and (max-width: 567px) and (min-width: 361px) {\n#message-box[data-v-0f45f93f] {\n        max-width: 70%;\n}\n}\n@media only screen and (max-width: 767px) and (min-width: 568px) {\n#message-box[data-v-0f45f93f] {\n        max-width: 220px;\n}\n}\n@media only screen and (max-width: 812px) and (min-width: 768px) {\n#message-box[data-v-0f45f93f] {\n        max-width: 85%;\n}\n}\n@media only screen and (min-width: 813px) and (max-width: 1024px) {\n#message-box[data-v-0f45f93f] {\n        max-width: 300px;\n}\n}\n@media only screen and (min-width: 1025px) {\n#message-box[data-v-0f45f93f] {\n        max-width: 500px;\n}\n}\n#send-btn[data-v-0f45f93f] {\n    margin-top: 7px;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 259 */
+/* 264 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_simple_lightbox__ = __webpack_require__(347);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_simple_lightbox__ = __webpack_require__(265);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_simple_lightbox___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vue_simple_lightbox__);
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(260),
+    template: __webpack_require__(266),
     components: {
         Lightbox: __WEBPACK_IMPORTED_MODULE_1_vue_simple_lightbox___default.a
     },
@@ -41920,19 +44075,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             message: "",
             upload_files: [],
             upload_files_extension: [],
-            images: [{
-                src: 'https://cdn.rawgit.com/vrajroham/vrajroham.github.io/85d64ac5/imgs/img1.jpg',
-                title: 'Image 2'
-            }, {
-                src: 'https://cdn.rawgit.com/vrajroham/vrajroham.github.io/85d64ac5/imgs/img2.jpg',
-                title: 'Image 3'
-            }, {
-                src: 'https://cdn.rawgit.com/vrajroham/vrajroham.github.io/85d64ac5/imgs/img3.jpg',
-                title: ''
-            }, {
-                src: 'https://cdn.rawgit.com/vrajroham/vrajroham.github.io/85d64ac5/imgs/img4.jpg',
-                title: ''
-            }],
             options: {
                 closeText: 'x'
             }
@@ -41956,7 +44098,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 if (!_this.isMounted) {
                     clearInterval(_this.timer2);
                 }
-            }, 10000);
+            }, 7000);
         });
     },
     beforeDestroy: function beforeDestroy() {
@@ -42027,15 +44169,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         uploadFiles: function uploadFiles() {
+            var _this3 = this;
+
             var payload = {
                 consult_id: this.currentConsult.consult_id,
                 files: this.upload_files,
                 files_type: this.upload_files_extension
             };
-            this.$store.dispatch('postSendAttachments', payload).then(function (response) {});
+            this.$store.dispatch('postSendAttachments', payload).then(function (response) {
+                _this3.upload_files = [];
+            });
         },
         sendMessage: function sendMessage() {
-            var _this3 = this;
+            var _this4 = this;
 
             console.log('sendMessage: clicked');
             var payload = {
@@ -42045,8 +44191,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             console.log(payload);
             this.$store.dispatch('postSendMessage', payload).then(function (response) {
                 // if success
-                _this3.message = '';
-                _this3.loadMessages(_this3.currentConsult.consult_id);
+                _this4.message = '';
+                _this4.loadMessages(_this4.currentConsult.consult_id);
             });
         },
         downloadAttachment: function downloadAttachment(attachment_id) {
@@ -42065,6 +44211,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         image_path: function image_path(file_name) {
             return "../../storage/attachments/" + this.currentConsult.consult_id + "/" + file_name;
+        },
+        lightbox_image: function lightbox_image(file_name) {
+            return [{
+                src: this.image_path(file_name)
+            }];
         }
     },
 
@@ -42085,23 +44236,54 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 260 */
-/***/ (function(module, exports) {
+/* 265 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<div id=\"message\">\n    <div class=\"uk-container\">\n        <vk-grid class=\"uk-grid-small\">\n            <!-- left column -->\n            <div class=\"uk-width-1-4@m crop scrollbox\">\n                <br/>\n                <div>\n                    <p class=\"uk-label uk-label-warning sticky\">Consult ID {{currentConsult.consult_id}}</p>\n                </div>\n                <!-- Consult Request -->\n                <br/>\n                <div id=\"consultinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                    </div>\n                    <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief\n                                Complain</label>\n                            <div class=\"uk-form-controls\">\n                                <p>{{currentConsult.consult_complain}}</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and\n                                plan</label>\n                            <div class=\"uk-form-controls\">\n                                <p>{{currentConsult.consult_plan}}</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <!-- Not Require -->\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Consult\n                                Order</label>\n                            <div class=\"uk-form-controls\">\n                                <p>{{currentConsult.consult_order}}</p>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <br/>\n                <vk-offcanvas-content>\n                        <vk-button @click=\"show = !show\" class=\"uk-align-center\">Click to view Information</vk-button>\n                        <vk-offcanvas :show.sync=\"show\">\n                                <vk-offcanvas-close @click=\"show = false\"></vk-offcanvas-close>\n                                <div id=\"personalinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                                        </div>\n                                        <div class=\"uk-form-horizontal\">\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's\n                                                    name</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.patient_firstname}} {{currentConsult.patient_lastname}}</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                                    Birth</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.patient_dob}}</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.patient_gender}}</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>\n                                                        {{currentConsult.patient_address}}\n                                                    </p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary\n                                                    Doctor</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.primary_doctor}}</p>\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>\n                                <div id=\"medicalinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                                        </div>\n                                        <div class=\"uk-form-horizontal\">\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health\n                                                    Condition</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.health_condition}}</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.med_dx}}</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.med_bw}} kg</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>{{currentConsult.med_bmi}}</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>{{currentConsult.med_t}} °C</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>{{currentConsult.med_fbs}} mg%</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                                                <div class=\"uk-form-controls unit\">\n                                                    <p>{{currentConsult.med_cr}} Cr</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.med_clearance}}</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.med_stage}}</p>\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>\n                                    <br/>\n                                    <!-- Record -->\n                                    <div id=\"recordinfo\">\n                                        <div class=\"uk-text-left\">\n                                            <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                                        </div>\n                                        <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                                        </div>\n                                        <div class=\"uk-form-horizontal unit\">\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                                    Diagnosis</label>\n                                                <div class=\"uk-form-controls \">\n                                                    <p>{{currentConsult.rec01_date}}</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                                <div class=\"uk-form-controls \">\n                                                    <p>{{currentConsult.rec01_fbs}} mg%</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.rec01_bp1}} mmHg</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.rec01_bp2}} mmHg</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.rec01_p}} /min</p>\n                                                </div>\n                                            </div>\n                                        </div>\n                    \n                                        <div class=\"uk-margin\">\n                                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                                        </div>\n                                        <div class=\"uk-form-horizontal unit\">\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                                    Diagnosis</label>\n                                                <div class=\"uk-form-controls \">\n                                                    <p>{{currentConsult.rec02_date}}</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                                                <div class=\"uk-form-controls \">\n                                                    <p>{{currentConsult.rec02_fbs}} mg%</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.rec02_bp1}} mmHg</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.rec02_bp2}} mmHg</p>\n                                                </div>\n                                            </div>\n                                            <div class=\"uk-margin\">\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                                                <div class=\"uk-form-controls\">\n                                                    <p>{{currentConsult.rec02_p}} /min</p>\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>\n                        </vk-offcanvas>\n                      </vk-offcanvas-content>\n            </div>\n\n            <!-- center column -->\n            <div class=\"uk-width-expand@m\">\n                <div class=\"scrollbox\">\n                    <ol class=\"chat\">\n                        <li v-for=\"message in messages\"\n                            v-bind:class=\"{ self: isSelf(message.user_id), 'other': !isSelf(message.user_id) }\">\n                            <div class=\"msg\">\n                                <p>{{message.user.first_name}} {{message.user.last_name}}</p>\n                                <p>{{message.message}}</p>\n                                <time>{{message.created_at}}</time>\n                            </div>\n                        </li>\n                    </ol>\n                </div>\n                <div class=\"centered\" v-if=\"isPending()\">\n                    <textarea v-model=\"message\" v-on:keyup.enter=\"sendMessage\" class=\"uk-textarea center-block chatbox\" id=\"message-box\" rows=\"2\" type=\"text\" placeholder=\"Type here\"></textarea>\n                    <button v-on:click=\"sendMessage\" class=\"uk-button uk-button-primary\" id=\"send-btn\">Send</button>\n                </div>\n            </div>\n            <div class=\"vertical-divider\"></div>\n            <!-- right column -->\n            <div class=\"uk-width-1-4@m\">\n                <div v-if=\"isPending()\" class=\"js-upload uk-placeholder uk-text-center upload\">\n                    <span><vk-icon icon=\"cloud-upload\"></vk-icon></span>\n                    <span class=\"uk-text-middle\">Upload file(s) here</span>\n                    <div uk-form-custom>\n                        <input type=\"file\" multiple v-on:change=\"onFilesChange\">\n                        <!-- <span class=\"uk-link\">selecting one</span> -->\n                        <button v-on:click=\"uploadFiles\">Upload</button>\n                    </div>\n                </div>\n                <progress id=\"js-progressbar\" class=\"uk-progress\" value=\"0\" max=\"100\" hidden></progress>\n                <!-- Uploaded file(s) position -->\n                <div class=\"scrollbox\">\n                    <vk-grid gutter=\"small\" class=\"uk-child-width-1-1@s uk-child-width-1-2@m uk-text-center\" style=\"max-height: 60vh;\">\n                        <div v-for=\"attachment in attachments\">\n                            <vk-card style=\"word-wrap: break-word;\" v-if=\"isImage(attachment)\"></vk-card>      \n                                <div id=\"app\">\n                                        <lightbox\n                                        id=\"mylightbox\"\n                                        :images=\"images\"\n                                        :image_class=\" 'img-responsive img-rounded' \"\n                                        :album_class=\" 'my-album-class' \"\n                                        :options=\"options\">\n                                      </lightbox>\n                                        <a class=\"uk-inline\" v-bind:src=\"image_path(attachment.file_name)\" data-caption=\"Caption 1\">\n                                            <img v-bind:src=\"image_path(attachment.file_name)\">\n                                        </a>\n                                </div>\n                                <!-- <img v-bind:src=\"image_path(attachment.file_name)\"> <br> -->\n                                <!--path to file: {{image_path}}{{attachment.file_name}}-->\n                            </vk-card>\n                            <vk-card v-on:click=\"downloadAttachment(attachment.attachment_id)\" v-if=\"!isImage(attachment)\" style=\"word-wrap: break-word;\">\n                                Other file/click to download<br>\n                                file name; {{attachment.file_name}}\n                            </vk-card>\n                        </div>\n                    </vk-grid>\n                </div>\n            </div>\n        </vk-grid>\n    </div>\n</div>";
+!function(e,t){ true?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports["vue-simple-lightbox"]=t():e["vue-simple-lightbox"]=t()}(this,function(){return function(e){function t(r){if(n[r])return n[r].exports;var i=n[r]={exports:{},id:r,loaded:!1};return e[r].call(i.exports,i,i.exports,t),i.loaded=!0,i.exports}var n={};return t.m=e,t.c=n,t.p="",t(0)}([function(e,t,n){var r,i,o={};n(9),r=n(2),i=n(7),e.exports=r||{},e.exports.__esModule&&(e.exports=e.exports.default);var a="function"==typeof e.exports?e.exports.options||(e.exports.options={}):e.exports;i&&(a.template=i),a.computed||(a.computed={}),Object.keys(o).forEach(function(e){var t=o[e];a.computed[e]=function(){return t}})},function(e,t){e.exports=function(){var e=[];return e.toString=function(){for(var e=[],t=0;t<this.length;t++){var n=this[t];n[2]?e.push("@media "+n[2]+"{"+n[1]+"}"):e.push(n[1])}return e.join("")},e.i=function(t,n){"string"==typeof t&&(t=[[null,t,""]]);for(var r={},i=0;i<this.length;i++){var o=this[i][0];"number"==typeof o&&(r[o]=!0)}for(i=0;i<t.length;i++){var a=t[i];"number"==typeof a[0]&&r[a[0]]||(n&&!a[2]?a[2]=n:n&&(a[2]="("+a[2]+") and ("+n+")"),e.push(a))}},e}},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default={props:{id:{type:String,required:!0},images:{type:Array,required:!0},image_class:{type:String},album_class:{type:String},options:{type:Object,required:!1}},mounted:function(){try{window.$=window.jQuery=n(5);n(6);if(void 0!=this.options){$(".my-gallery a").simpleLightbox(this.options)}else{$(".my-gallery a").simpleLightbox()}}catch(e){}}}},function(e,t,n){t=e.exports=n(1)(),t.push([e.id,"body.hidden-scroll{overflow:hidden}.sl-overlay{position:fixed;left:0;right:0;top:0;bottom:0;background:#fff;opacity:.7;display:none;z-index:1050}.sl-wrapper{z-index:1040}.sl-wrapper button{border:0 none;background:transparent;font-size:28px;padding:0;cursor:pointer}.sl-wrapper button:hover{opacity:.7}.sl-wrapper .sl-close{display:none;position:fixed;right:30px;top:30px;z-index:1060;margin-top:-14px;margin-right:-14px;height:44px;width:44px;line-height:44px;font-family:Arial,Baskerville,monospace;color:#000;font-size:3rem}.sl-wrapper .sl-close:focus{outline:none}.sl-wrapper .sl-counter{display:none;position:fixed;top:30px;left:30px;z-index:1060;color:#000;font-size:1rem}.sl-wrapper .sl-navigation{width:100%;display:none}.sl-wrapper .sl-navigation button{position:fixed;top:50%;margin-top:-22px;height:44px;width:22px;line-height:44px;text-align:center;display:block;z-index:1060;font-family:Arial,Baskerville,monospace;color:#000}.sl-wrapper .sl-navigation button.sl-next{right:5px;font-size:2rem}.sl-wrapper .sl-navigation button.sl-prev{left:5px;font-size:2rem}.sl-wrapper .sl-navigation button:focus{outline:none}@media (min-width:35.5em){.sl-wrapper .sl-navigation button{width:44px}.sl-wrapper .sl-navigation button.sl-next{right:10px;font-size:3rem}.sl-wrapper .sl-navigation button.sl-prev{left:10px;font-size:3rem}}@media (min-width:50em){.sl-wrapper .sl-navigation button{width:44px}.sl-wrapper .sl-navigation button.sl-next{right:20px;font-size:3rem}.sl-wrapper .sl-navigation button.sl-prev{left:20px;font-size:3rem}}.sl-wrapper .sl-image{position:fixed;-ms-touch-action:none;touch-action:none;z-index:10000}.sl-wrapper .sl-image img{margin:0;padding:0;display:block;border:0 none}@media (min-width:35.5em){.sl-wrapper .sl-image img{border:0 none}}@media (min-width:50em){.sl-wrapper .sl-image img{border:0 none}}.sl-wrapper .sl-image iframe{background:#000;border:0 none}@media (min-width:35.5em){.sl-wrapper .sl-image iframe{border:0 none}}@media (min-width:50em){.sl-wrapper .sl-image iframe{border:0 none}}.sl-wrapper .sl-image .sl-caption{display:none;padding:10px;color:#fff;background:rgba(0,0,0,.8);position:absolute;bottom:0;left:0;right:0}.sl-wrapper .sl-image .sl-caption.pos-top{bottom:auto;top:0}.sl-wrapper .sl-image .sl-caption.pos-outside{bottom:auto}.sl-wrapper .sl-image .sl-download{display:none;position:absolute;bottom:5px;right:5px;color:#000;z-index:1060}.sl-spinner{display:none;border:5px solid #333;border-radius:40px;height:40px;left:50%;margin:-20px 0 0 -20px;opacity:0;position:fixed;top:50%;width:40px;z-index:1007;-webkit-animation:pulsate 1s ease-out infinite;animation:pulsate 1s ease-out infinite}.sl-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}@-webkit-keyframes pulsate{0%{transform:scale(.1);opacity:0}50%{opacity:1}to{transform:scale(1.2);opacity:0}}@keyframes pulsate{0%{transform:scale(.1);opacity:0}50%{opacity:1}to{transform:scale(1.2);opacity:0}}",""])},function(e,t,n){t=e.exports=n(1)(),t.push([e.id,"@import url(https://fonts.googleapis.com/css?family=Ruda);",""]),t.i(n(3),""),t.push([e.id,".my-gallery a img{float:left;width:20%;height:auto;border:2px solid #fff;transition:-webkit-transform .15s ease;transition:transform .15s ease;transition:transform .15s ease,-webkit-transform .15s ease;position:relative}.my-gallery a:hover img{-webkit-transform:scale(1.05);transform:scale(1.05);z-index:5}.my-gallery a.big img{width:40%}.align-center{text-align:center}",""])},function(e,t,n){var r,i;/*!
+	 * jQuery JavaScript Library v3.2.1
+	 * https://jquery.com/
+	 *
+	 * Includes Sizzle.js
+	 * https://sizzlejs.com/
+	 *
+	 * Copyright JS Foundation and other contributors
+	 * Released under the MIT license
+	 * https://jquery.org/license
+	 *
+	 * Date: 2017-03-20T18:59Z
+	 */
+!function(t,n){"use strict";"object"==typeof e&&"object"==typeof e.exports?e.exports=t.document?n(t,!0):function(e){if(!e.document)throw new Error("jQuery requires a window with a document");return n(e)}:n(t)}("undefined"!=typeof window?window:this,function(n,o){"use strict";function a(e,t){t=t||ae;var n=t.createElement("script");n.text=e,t.head.appendChild(n).parentNode.removeChild(n)}function s(e){var t=!!e&&"length"in e&&e.length,n=xe.type(e);return"function"!==n&&!xe.isWindow(e)&&("array"===n||0===t||"number"==typeof t&&t>0&&t-1 in e)}function l(e,t){return e.nodeName&&e.nodeName.toLowerCase()===t.toLowerCase()}function u(e,t,n){return xe.isFunction(t)?xe.grep(e,function(e,r){return!!t.call(e,r,e)!==n}):t.nodeType?xe.grep(e,function(e){return e===t!==n}):"string"!=typeof t?xe.grep(e,function(e){return fe.call(t,e)>-1!==n}):De.test(t)?xe.filter(t,e,n):(t=xe.filter(t,e),xe.grep(e,function(e){return fe.call(t,e)>-1!==n&&1===e.nodeType}))}function c(e,t){for(;(e=e[t])&&1!==e.nodeType;);return e}function f(e){var t={};return xe.each(e.match(Fe)||[],function(e,n){t[n]=!0}),t}function p(e){return e}function d(e){throw e}function h(e,t,n,r){var i;try{e&&xe.isFunction(i=e.promise)?i.call(e).done(t).fail(n):e&&xe.isFunction(i=e.then)?i.call(e,t,n):t.apply(void 0,[e].slice(r))}catch(e){n.apply(void 0,[e])}}function g(){ae.removeEventListener("DOMContentLoaded",g),n.removeEventListener("load",g),xe.ready()}function m(){this.expando=xe.expando+m.uid++}function v(e){return"true"===e||"false"!==e&&("null"===e?null:e===+e+""?+e:Be.test(e)?JSON.parse(e):e)}function y(e,t,n){var r;if(void 0===n&&1===e.nodeType)if(r="data-"+t.replace(ze,"-$&").toLowerCase(),n=e.getAttribute(r),"string"==typeof n){try{n=v(n)}catch(e){}$e.set(e,t,n)}else n=void 0;return n}function x(e,t,n,r){var i,o=1,a=20,s=r?function(){return r.cur()}:function(){return xe.css(e,t,"")},l=s(),u=n&&n[3]||(xe.cssNumber[t]?"":"px"),c=(xe.cssNumber[t]||"px"!==u&&+l)&&Xe.exec(xe.css(e,t));if(c&&c[3]!==u){u=u||c[3],n=n||[],c=+l||1;do o=o||".5",c/=o,xe.style(e,t,c+u);while(o!==(o=s()/l)&&1!==o&&--a)}return n&&(c=+c||+l||0,i=n[1]?c+(n[1]+1)*n[2]:+n[2],r&&(r.unit=u,r.start=c,r.end=i)),i}function b(e){var t,n=e.ownerDocument,r=e.nodeName,i=Ge[r];return i?i:(t=n.body.appendChild(n.createElement(r)),i=xe.css(t,"display"),t.parentNode.removeChild(t),"none"===i&&(i="block"),Ge[r]=i,i)}function w(e,t){for(var n,r,i=[],o=0,a=e.length;o<a;o++)r=e[o],r.style&&(n=r.style.display,t?("none"===n&&(i[o]=We.get(r,"display")||null,i[o]||(r.style.display="")),""===r.style.display&&Ve(r)&&(i[o]=b(r))):"none"!==n&&(i[o]="none",We.set(r,"display",n)));for(o=0;o<a;o++)null!=i[o]&&(e[o].style.display=i[o]);return e}function T(e,t){var n;return n="undefined"!=typeof e.getElementsByTagName?e.getElementsByTagName(t||"*"):"undefined"!=typeof e.querySelectorAll?e.querySelectorAll(t||"*"):[],void 0===t||t&&l(e,t)?xe.merge([e],n):n}function C(e,t){for(var n=0,r=e.length;n<r;n++)We.set(e[n],"globalEval",!t||We.get(t[n],"globalEval"))}function E(e,t,n,r,i){for(var o,a,s,l,u,c,f=t.createDocumentFragment(),p=[],d=0,h=e.length;d<h;d++)if(o=e[d],o||0===o)if("object"===xe.type(o))xe.merge(p,o.nodeType?[o]:o);else if(et.test(o)){for(a=a||f.appendChild(t.createElement("div")),s=(Je.exec(o)||["",""])[1].toLowerCase(),l=Ze[s]||Ze._default,a.innerHTML=l[1]+xe.htmlPrefilter(o)+l[2],c=l[0];c--;)a=a.lastChild;xe.merge(p,a.childNodes),a=f.firstChild,a.textContent=""}else p.push(t.createTextNode(o));for(f.textContent="",d=0;o=p[d++];)if(r&&xe.inArray(o,r)>-1)i&&i.push(o);else if(u=xe.contains(o.ownerDocument,o),a=T(f.appendChild(o),"script"),u&&C(a),n)for(c=0;o=a[c++];)Ke.test(o.type||"")&&n.push(o);return f}function k(){return!0}function S(){return!1}function A(){try{return ae.activeElement}catch(e){}}function N(e,t,n,r,i,o){var a,s;if("object"==typeof t){"string"!=typeof n&&(r=r||n,n=void 0);for(s in t)N(e,s,n,r,t[s],o);return e}if(null==r&&null==i?(i=n,r=n=void 0):null==i&&("string"==typeof n?(i=r,r=void 0):(i=r,r=n,n=void 0)),i===!1)i=S;else if(!i)return e;return 1===o&&(a=i,i=function(e){return xe().off(e),a.apply(this,arguments)},i.guid=a.guid||(a.guid=xe.guid++)),e.each(function(){xe.event.add(this,t,i,r,n)})}function D(e,t){return l(e,"table")&&l(11!==t.nodeType?t:t.firstChild,"tr")?xe(">tbody",e)[0]||e:e}function j(e){return e.type=(null!==e.getAttribute("type"))+"/"+e.type,e}function q(e){var t=lt.exec(e.type);return t?e.type=t[1]:e.removeAttribute("type"),e}function L(e,t){var n,r,i,o,a,s,l,u;if(1===t.nodeType){if(We.hasData(e)&&(o=We.access(e),a=We.set(t,o),u=o.events)){delete a.handle,a.events={};for(i in u)for(n=0,r=u[i].length;n<r;n++)xe.event.add(t,i,u[i][n])}$e.hasData(e)&&(s=$e.access(e),l=xe.extend({},s),$e.set(t,l))}}function H(e,t){var n=t.nodeName.toLowerCase();"input"===n&&Qe.test(e.type)?t.checked=e.checked:"input"!==n&&"textarea"!==n||(t.defaultValue=e.defaultValue)}function O(e,t,n,r){t=ue.apply([],t);var i,o,s,l,u,c,f=0,p=e.length,d=p-1,h=t[0],g=xe.isFunction(h);if(g||p>1&&"string"==typeof h&&!ve.checkClone&&st.test(h))return e.each(function(i){var o=e.eq(i);g&&(t[0]=h.call(this,i,o.html())),O(o,t,n,r)});if(p&&(i=E(t,e[0].ownerDocument,!1,e,r),o=i.firstChild,1===i.childNodes.length&&(i=o),o||r)){for(s=xe.map(T(i,"script"),j),l=s.length;f<p;f++)u=i,f!==d&&(u=xe.clone(u,!0,!0),l&&xe.merge(s,T(u,"script"))),n.call(e[f],u,f);if(l)for(c=s[s.length-1].ownerDocument,xe.map(s,q),f=0;f<l;f++)u=s[f],Ke.test(u.type||"")&&!We.access(u,"globalEval")&&xe.contains(c,u)&&(u.src?xe._evalUrl&&xe._evalUrl(u.src):a(u.textContent.replace(ut,""),c))}return e}function F(e,t,n){for(var r,i=t?xe.filter(t,e):e,o=0;null!=(r=i[o]);o++)n||1!==r.nodeType||xe.cleanData(T(r)),r.parentNode&&(n&&xe.contains(r.ownerDocument,r)&&C(T(r,"script")),r.parentNode.removeChild(r));return e}function M(e,t,n){var r,i,o,a,s=e.style;return n=n||pt(e),n&&(a=n.getPropertyValue(t)||n[t],""!==a||xe.contains(e.ownerDocument,e)||(a=xe.style(e,t)),!ve.pixelMarginRight()&&ft.test(a)&&ct.test(t)&&(r=s.width,i=s.minWidth,o=s.maxWidth,s.minWidth=s.maxWidth=s.width=a,a=n.width,s.width=r,s.minWidth=i,s.maxWidth=o)),void 0!==a?a+"":a}function R(e,t){return{get:function(){return e()?void delete this.get:(this.get=t).apply(this,arguments)}}}function P(e){if(e in yt)return e;for(var t=e[0].toUpperCase()+e.slice(1),n=vt.length;n--;)if(e=vt[n]+t,e in yt)return e}function I(e){var t=xe.cssProps[e];return t||(t=xe.cssProps[e]=P(e)||e),t}function W(e,t,n){var r=Xe.exec(t);return r?Math.max(0,r[2]-(n||0))+(r[3]||"px"):t}function $(e,t,n,r,i){var o,a=0;for(o=n===(r?"border":"content")?4:"width"===t?1:0;o<4;o+=2)"margin"===n&&(a+=xe.css(e,n+Ue[o],!0,i)),r?("content"===n&&(a-=xe.css(e,"padding"+Ue[o],!0,i)),"margin"!==n&&(a-=xe.css(e,"border"+Ue[o]+"Width",!0,i))):(a+=xe.css(e,"padding"+Ue[o],!0,i),"padding"!==n&&(a+=xe.css(e,"border"+Ue[o]+"Width",!0,i)));return a}function B(e,t,n){var r,i=pt(e),o=M(e,t,i),a="border-box"===xe.css(e,"boxSizing",!1,i);return ft.test(o)?o:(r=a&&(ve.boxSizingReliable()||o===e.style[t]),"auto"===o&&(o=e["offset"+t[0].toUpperCase()+t.slice(1)]),o=parseFloat(o)||0,o+$(e,t,n||(a?"border":"content"),r,i)+"px")}function z(e,t,n,r,i){return new z.prototype.init(e,t,n,r,i)}function _(){bt&&(ae.hidden===!1&&n.requestAnimationFrame?n.requestAnimationFrame(_):n.setTimeout(_,xe.fx.interval),xe.fx.tick())}function X(){return n.setTimeout(function(){xt=void 0}),xt=xe.now()}function U(e,t){var n,r=0,i={height:e};for(t=t?1:0;r<4;r+=2-t)n=Ue[r],i["margin"+n]=i["padding"+n]=e;return t&&(i.opacity=i.width=e),i}function V(e,t,n){for(var r,i=(Q.tweeners[t]||[]).concat(Q.tweeners["*"]),o=0,a=i.length;o<a;o++)if(r=i[o].call(n,t,e))return r}function Y(e,t,n){var r,i,o,a,s,l,u,c,f="width"in t||"height"in t,p=this,d={},h=e.style,g=e.nodeType&&Ve(e),m=We.get(e,"fxshow");n.queue||(a=xe._queueHooks(e,"fx"),null==a.unqueued&&(a.unqueued=0,s=a.empty.fire,a.empty.fire=function(){a.unqueued||s()}),a.unqueued++,p.always(function(){p.always(function(){a.unqueued--,xe.queue(e,"fx").length||a.empty.fire()})}));for(r in t)if(i=t[r],wt.test(i)){if(delete t[r],o=o||"toggle"===i,i===(g?"hide":"show")){if("show"!==i||!m||void 0===m[r])continue;g=!0}d[r]=m&&m[r]||xe.style(e,r)}if(l=!xe.isEmptyObject(t),l||!xe.isEmptyObject(d)){f&&1===e.nodeType&&(n.overflow=[h.overflow,h.overflowX,h.overflowY],u=m&&m.display,null==u&&(u=We.get(e,"display")),c=xe.css(e,"display"),"none"===c&&(u?c=u:(w([e],!0),u=e.style.display||u,c=xe.css(e,"display"),w([e]))),("inline"===c||"inline-block"===c&&null!=u)&&"none"===xe.css(e,"float")&&(l||(p.done(function(){h.display=u}),null==u&&(c=h.display,u="none"===c?"":c)),h.display="inline-block")),n.overflow&&(h.overflow="hidden",p.always(function(){h.overflow=n.overflow[0],h.overflowX=n.overflow[1],h.overflowY=n.overflow[2]})),l=!1;for(r in d)l||(m?"hidden"in m&&(g=m.hidden):m=We.access(e,"fxshow",{display:u}),o&&(m.hidden=!g),g&&w([e],!0),p.done(function(){g||w([e]),We.remove(e,"fxshow");for(r in d)xe.style(e,r,d[r])})),l=V(g?m[r]:0,r,p),r in m||(m[r]=l.start,g&&(l.end=l.start,l.start=0))}}function G(e,t){var n,r,i,o,a;for(n in e)if(r=xe.camelCase(n),i=t[r],o=e[n],Array.isArray(o)&&(i=o[1],o=e[n]=o[0]),n!==r&&(e[r]=o,delete e[n]),a=xe.cssHooks[r],a&&"expand"in a){o=a.expand(o),delete e[r];for(n in o)n in e||(e[n]=o[n],t[n]=i)}else t[r]=i}function Q(e,t,n){var r,i,o=0,a=Q.prefilters.length,s=xe.Deferred().always(function(){delete l.elem}),l=function(){if(i)return!1;for(var t=xt||X(),n=Math.max(0,u.startTime+u.duration-t),r=n/u.duration||0,o=1-r,a=0,l=u.tweens.length;a<l;a++)u.tweens[a].run(o);return s.notifyWith(e,[u,o,n]),o<1&&l?n:(l||s.notifyWith(e,[u,1,0]),s.resolveWith(e,[u]),!1)},u=s.promise({elem:e,props:xe.extend({},t),opts:xe.extend(!0,{specialEasing:{},easing:xe.easing._default},n),originalProperties:t,originalOptions:n,startTime:xt||X(),duration:n.duration,tweens:[],createTween:function(t,n){var r=xe.Tween(e,u.opts,t,n,u.opts.specialEasing[t]||u.opts.easing);return u.tweens.push(r),r},stop:function(t){var n=0,r=t?u.tweens.length:0;if(i)return this;for(i=!0;n<r;n++)u.tweens[n].run(1);return t?(s.notifyWith(e,[u,1,0]),s.resolveWith(e,[u,t])):s.rejectWith(e,[u,t]),this}}),c=u.props;for(G(c,u.opts.specialEasing);o<a;o++)if(r=Q.prefilters[o].call(u,e,c,u.opts))return xe.isFunction(r.stop)&&(xe._queueHooks(u.elem,u.opts.queue).stop=xe.proxy(r.stop,r)),r;return xe.map(c,V,u),xe.isFunction(u.opts.start)&&u.opts.start.call(e,u),u.progress(u.opts.progress).done(u.opts.done,u.opts.complete).fail(u.opts.fail).always(u.opts.always),xe.fx.timer(xe.extend(l,{elem:e,anim:u,queue:u.opts.queue})),u}function J(e){var t=e.match(Fe)||[];return t.join(" ")}function K(e){return e.getAttribute&&e.getAttribute("class")||""}function Z(e,t,n,r){var i;if(Array.isArray(t))xe.each(t,function(t,i){n||Lt.test(e)?r(e,i):Z(e+"["+("object"==typeof i&&null!=i?t:"")+"]",i,n,r)});else if(n||"object"!==xe.type(t))r(e,t);else for(i in t)Z(e+"["+i+"]",t[i],n,r)}function ee(e){return function(t,n){"string"!=typeof t&&(n=t,t="*");var r,i=0,o=t.toLowerCase().match(Fe)||[];if(xe.isFunction(n))for(;r=o[i++];)"+"===r[0]?(r=r.slice(1)||"*",(e[r]=e[r]||[]).unshift(n)):(e[r]=e[r]||[]).push(n)}}function te(e,t,n,r){function i(s){var l;return o[s]=!0,xe.each(e[s]||[],function(e,s){var u=s(t,n,r);return"string"!=typeof u||a||o[u]?a?!(l=u):void 0:(t.dataTypes.unshift(u),i(u),!1)}),l}var o={},a=e===_t;return i(t.dataTypes[0])||!o["*"]&&i("*")}function ne(e,t){var n,r,i=xe.ajaxSettings.flatOptions||{};for(n in t)void 0!==t[n]&&((i[n]?e:r||(r={}))[n]=t[n]);return r&&xe.extend(!0,e,r),e}function re(e,t,n){for(var r,i,o,a,s=e.contents,l=e.dataTypes;"*"===l[0];)l.shift(),void 0===r&&(r=e.mimeType||t.getResponseHeader("Content-Type"));if(r)for(i in s)if(s[i]&&s[i].test(r)){l.unshift(i);break}if(l[0]in n)o=l[0];else{for(i in n){if(!l[0]||e.converters[i+" "+l[0]]){o=i;break}a||(a=i)}o=o||a}if(o)return o!==l[0]&&l.unshift(o),n[o]}function ie(e,t,n,r){var i,o,a,s,l,u={},c=e.dataTypes.slice();if(c[1])for(a in e.converters)u[a.toLowerCase()]=e.converters[a];for(o=c.shift();o;)if(e.responseFields[o]&&(n[e.responseFields[o]]=t),!l&&r&&e.dataFilter&&(t=e.dataFilter(t,e.dataType)),l=o,o=c.shift())if("*"===o)o=l;else if("*"!==l&&l!==o){if(a=u[l+" "+o]||u["* "+o],!a)for(i in u)if(s=i.split(" "),s[1]===o&&(a=u[l+" "+s[0]]||u["* "+s[0]])){a===!0?a=u[i]:u[i]!==!0&&(o=s[0],c.unshift(s[1]));break}if(a!==!0)if(a&&e.throws)t=a(t);else try{t=a(t)}catch(e){return{state:"parsererror",error:a?e:"No conversion from "+l+" to "+o}}}return{state:"success",data:t}}var oe=[],ae=n.document,se=Object.getPrototypeOf,le=oe.slice,ue=oe.concat,ce=oe.push,fe=oe.indexOf,pe={},de=pe.toString,he=pe.hasOwnProperty,ge=he.toString,me=ge.call(Object),ve={},ye="3.2.1",xe=function(e,t){return new xe.fn.init(e,t)},be=/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,we=/^-ms-/,Te=/-([a-z])/g,Ce=function(e,t){return t.toUpperCase()};xe.fn=xe.prototype={jquery:ye,constructor:xe,length:0,toArray:function(){return le.call(this)},get:function(e){return null==e?le.call(this):e<0?this[e+this.length]:this[e]},pushStack:function(e){var t=xe.merge(this.constructor(),e);return t.prevObject=this,t},each:function(e){return xe.each(this,e)},map:function(e){return this.pushStack(xe.map(this,function(t,n){return e.call(t,n,t)}))},slice:function(){return this.pushStack(le.apply(this,arguments))},first:function(){return this.eq(0)},last:function(){return this.eq(-1)},eq:function(e){var t=this.length,n=+e+(e<0?t:0);return this.pushStack(n>=0&&n<t?[this[n]]:[])},end:function(){return this.prevObject||this.constructor()},push:ce,sort:oe.sort,splice:oe.splice},xe.extend=xe.fn.extend=function(){var e,t,n,r,i,o,a=arguments[0]||{},s=1,l=arguments.length,u=!1;for("boolean"==typeof a&&(u=a,a=arguments[s]||{},s++),"object"==typeof a||xe.isFunction(a)||(a={}),s===l&&(a=this,s--);s<l;s++)if(null!=(e=arguments[s]))for(t in e)n=a[t],r=e[t],a!==r&&(u&&r&&(xe.isPlainObject(r)||(i=Array.isArray(r)))?(i?(i=!1,o=n&&Array.isArray(n)?n:[]):o=n&&xe.isPlainObject(n)?n:{},a[t]=xe.extend(u,o,r)):void 0!==r&&(a[t]=r));return a},xe.extend({expando:"jQuery"+(ye+Math.random()).replace(/\D/g,""),isReady:!0,error:function(e){throw new Error(e)},noop:function(){},isFunction:function(e){return"function"===xe.type(e)},isWindow:function(e){return null!=e&&e===e.window},isNumeric:function(e){var t=xe.type(e);return("number"===t||"string"===t)&&!isNaN(e-parseFloat(e))},isPlainObject:function(e){var t,n;return!(!e||"[object Object]"!==de.call(e))&&(!(t=se(e))||(n=he.call(t,"constructor")&&t.constructor,"function"==typeof n&&ge.call(n)===me))},isEmptyObject:function(e){var t;for(t in e)return!1;return!0},type:function(e){return null==e?e+"":"object"==typeof e||"function"==typeof e?pe[de.call(e)]||"object":typeof e},globalEval:function(e){a(e)},camelCase:function(e){return e.replace(we,"ms-").replace(Te,Ce)},each:function(e,t){var n,r=0;if(s(e))for(n=e.length;r<n&&t.call(e[r],r,e[r])!==!1;r++);else for(r in e)if(t.call(e[r],r,e[r])===!1)break;return e},trim:function(e){return null==e?"":(e+"").replace(be,"")},makeArray:function(e,t){var n=t||[];return null!=e&&(s(Object(e))?xe.merge(n,"string"==typeof e?[e]:e):ce.call(n,e)),n},inArray:function(e,t,n){return null==t?-1:fe.call(t,e,n)},merge:function(e,t){for(var n=+t.length,r=0,i=e.length;r<n;r++)e[i++]=t[r];return e.length=i,e},grep:function(e,t,n){for(var r,i=[],o=0,a=e.length,s=!n;o<a;o++)r=!t(e[o],o),r!==s&&i.push(e[o]);return i},map:function(e,t,n){var r,i,o=0,a=[];if(s(e))for(r=e.length;o<r;o++)i=t(e[o],o,n),null!=i&&a.push(i);else for(o in e)i=t(e[o],o,n),null!=i&&a.push(i);return ue.apply([],a)},guid:1,proxy:function(e,t){var n,r,i;if("string"==typeof t&&(n=e[t],t=e,e=n),xe.isFunction(e))return r=le.call(arguments,2),i=function(){return e.apply(t||this,r.concat(le.call(arguments)))},i.guid=e.guid=e.guid||xe.guid++,i},now:Date.now,support:ve}),"function"==typeof Symbol&&(xe.fn[Symbol.iterator]=oe[Symbol.iterator]),xe.each("Boolean Number String Function Array Date RegExp Object Error Symbol".split(" "),function(e,t){pe["[object "+t+"]"]=t.toLowerCase()});var Ee=/*!
+	 * Sizzle CSS Selector Engine v2.3.3
+	 * https://sizzlejs.com/
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license
+	 * http://jquery.org/license
+	 *
+	 * Date: 2016-08-08
+	 */
+function(e){function t(e,t,n,r){var i,o,a,s,l,u,c,p=t&&t.ownerDocument,h=t?t.nodeType:9;if(n=n||[],"string"!=typeof e||!e||1!==h&&9!==h&&11!==h)return n;if(!r&&((t?t.ownerDocument||t:$)!==H&&L(t),t=t||H,F)){if(11!==h&&(l=ve.exec(e)))if(i=l[1]){if(9===h){if(!(a=t.getElementById(i)))return n;if(a.id===i)return n.push(a),n}else if(p&&(a=p.getElementById(i))&&I(t,a)&&a.id===i)return n.push(a),n}else{if(l[2])return K.apply(n,t.getElementsByTagName(e)),n;if((i=l[3])&&T.getElementsByClassName&&t.getElementsByClassName)return K.apply(n,t.getElementsByClassName(i)),n}if(T.qsa&&!U[e+" "]&&(!M||!M.test(e))){if(1!==h)p=t,c=e;else if("object"!==t.nodeName.toLowerCase()){for((s=t.getAttribute("id"))?s=s.replace(we,Te):t.setAttribute("id",s=W),u=S(e),o=u.length;o--;)u[o]="#"+s+" "+d(u[o]);c=u.join(","),p=ye.test(e)&&f(t.parentNode)||t}if(c)try{return K.apply(n,p.querySelectorAll(c)),n}catch(e){}finally{s===W&&t.removeAttribute("id")}}}return N(e.replace(se,"$1"),t,n,r)}function n(){function e(n,r){return t.push(n+" ")>C.cacheLength&&delete e[t.shift()],e[n+" "]=r}var t=[];return e}function r(e){return e[W]=!0,e}function i(e){var t=H.createElement("fieldset");try{return!!e(t)}catch(e){return!1}finally{t.parentNode&&t.parentNode.removeChild(t),t=null}}function o(e,t){for(var n=e.split("|"),r=n.length;r--;)C.attrHandle[n[r]]=t}function a(e,t){var n=t&&e,r=n&&1===e.nodeType&&1===t.nodeType&&e.sourceIndex-t.sourceIndex;if(r)return r;if(n)for(;n=n.nextSibling;)if(n===t)return-1;return e?1:-1}function s(e){return function(t){var n=t.nodeName.toLowerCase();return"input"===n&&t.type===e}}function l(e){return function(t){var n=t.nodeName.toLowerCase();return("input"===n||"button"===n)&&t.type===e}}function u(e){return function(t){return"form"in t?t.parentNode&&t.disabled===!1?"label"in t?"label"in t.parentNode?t.parentNode.disabled===e:t.disabled===e:t.isDisabled===e||t.isDisabled!==!e&&Ee(t)===e:t.disabled===e:"label"in t&&t.disabled===e}}function c(e){return r(function(t){return t=+t,r(function(n,r){for(var i,o=e([],n.length,t),a=o.length;a--;)n[i=o[a]]&&(n[i]=!(r[i]=n[i]))})})}function f(e){return e&&"undefined"!=typeof e.getElementsByTagName&&e}function p(){}function d(e){for(var t=0,n=e.length,r="";t<n;t++)r+=e[t].value;return r}function h(e,t,n){var r=t.dir,i=t.next,o=i||r,a=n&&"parentNode"===o,s=z++;return t.first?function(t,n,i){for(;t=t[r];)if(1===t.nodeType||a)return e(t,n,i);return!1}:function(t,n,l){var u,c,f,p=[B,s];if(l){for(;t=t[r];)if((1===t.nodeType||a)&&e(t,n,l))return!0}else for(;t=t[r];)if(1===t.nodeType||a)if(f=t[W]||(t[W]={}),c=f[t.uniqueID]||(f[t.uniqueID]={}),i&&i===t.nodeName.toLowerCase())t=t[r]||t;else{if((u=c[o])&&u[0]===B&&u[1]===s)return p[2]=u[2];if(c[o]=p,p[2]=e(t,n,l))return!0}return!1}}function g(e){return e.length>1?function(t,n,r){for(var i=e.length;i--;)if(!e[i](t,n,r))return!1;return!0}:e[0]}function m(e,n,r){for(var i=0,o=n.length;i<o;i++)t(e,n[i],r);return r}function v(e,t,n,r,i){for(var o,a=[],s=0,l=e.length,u=null!=t;s<l;s++)(o=e[s])&&(n&&!n(o,r,i)||(a.push(o),u&&t.push(s)));return a}function y(e,t,n,i,o,a){return i&&!i[W]&&(i=y(i)),o&&!o[W]&&(o=y(o,a)),r(function(r,a,s,l){var u,c,f,p=[],d=[],h=a.length,g=r||m(t||"*",s.nodeType?[s]:s,[]),y=!e||!r&&t?g:v(g,p,e,s,l),x=n?o||(r?e:h||i)?[]:a:y;if(n&&n(y,x,s,l),i)for(u=v(x,d),i(u,[],s,l),c=u.length;c--;)(f=u[c])&&(x[d[c]]=!(y[d[c]]=f));if(r){if(o||e){if(o){for(u=[],c=x.length;c--;)(f=x[c])&&u.push(y[c]=f);o(null,x=[],u,l)}for(c=x.length;c--;)(f=x[c])&&(u=o?ee(r,f):p[c])>-1&&(r[u]=!(a[u]=f))}}else x=v(x===a?x.splice(h,x.length):x),o?o(null,a,x,l):K.apply(a,x)})}function x(e){for(var t,n,r,i=e.length,o=C.relative[e[0].type],a=o||C.relative[" "],s=o?1:0,l=h(function(e){return e===t},a,!0),u=h(function(e){return ee(t,e)>-1},a,!0),c=[function(e,n,r){var i=!o&&(r||n!==D)||((t=n).nodeType?l(e,n,r):u(e,n,r));return t=null,i}];s<i;s++)if(n=C.relative[e[s].type])c=[h(g(c),n)];else{if(n=C.filter[e[s].type].apply(null,e[s].matches),n[W]){for(r=++s;r<i&&!C.relative[e[r].type];r++);return y(s>1&&g(c),s>1&&d(e.slice(0,s-1).concat({value:" "===e[s-2].type?"*":""})).replace(se,"$1"),n,s<r&&x(e.slice(s,r)),r<i&&x(e=e.slice(r)),r<i&&d(e))}c.push(n)}return g(c)}function b(e,n){var i=n.length>0,o=e.length>0,a=function(r,a,s,l,u){var c,f,p,d=0,h="0",g=r&&[],m=[],y=D,x=r||o&&C.find.TAG("*",u),b=B+=null==y?1:Math.random()||.1,w=x.length;for(u&&(D=a===H||a||u);h!==w&&null!=(c=x[h]);h++){if(o&&c){for(f=0,a||c.ownerDocument===H||(L(c),s=!F);p=e[f++];)if(p(c,a||H,s)){l.push(c);break}u&&(B=b)}i&&((c=!p&&c)&&d--,r&&g.push(c))}if(d+=h,i&&h!==d){for(f=0;p=n[f++];)p(g,m,a,s);if(r){if(d>0)for(;h--;)g[h]||m[h]||(m[h]=Q.call(l));m=v(m)}K.apply(l,m),u&&!r&&m.length>0&&d+n.length>1&&t.uniqueSort(l)}return u&&(B=b,D=y),g};return i?r(a):a}var w,T,C,E,k,S,A,N,D,j,q,L,H,O,F,M,R,P,I,W="sizzle"+1*new Date,$=e.document,B=0,z=0,_=n(),X=n(),U=n(),V=function(e,t){return e===t&&(q=!0),0},Y={}.hasOwnProperty,G=[],Q=G.pop,J=G.push,K=G.push,Z=G.slice,ee=function(e,t){for(var n=0,r=e.length;n<r;n++)if(e[n]===t)return n;return-1},te="checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",ne="[\\x20\\t\\r\\n\\f]",re="(?:\\\\.|[\\w-]|[^\0-\\xa0])+",ie="\\["+ne+"*("+re+")(?:"+ne+"*([*^$|!~]?=)"+ne+"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|("+re+"))|)"+ne+"*\\]",oe=":("+re+")(?:\\((('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|((?:\\\\.|[^\\\\()[\\]]|"+ie+")*)|.*)\\)|)",ae=new RegExp(ne+"+","g"),se=new RegExp("^"+ne+"+|((?:^|[^\\\\])(?:\\\\.)*)"+ne+"+$","g"),le=new RegExp("^"+ne+"*,"+ne+"*"),ue=new RegExp("^"+ne+"*([>+~]|"+ne+")"+ne+"*"),ce=new RegExp("="+ne+"*([^\\]'\"]*?)"+ne+"*\\]","g"),fe=new RegExp(oe),pe=new RegExp("^"+re+"$"),de={ID:new RegExp("^#("+re+")"),CLASS:new RegExp("^\\.("+re+")"),TAG:new RegExp("^("+re+"|[*])"),ATTR:new RegExp("^"+ie),PSEUDO:new RegExp("^"+oe),CHILD:new RegExp("^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\("+ne+"*(even|odd|(([+-]|)(\\d*)n|)"+ne+"*(?:([+-]|)"+ne+"*(\\d+)|))"+ne+"*\\)|)","i"),bool:new RegExp("^(?:"+te+")$","i"),needsContext:new RegExp("^"+ne+"*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\("+ne+"*((?:-\\d)?\\d*)"+ne+"*\\)|)(?=[^-]|$)","i")},he=/^(?:input|select|textarea|button)$/i,ge=/^h\d$/i,me=/^[^{]+\{\s*\[native \w/,ve=/^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,ye=/[+~]/,xe=new RegExp("\\\\([\\da-f]{1,6}"+ne+"?|("+ne+")|.)","ig"),be=function(e,t,n){var r="0x"+t-65536;return r!==r||n?t:r<0?String.fromCharCode(r+65536):String.fromCharCode(r>>10|55296,1023&r|56320)},we=/([\0-\x1f\x7f]|^-?\d)|^-$|[^\0-\x1f\x7f-\uFFFF\w-]/g,Te=function(e,t){return t?"\0"===e?"�":e.slice(0,-1)+"\\"+e.charCodeAt(e.length-1).toString(16)+" ":"\\"+e},Ce=function(){L()},Ee=h(function(e){return e.disabled===!0&&("form"in e||"label"in e)},{dir:"parentNode",next:"legend"});try{K.apply(G=Z.call($.childNodes),$.childNodes),G[$.childNodes.length].nodeType}catch(e){K={apply:G.length?function(e,t){J.apply(e,Z.call(t))}:function(e,t){for(var n=e.length,r=0;e[n++]=t[r++];);e.length=n-1}}}T=t.support={},k=t.isXML=function(e){var t=e&&(e.ownerDocument||e).documentElement;return!!t&&"HTML"!==t.nodeName},L=t.setDocument=function(e){var t,n,r=e?e.ownerDocument||e:$;return r!==H&&9===r.nodeType&&r.documentElement?(H=r,O=H.documentElement,F=!k(H),$!==H&&(n=H.defaultView)&&n.top!==n&&(n.addEventListener?n.addEventListener("unload",Ce,!1):n.attachEvent&&n.attachEvent("onunload",Ce)),T.attributes=i(function(e){return e.className="i",!e.getAttribute("className")}),T.getElementsByTagName=i(function(e){return e.appendChild(H.createComment("")),!e.getElementsByTagName("*").length}),T.getElementsByClassName=me.test(H.getElementsByClassName),T.getById=i(function(e){return O.appendChild(e).id=W,!H.getElementsByName||!H.getElementsByName(W).length}),T.getById?(C.filter.ID=function(e){var t=e.replace(xe,be);return function(e){return e.getAttribute("id")===t}},C.find.ID=function(e,t){if("undefined"!=typeof t.getElementById&&F){var n=t.getElementById(e);return n?[n]:[]}}):(C.filter.ID=function(e){var t=e.replace(xe,be);return function(e){var n="undefined"!=typeof e.getAttributeNode&&e.getAttributeNode("id");return n&&n.value===t}},C.find.ID=function(e,t){if("undefined"!=typeof t.getElementById&&F){var n,r,i,o=t.getElementById(e);if(o){if(n=o.getAttributeNode("id"),n&&n.value===e)return[o];for(i=t.getElementsByName(e),r=0;o=i[r++];)if(n=o.getAttributeNode("id"),n&&n.value===e)return[o]}return[]}}),C.find.TAG=T.getElementsByTagName?function(e,t){return"undefined"!=typeof t.getElementsByTagName?t.getElementsByTagName(e):T.qsa?t.querySelectorAll(e):void 0}:function(e,t){var n,r=[],i=0,o=t.getElementsByTagName(e);if("*"===e){for(;n=o[i++];)1===n.nodeType&&r.push(n);return r}return o},C.find.CLASS=T.getElementsByClassName&&function(e,t){if("undefined"!=typeof t.getElementsByClassName&&F)return t.getElementsByClassName(e)},R=[],M=[],(T.qsa=me.test(H.querySelectorAll))&&(i(function(e){O.appendChild(e).innerHTML="<a id='"+W+"'></a><select id='"+W+"-\r\\' msallowcapture=''><option selected=''></option></select>",e.querySelectorAll("[msallowcapture^='']").length&&M.push("[*^$]="+ne+"*(?:''|\"\")"),e.querySelectorAll("[selected]").length||M.push("\\["+ne+"*(?:value|"+te+")"),e.querySelectorAll("[id~="+W+"-]").length||M.push("~="),e.querySelectorAll(":checked").length||M.push(":checked"),e.querySelectorAll("a#"+W+"+*").length||M.push(".#.+[+~]")}),i(function(e){e.innerHTML="<a href='' disabled='disabled'></a><select disabled='disabled'><option/></select>";var t=H.createElement("input");t.setAttribute("type","hidden"),e.appendChild(t).setAttribute("name","D"),e.querySelectorAll("[name=d]").length&&M.push("name"+ne+"*[*^$|!~]?="),2!==e.querySelectorAll(":enabled").length&&M.push(":enabled",":disabled"),O.appendChild(e).disabled=!0,2!==e.querySelectorAll(":disabled").length&&M.push(":enabled",":disabled"),e.querySelectorAll("*,:x"),M.push(",.*:")})),(T.matchesSelector=me.test(P=O.matches||O.webkitMatchesSelector||O.mozMatchesSelector||O.oMatchesSelector||O.msMatchesSelector))&&i(function(e){T.disconnectedMatch=P.call(e,"*"),P.call(e,"[s!='']:x"),R.push("!=",oe)}),M=M.length&&new RegExp(M.join("|")),R=R.length&&new RegExp(R.join("|")),t=me.test(O.compareDocumentPosition),I=t||me.test(O.contains)?function(e,t){var n=9===e.nodeType?e.documentElement:e,r=t&&t.parentNode;return e===r||!(!r||1!==r.nodeType||!(n.contains?n.contains(r):e.compareDocumentPosition&&16&e.compareDocumentPosition(r)))}:function(e,t){if(t)for(;t=t.parentNode;)if(t===e)return!0;return!1},V=t?function(e,t){if(e===t)return q=!0,0;var n=!e.compareDocumentPosition-!t.compareDocumentPosition;return n?n:(n=(e.ownerDocument||e)===(t.ownerDocument||t)?e.compareDocumentPosition(t):1,1&n||!T.sortDetached&&t.compareDocumentPosition(e)===n?e===H||e.ownerDocument===$&&I($,e)?-1:t===H||t.ownerDocument===$&&I($,t)?1:j?ee(j,e)-ee(j,t):0:4&n?-1:1)}:function(e,t){if(e===t)return q=!0,0;var n,r=0,i=e.parentNode,o=t.parentNode,s=[e],l=[t];if(!i||!o)return e===H?-1:t===H?1:i?-1:o?1:j?ee(j,e)-ee(j,t):0;if(i===o)return a(e,t);for(n=e;n=n.parentNode;)s.unshift(n);for(n=t;n=n.parentNode;)l.unshift(n);for(;s[r]===l[r];)r++;return r?a(s[r],l[r]):s[r]===$?-1:l[r]===$?1:0},H):H},t.matches=function(e,n){return t(e,null,null,n)},t.matchesSelector=function(e,n){if((e.ownerDocument||e)!==H&&L(e),n=n.replace(ce,"='$1']"),T.matchesSelector&&F&&!U[n+" "]&&(!R||!R.test(n))&&(!M||!M.test(n)))try{var r=P.call(e,n);if(r||T.disconnectedMatch||e.document&&11!==e.document.nodeType)return r}catch(e){}return t(n,H,null,[e]).length>0},t.contains=function(e,t){return(e.ownerDocument||e)!==H&&L(e),I(e,t)},t.attr=function(e,t){(e.ownerDocument||e)!==H&&L(e);var n=C.attrHandle[t.toLowerCase()],r=n&&Y.call(C.attrHandle,t.toLowerCase())?n(e,t,!F):void 0;return void 0!==r?r:T.attributes||!F?e.getAttribute(t):(r=e.getAttributeNode(t))&&r.specified?r.value:null},t.escape=function(e){return(e+"").replace(we,Te)},t.error=function(e){throw new Error("Syntax error, unrecognized expression: "+e)},t.uniqueSort=function(e){var t,n=[],r=0,i=0;if(q=!T.detectDuplicates,j=!T.sortStable&&e.slice(0),e.sort(V),q){for(;t=e[i++];)t===e[i]&&(r=n.push(i));for(;r--;)e.splice(n[r],1)}return j=null,e},E=t.getText=function(e){var t,n="",r=0,i=e.nodeType;if(i){if(1===i||9===i||11===i){if("string"==typeof e.textContent)return e.textContent;for(e=e.firstChild;e;e=e.nextSibling)n+=E(e)}else if(3===i||4===i)return e.nodeValue}else for(;t=e[r++];)n+=E(t);return n},C=t.selectors={cacheLength:50,createPseudo:r,match:de,attrHandle:{},find:{},relative:{">":{dir:"parentNode",first:!0}," ":{dir:"parentNode"},"+":{dir:"previousSibling",first:!0},"~":{dir:"previousSibling"}},preFilter:{ATTR:function(e){return e[1]=e[1].replace(xe,be),e[3]=(e[3]||e[4]||e[5]||"").replace(xe,be),"~="===e[2]&&(e[3]=" "+e[3]+" "),e.slice(0,4)},CHILD:function(e){return e[1]=e[1].toLowerCase(),"nth"===e[1].slice(0,3)?(e[3]||t.error(e[0]),e[4]=+(e[4]?e[5]+(e[6]||1):2*("even"===e[3]||"odd"===e[3])),e[5]=+(e[7]+e[8]||"odd"===e[3])):e[3]&&t.error(e[0]),e},PSEUDO:function(e){var t,n=!e[6]&&e[2];return de.CHILD.test(e[0])?null:(e[3]?e[2]=e[4]||e[5]||"":n&&fe.test(n)&&(t=S(n,!0))&&(t=n.indexOf(")",n.length-t)-n.length)&&(e[0]=e[0].slice(0,t),e[2]=n.slice(0,t)),e.slice(0,3))}},filter:{TAG:function(e){var t=e.replace(xe,be).toLowerCase();return"*"===e?function(){return!0}:function(e){return e.nodeName&&e.nodeName.toLowerCase()===t}},CLASS:function(e){var t=_[e+" "];return t||(t=new RegExp("(^|"+ne+")"+e+"("+ne+"|$)"))&&_(e,function(e){return t.test("string"==typeof e.className&&e.className||"undefined"!=typeof e.getAttribute&&e.getAttribute("class")||"")})},ATTR:function(e,n,r){return function(i){var o=t.attr(i,e);return null==o?"!="===n:!n||(o+="","="===n?o===r:"!="===n?o!==r:"^="===n?r&&0===o.indexOf(r):"*="===n?r&&o.indexOf(r)>-1:"$="===n?r&&o.slice(-r.length)===r:"~="===n?(" "+o.replace(ae," ")+" ").indexOf(r)>-1:"|="===n&&(o===r||o.slice(0,r.length+1)===r+"-"))}},CHILD:function(e,t,n,r,i){var o="nth"!==e.slice(0,3),a="last"!==e.slice(-4),s="of-type"===t;return 1===r&&0===i?function(e){return!!e.parentNode}:function(t,n,l){var u,c,f,p,d,h,g=o!==a?"nextSibling":"previousSibling",m=t.parentNode,v=s&&t.nodeName.toLowerCase(),y=!l&&!s,x=!1;if(m){if(o){for(;g;){for(p=t;p=p[g];)if(s?p.nodeName.toLowerCase()===v:1===p.nodeType)return!1;h=g="only"===e&&!h&&"nextSibling"}return!0}if(h=[a?m.firstChild:m.lastChild],a&&y){for(p=m,f=p[W]||(p[W]={}),c=f[p.uniqueID]||(f[p.uniqueID]={}),u=c[e]||[],d=u[0]===B&&u[1],x=d&&u[2],p=d&&m.childNodes[d];p=++d&&p&&p[g]||(x=d=0)||h.pop();)if(1===p.nodeType&&++x&&p===t){c[e]=[B,d,x];break}}else if(y&&(p=t,f=p[W]||(p[W]={}),c=f[p.uniqueID]||(f[p.uniqueID]={}),u=c[e]||[],d=u[0]===B&&u[1],x=d),x===!1)for(;(p=++d&&p&&p[g]||(x=d=0)||h.pop())&&((s?p.nodeName.toLowerCase()!==v:1!==p.nodeType)||!++x||(y&&(f=p[W]||(p[W]={}),c=f[p.uniqueID]||(f[p.uniqueID]={}),c[e]=[B,x]),p!==t)););return x-=i,x===r||x%r===0&&x/r>=0}}},PSEUDO:function(e,n){var i,o=C.pseudos[e]||C.setFilters[e.toLowerCase()]||t.error("unsupported pseudo: "+e);return o[W]?o(n):o.length>1?(i=[e,e,"",n],C.setFilters.hasOwnProperty(e.toLowerCase())?r(function(e,t){for(var r,i=o(e,n),a=i.length;a--;)r=ee(e,i[a]),e[r]=!(t[r]=i[a])}):function(e){return o(e,0,i)}):o}},pseudos:{not:r(function(e){var t=[],n=[],i=A(e.replace(se,"$1"));return i[W]?r(function(e,t,n,r){for(var o,a=i(e,null,r,[]),s=e.length;s--;)(o=a[s])&&(e[s]=!(t[s]=o))}):function(e,r,o){return t[0]=e,i(t,null,o,n),t[0]=null,!n.pop()}}),has:r(function(e){return function(n){return t(e,n).length>0}}),contains:r(function(e){return e=e.replace(xe,be),function(t){return(t.textContent||t.innerText||E(t)).indexOf(e)>-1}}),lang:r(function(e){return pe.test(e||"")||t.error("unsupported lang: "+e),e=e.replace(xe,be).toLowerCase(),function(t){var n;do if(n=F?t.lang:t.getAttribute("xml:lang")||t.getAttribute("lang"))return n=n.toLowerCase(),n===e||0===n.indexOf(e+"-");while((t=t.parentNode)&&1===t.nodeType);return!1}}),target:function(t){var n=e.location&&e.location.hash;return n&&n.slice(1)===t.id},root:function(e){return e===O},focus:function(e){return e===H.activeElement&&(!H.hasFocus||H.hasFocus())&&!!(e.type||e.href||~e.tabIndex)},enabled:u(!1),disabled:u(!0),checked:function(e){var t=e.nodeName.toLowerCase();return"input"===t&&!!e.checked||"option"===t&&!!e.selected},selected:function(e){return e.parentNode&&e.parentNode.selectedIndex,e.selected===!0},empty:function(e){for(e=e.firstChild;e;e=e.nextSibling)if(e.nodeType<6)return!1;return!0},parent:function(e){return!C.pseudos.empty(e)},header:function(e){return ge.test(e.nodeName)},input:function(e){return he.test(e.nodeName)},button:function(e){var t=e.nodeName.toLowerCase();return"input"===t&&"button"===e.type||"button"===t},text:function(e){var t;return"input"===e.nodeName.toLowerCase()&&"text"===e.type&&(null==(t=e.getAttribute("type"))||"text"===t.toLowerCase())},first:c(function(){return[0]}),last:c(function(e,t){return[t-1]}),eq:c(function(e,t,n){return[n<0?n+t:n]}),even:c(function(e,t){for(var n=0;n<t;n+=2)e.push(n);return e}),odd:c(function(e,t){for(var n=1;n<t;n+=2)e.push(n);return e}),lt:c(function(e,t,n){for(var r=n<0?n+t:n;--r>=0;)e.push(r);return e}),gt:c(function(e,t,n){for(var r=n<0?n+t:n;++r<t;)e.push(r);return e})}},C.pseudos.nth=C.pseudos.eq;for(w in{radio:!0,checkbox:!0,file:!0,password:!0,image:!0})C.pseudos[w]=s(w);for(w in{submit:!0,reset:!0})C.pseudos[w]=l(w);return p.prototype=C.filters=C.pseudos,C.setFilters=new p,S=t.tokenize=function(e,n){var r,i,o,a,s,l,u,c=X[e+" "];if(c)return n?0:c.slice(0);for(s=e,l=[],u=C.preFilter;s;){r&&!(i=le.exec(s))||(i&&(s=s.slice(i[0].length)||s),l.push(o=[])),r=!1,(i=ue.exec(s))&&(r=i.shift(),o.push({value:r,type:i[0].replace(se," ")}),s=s.slice(r.length));for(a in C.filter)!(i=de[a].exec(s))||u[a]&&!(i=u[a](i))||(r=i.shift(),o.push({value:r,type:a,matches:i}),s=s.slice(r.length));if(!r)break}return n?s.length:s?t.error(e):X(e,l).slice(0)},A=t.compile=function(e,t){var n,r=[],i=[],o=U[e+" "];if(!o){for(t||(t=S(e)),n=t.length;n--;)o=x(t[n]),o[W]?r.push(o):i.push(o);o=U(e,b(i,r)),o.selector=e}return o},N=t.select=function(e,t,n,r){var i,o,a,s,l,u="function"==typeof e&&e,c=!r&&S(e=u.selector||e);if(n=n||[],1===c.length){if(o=c[0]=c[0].slice(0),o.length>2&&"ID"===(a=o[0]).type&&9===t.nodeType&&F&&C.relative[o[1].type]){if(t=(C.find.ID(a.matches[0].replace(xe,be),t)||[])[0],!t)return n;u&&(t=t.parentNode),e=e.slice(o.shift().value.length)}for(i=de.needsContext.test(e)?0:o.length;i--&&(a=o[i],!C.relative[s=a.type]);)if((l=C.find[s])&&(r=l(a.matches[0].replace(xe,be),ye.test(o[0].type)&&f(t.parentNode)||t))){if(o.splice(i,1),e=r.length&&d(o),!e)return K.apply(n,r),n;break}}return(u||A(e,c))(r,t,!F,n,!t||ye.test(e)&&f(t.parentNode)||t),n},T.sortStable=W.split("").sort(V).join("")===W,T.detectDuplicates=!!q,L(),T.sortDetached=i(function(e){return 1&e.compareDocumentPosition(H.createElement("fieldset"))}),i(function(e){return e.innerHTML="<a href='#'></a>","#"===e.firstChild.getAttribute("href")})||o("type|href|height|width",function(e,t,n){if(!n)return e.getAttribute(t,"type"===t.toLowerCase()?1:2)}),T.attributes&&i(function(e){return e.innerHTML="<input/>",e.firstChild.setAttribute("value",""),""===e.firstChild.getAttribute("value")})||o("value",function(e,t,n){if(!n&&"input"===e.nodeName.toLowerCase())return e.defaultValue}),i(function(e){return null==e.getAttribute("disabled")})||o(te,function(e,t,n){var r;if(!n)return e[t]===!0?t.toLowerCase():(r=e.getAttributeNode(t))&&r.specified?r.value:null}),t}(n);xe.find=Ee,xe.expr=Ee.selectors,xe.expr[":"]=xe.expr.pseudos,xe.uniqueSort=xe.unique=Ee.uniqueSort,xe.text=Ee.getText,xe.isXMLDoc=Ee.isXML,xe.contains=Ee.contains,xe.escapeSelector=Ee.escape;var ke=function(e,t,n){for(var r=[],i=void 0!==n;(e=e[t])&&9!==e.nodeType;)if(1===e.nodeType){if(i&&xe(e).is(n))break;r.push(e)}return r},Se=function(e,t){for(var n=[];e;e=e.nextSibling)1===e.nodeType&&e!==t&&n.push(e);return n},Ae=xe.expr.match.needsContext,Ne=/^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i,De=/^.[^:#\[\.,]*$/;xe.filter=function(e,t,n){var r=t[0];return n&&(e=":not("+e+")"),1===t.length&&1===r.nodeType?xe.find.matchesSelector(r,e)?[r]:[]:xe.find.matches(e,xe.grep(t,function(e){return 1===e.nodeType}))},xe.fn.extend({find:function(e){var t,n,r=this.length,i=this;if("string"!=typeof e)return this.pushStack(xe(e).filter(function(){for(t=0;t<r;t++)if(xe.contains(i[t],this))return!0}));for(n=this.pushStack([]),t=0;t<r;t++)xe.find(e,i[t],n);return r>1?xe.uniqueSort(n):n},filter:function(e){return this.pushStack(u(this,e||[],!1))},not:function(e){return this.pushStack(u(this,e||[],!0))},is:function(e){return!!u(this,"string"==typeof e&&Ae.test(e)?xe(e):e||[],!1).length}});var je,qe=/^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/,Le=xe.fn.init=function(e,t,n){var r,i;if(!e)return this;if(n=n||je,"string"==typeof e){if(r="<"===e[0]&&">"===e[e.length-1]&&e.length>=3?[null,e,null]:qe.exec(e),!r||!r[1]&&t)return!t||t.jquery?(t||n).find(e):this.constructor(t).find(e);if(r[1]){if(t=t instanceof xe?t[0]:t,xe.merge(this,xe.parseHTML(r[1],t&&t.nodeType?t.ownerDocument||t:ae,!0)),Ne.test(r[1])&&xe.isPlainObject(t))for(r in t)xe.isFunction(this[r])?this[r](t[r]):this.attr(r,t[r]);return this}return i=ae.getElementById(r[2]),i&&(this[0]=i,this.length=1),this}return e.nodeType?(this[0]=e,this.length=1,this):xe.isFunction(e)?void 0!==n.ready?n.ready(e):e(xe):xe.makeArray(e,this)};Le.prototype=xe.fn,je=xe(ae);var He=/^(?:parents|prev(?:Until|All))/,Oe={children:!0,contents:!0,next:!0,prev:!0};xe.fn.extend({has:function(e){var t=xe(e,this),n=t.length;return this.filter(function(){for(var e=0;e<n;e++)if(xe.contains(this,t[e]))return!0})},closest:function(e,t){var n,r=0,i=this.length,o=[],a="string"!=typeof e&&xe(e);if(!Ae.test(e))for(;r<i;r++)for(n=this[r];n&&n!==t;n=n.parentNode)if(n.nodeType<11&&(a?a.index(n)>-1:1===n.nodeType&&xe.find.matchesSelector(n,e))){o.push(n);break}return this.pushStack(o.length>1?xe.uniqueSort(o):o)},index:function(e){return e?"string"==typeof e?fe.call(xe(e),this[0]):fe.call(this,e.jquery?e[0]:e):this[0]&&this[0].parentNode?this.first().prevAll().length:-1},add:function(e,t){return this.pushStack(xe.uniqueSort(xe.merge(this.get(),xe(e,t))))},addBack:function(e){return this.add(null==e?this.prevObject:this.prevObject.filter(e))}}),xe.each({parent:function(e){var t=e.parentNode;return t&&11!==t.nodeType?t:null},parents:function(e){return ke(e,"parentNode")},parentsUntil:function(e,t,n){return ke(e,"parentNode",n)},next:function(e){return c(e,"nextSibling")},prev:function(e){return c(e,"previousSibling")},nextAll:function(e){return ke(e,"nextSibling")},prevAll:function(e){return ke(e,"previousSibling")},nextUntil:function(e,t,n){return ke(e,"nextSibling",n)},prevUntil:function(e,t,n){return ke(e,"previousSibling",n)},siblings:function(e){return Se((e.parentNode||{}).firstChild,e)},children:function(e){return Se(e.firstChild)},contents:function(e){return l(e,"iframe")?e.contentDocument:(l(e,"template")&&(e=e.content||e),xe.merge([],e.childNodes))}},function(e,t){xe.fn[e]=function(n,r){var i=xe.map(this,t,n);return"Until"!==e.slice(-5)&&(r=n),r&&"string"==typeof r&&(i=xe.filter(r,i)),this.length>1&&(Oe[e]||xe.uniqueSort(i),He.test(e)&&i.reverse()),this.pushStack(i)}});var Fe=/[^\x20\t\r\n\f]+/g;xe.Callbacks=function(e){e="string"==typeof e?f(e):xe.extend({},e);var t,n,r,i,o=[],a=[],s=-1,l=function(){for(i=i||e.once,r=t=!0;a.length;s=-1)for(n=a.shift();++s<o.length;)o[s].apply(n[0],n[1])===!1&&e.stopOnFalse&&(s=o.length,n=!1);e.memory||(n=!1),t=!1,i&&(o=n?[]:"")},u={add:function(){return o&&(n&&!t&&(s=o.length-1,a.push(n)),function t(n){xe.each(n,function(n,r){xe.isFunction(r)?e.unique&&u.has(r)||o.push(r):r&&r.length&&"string"!==xe.type(r)&&t(r)})}(arguments),n&&!t&&l()),this},remove:function(){return xe.each(arguments,function(e,t){for(var n;(n=xe.inArray(t,o,n))>-1;)o.splice(n,1),n<=s&&s--}),this},has:function(e){return e?xe.inArray(e,o)>-1:o.length>0},empty:function(){return o&&(o=[]),this},disable:function(){return i=a=[],o=n="",this},disabled:function(){return!o},lock:function(){return i=a=[],n||t||(o=n=""),this},locked:function(){return!!i},fireWith:function(e,n){return i||(n=n||[],n=[e,n.slice?n.slice():n],a.push(n),t||l()),this},fire:function(){return u.fireWith(this,arguments),this},fired:function(){return!!r}};return u},xe.extend({Deferred:function(e){var t=[["notify","progress",xe.Callbacks("memory"),xe.Callbacks("memory"),2],["resolve","done",xe.Callbacks("once memory"),xe.Callbacks("once memory"),0,"resolved"],["reject","fail",xe.Callbacks("once memory"),xe.Callbacks("once memory"),1,"rejected"]],r="pending",i={state:function(){return r},always:function(){return o.done(arguments).fail(arguments),this},catch:function(e){return i.then(null,e)},pipe:function(){var e=arguments;return xe.Deferred(function(n){xe.each(t,function(t,r){var i=xe.isFunction(e[r[4]])&&e[r[4]];o[r[1]](function(){var e=i&&i.apply(this,arguments);e&&xe.isFunction(e.promise)?e.promise().progress(n.notify).done(n.resolve).fail(n.reject):n[r[0]+"With"](this,i?[e]:arguments)})}),e=null}).promise()},then:function(e,r,i){function o(e,t,r,i){return function(){var s=this,l=arguments,u=function(){var n,u;if(!(e<a)){if(n=r.apply(s,l),n===t.promise())throw new TypeError("Thenable self-resolution");u=n&&("object"==typeof n||"function"==typeof n)&&n.then,xe.isFunction(u)?i?u.call(n,o(a,t,p,i),o(a,t,d,i)):(a++,u.call(n,o(a,t,p,i),o(a,t,d,i),o(a,t,p,t.notifyWith))):(r!==p&&(s=void 0,l=[n]),(i||t.resolveWith)(s,l))}},c=i?u:function(){try{u()}catch(n){xe.Deferred.exceptionHook&&xe.Deferred.exceptionHook(n,c.stackTrace),e+1>=a&&(r!==d&&(s=void 0,l=[n]),t.rejectWith(s,l))}};e?c():(xe.Deferred.getStackHook&&(c.stackTrace=xe.Deferred.getStackHook()),n.setTimeout(c))}}var a=0;return xe.Deferred(function(n){t[0][3].add(o(0,n,xe.isFunction(i)?i:p,n.notifyWith)),t[1][3].add(o(0,n,xe.isFunction(e)?e:p)),t[2][3].add(o(0,n,xe.isFunction(r)?r:d))}).promise()},promise:function(e){return null!=e?xe.extend(e,i):i}},o={};return xe.each(t,function(e,n){var a=n[2],s=n[5];i[n[1]]=a.add,s&&a.add(function(){r=s},t[3-e][2].disable,t[0][2].lock),a.add(n[3].fire),o[n[0]]=function(){return o[n[0]+"With"](this===o?void 0:this,arguments),this},o[n[0]+"With"]=a.fireWith}),i.promise(o),e&&e.call(o,o),o},when:function(e){var t=arguments.length,n=t,r=Array(n),i=le.call(arguments),o=xe.Deferred(),a=function(e){return function(n){r[e]=this,i[e]=arguments.length>1?le.call(arguments):n,--t||o.resolveWith(r,i)}};if(t<=1&&(h(e,o.done(a(n)).resolve,o.reject,!t),"pending"===o.state()||xe.isFunction(i[n]&&i[n].then)))return o.then();for(;n--;)h(i[n],a(n),o.reject);return o.promise()}});var Me=/^(Eval|Internal|Range|Reference|Syntax|Type|URI)Error$/;xe.Deferred.exceptionHook=function(e,t){n.console&&n.console.warn&&e&&Me.test(e.name)&&n.console.warn("jQuery.Deferred exception: "+e.message,e.stack,t)},xe.readyException=function(e){n.setTimeout(function(){throw e})};var Re=xe.Deferred();xe.fn.ready=function(e){return Re.then(e).catch(function(e){xe.readyException(e)}),this},xe.extend({isReady:!1,readyWait:1,ready:function(e){(e===!0?--xe.readyWait:xe.isReady)||(xe.isReady=!0,e!==!0&&--xe.readyWait>0||Re.resolveWith(ae,[xe]))}}),xe.ready.then=Re.then,"complete"===ae.readyState||"loading"!==ae.readyState&&!ae.documentElement.doScroll?n.setTimeout(xe.ready):(ae.addEventListener("DOMContentLoaded",g),n.addEventListener("load",g));var Pe=function(e,t,n,r,i,o,a){var s=0,l=e.length,u=null==n;if("object"===xe.type(n)){i=!0;for(s in n)Pe(e,t,s,n[s],!0,o,a)}else if(void 0!==r&&(i=!0,xe.isFunction(r)||(a=!0),u&&(a?(t.call(e,r),t=null):(u=t,t=function(e,t,n){return u.call(xe(e),n)})),t))for(;s<l;s++)t(e[s],n,a?r:r.call(e[s],s,t(e[s],n)));return i?e:u?t.call(e):l?t(e[0],n):o},Ie=function(e){return 1===e.nodeType||9===e.nodeType||!+e.nodeType};m.uid=1,m.prototype={cache:function(e){var t=e[this.expando];return t||(t={},Ie(e)&&(e.nodeType?e[this.expando]=t:Object.defineProperty(e,this.expando,{value:t,configurable:!0}))),t},set:function(e,t,n){var r,i=this.cache(e);if("string"==typeof t)i[xe.camelCase(t)]=n;else for(r in t)i[xe.camelCase(r)]=t[r];return i},get:function(e,t){return void 0===t?this.cache(e):e[this.expando]&&e[this.expando][xe.camelCase(t)]},access:function(e,t,n){return void 0===t||t&&"string"==typeof t&&void 0===n?this.get(e,t):(this.set(e,t,n),void 0!==n?n:t)},remove:function(e,t){var n,r=e[this.expando];if(void 0!==r){if(void 0!==t){Array.isArray(t)?t=t.map(xe.camelCase):(t=xe.camelCase(t),t=t in r?[t]:t.match(Fe)||[]),n=t.length;for(;n--;)delete r[t[n]]}(void 0===t||xe.isEmptyObject(r))&&(e.nodeType?e[this.expando]=void 0:delete e[this.expando])}},hasData:function(e){var t=e[this.expando];return void 0!==t&&!xe.isEmptyObject(t)}};var We=new m,$e=new m,Be=/^(?:\{[\w\W]*\}|\[[\w\W]*\])$/,ze=/[A-Z]/g;xe.extend({hasData:function(e){return $e.hasData(e)||We.hasData(e)},data:function(e,t,n){return $e.access(e,t,n)},removeData:function(e,t){$e.remove(e,t)},_data:function(e,t,n){return We.access(e,t,n)},_removeData:function(e,t){We.remove(e,t)}}),xe.fn.extend({data:function(e,t){var n,r,i,o=this[0],a=o&&o.attributes;if(void 0===e){if(this.length&&(i=$e.get(o),1===o.nodeType&&!We.get(o,"hasDataAttrs"))){for(n=a.length;n--;)a[n]&&(r=a[n].name,0===r.indexOf("data-")&&(r=xe.camelCase(r.slice(5)),y(o,r,i[r])));We.set(o,"hasDataAttrs",!0)}return i}return"object"==typeof e?this.each(function(){$e.set(this,e)}):Pe(this,function(t){var n;if(o&&void 0===t){if(n=$e.get(o,e),void 0!==n)return n;if(n=y(o,e),void 0!==n)return n}else this.each(function(){$e.set(this,e,t)})},null,t,arguments.length>1,null,!0)},removeData:function(e){return this.each(function(){$e.remove(this,e)})}}),xe.extend({queue:function(e,t,n){var r;if(e)return t=(t||"fx")+"queue",r=We.get(e,t),n&&(!r||Array.isArray(n)?r=We.access(e,t,xe.makeArray(n)):r.push(n)),r||[]},dequeue:function(e,t){t=t||"fx";var n=xe.queue(e,t),r=n.length,i=n.shift(),o=xe._queueHooks(e,t),a=function(){xe.dequeue(e,t)};"inprogress"===i&&(i=n.shift(),r--),i&&("fx"===t&&n.unshift("inprogress"),delete o.stop,i.call(e,a,o)),!r&&o&&o.empty.fire()},_queueHooks:function(e,t){var n=t+"queueHooks";return We.get(e,n)||We.access(e,n,{empty:xe.Callbacks("once memory").add(function(){We.remove(e,[t+"queue",n])})})}}),xe.fn.extend({queue:function(e,t){var n=2;return"string"!=typeof e&&(t=e,e="fx",n--),arguments.length<n?xe.queue(this[0],e):void 0===t?this:this.each(function(){var n=xe.queue(this,e,t);xe._queueHooks(this,e),"fx"===e&&"inprogress"!==n[0]&&xe.dequeue(this,e)})},dequeue:function(e){return this.each(function(){xe.dequeue(this,e)})},clearQueue:function(e){return this.queue(e||"fx",[])},promise:function(e,t){var n,r=1,i=xe.Deferred(),o=this,a=this.length,s=function(){--r||i.resolveWith(o,[o])};for("string"!=typeof e&&(t=e,e=void 0),e=e||"fx";a--;)n=We.get(o[a],e+"queueHooks"),n&&n.empty&&(r++,n.empty.add(s));return s(),i.promise(t)}});var _e=/[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/.source,Xe=new RegExp("^(?:([+-])=|)("+_e+")([a-z%]*)$","i"),Ue=["Top","Right","Bottom","Left"],Ve=function(e,t){return e=t||e,"none"===e.style.display||""===e.style.display&&xe.contains(e.ownerDocument,e)&&"none"===xe.css(e,"display")},Ye=function(e,t,n,r){var i,o,a={};for(o in t)a[o]=e.style[o],e.style[o]=t[o];i=n.apply(e,r||[]);for(o in t)e.style[o]=a[o];return i},Ge={};xe.fn.extend({show:function(){return w(this,!0)},hide:function(){return w(this)},toggle:function(e){return"boolean"==typeof e?e?this.show():this.hide():this.each(function(){Ve(this)?xe(this).show():xe(this).hide()})}});var Qe=/^(?:checkbox|radio)$/i,Je=/<([a-z][^\/\0>\x20\t\r\n\f]+)/i,Ke=/^$|\/(?:java|ecma)script/i,Ze={option:[1,"<select multiple='multiple'>","</select>"],thead:[1,"<table>","</table>"],col:[2,"<table><colgroup>","</colgroup></table>"],tr:[2,"<table><tbody>","</tbody></table>"],td:[3,"<table><tbody><tr>","</tr></tbody></table>"],_default:[0,"",""]};Ze.optgroup=Ze.option,Ze.tbody=Ze.tfoot=Ze.colgroup=Ze.caption=Ze.thead,
+Ze.th=Ze.td;var et=/<|&#?\w+;/;!function(){var e=ae.createDocumentFragment(),t=e.appendChild(ae.createElement("div")),n=ae.createElement("input");n.setAttribute("type","radio"),n.setAttribute("checked","checked"),n.setAttribute("name","t"),t.appendChild(n),ve.checkClone=t.cloneNode(!0).cloneNode(!0).lastChild.checked,t.innerHTML="<textarea>x</textarea>",ve.noCloneChecked=!!t.cloneNode(!0).lastChild.defaultValue}();var tt=ae.documentElement,nt=/^key/,rt=/^(?:mouse|pointer|contextmenu|drag|drop)|click/,it=/^([^.]*)(?:\.(.+)|)/;xe.event={global:{},add:function(e,t,n,r,i){var o,a,s,l,u,c,f,p,d,h,g,m=We.get(e);if(m)for(n.handler&&(o=n,n=o.handler,i=o.selector),i&&xe.find.matchesSelector(tt,i),n.guid||(n.guid=xe.guid++),(l=m.events)||(l=m.events={}),(a=m.handle)||(a=m.handle=function(t){return"undefined"!=typeof xe&&xe.event.triggered!==t.type?xe.event.dispatch.apply(e,arguments):void 0}),t=(t||"").match(Fe)||[""],u=t.length;u--;)s=it.exec(t[u])||[],d=g=s[1],h=(s[2]||"").split(".").sort(),d&&(f=xe.event.special[d]||{},d=(i?f.delegateType:f.bindType)||d,f=xe.event.special[d]||{},c=xe.extend({type:d,origType:g,data:r,handler:n,guid:n.guid,selector:i,needsContext:i&&xe.expr.match.needsContext.test(i),namespace:h.join(".")},o),(p=l[d])||(p=l[d]=[],p.delegateCount=0,f.setup&&f.setup.call(e,r,h,a)!==!1||e.addEventListener&&e.addEventListener(d,a)),f.add&&(f.add.call(e,c),c.handler.guid||(c.handler.guid=n.guid)),i?p.splice(p.delegateCount++,0,c):p.push(c),xe.event.global[d]=!0)},remove:function(e,t,n,r,i){var o,a,s,l,u,c,f,p,d,h,g,m=We.hasData(e)&&We.get(e);if(m&&(l=m.events)){for(t=(t||"").match(Fe)||[""],u=t.length;u--;)if(s=it.exec(t[u])||[],d=g=s[1],h=(s[2]||"").split(".").sort(),d){for(f=xe.event.special[d]||{},d=(r?f.delegateType:f.bindType)||d,p=l[d]||[],s=s[2]&&new RegExp("(^|\\.)"+h.join("\\.(?:.*\\.|)")+"(\\.|$)"),a=o=p.length;o--;)c=p[o],!i&&g!==c.origType||n&&n.guid!==c.guid||s&&!s.test(c.namespace)||r&&r!==c.selector&&("**"!==r||!c.selector)||(p.splice(o,1),c.selector&&p.delegateCount--,f.remove&&f.remove.call(e,c));a&&!p.length&&(f.teardown&&f.teardown.call(e,h,m.handle)!==!1||xe.removeEvent(e,d,m.handle),delete l[d])}else for(d in l)xe.event.remove(e,d+t[u],n,r,!0);xe.isEmptyObject(l)&&We.remove(e,"handle events")}},dispatch:function(e){var t,n,r,i,o,a,s=xe.event.fix(e),l=new Array(arguments.length),u=(We.get(this,"events")||{})[s.type]||[],c=xe.event.special[s.type]||{};for(l[0]=s,t=1;t<arguments.length;t++)l[t]=arguments[t];if(s.delegateTarget=this,!c.preDispatch||c.preDispatch.call(this,s)!==!1){for(a=xe.event.handlers.call(this,s,u),t=0;(i=a[t++])&&!s.isPropagationStopped();)for(s.currentTarget=i.elem,n=0;(o=i.handlers[n++])&&!s.isImmediatePropagationStopped();)s.rnamespace&&!s.rnamespace.test(o.namespace)||(s.handleObj=o,s.data=o.data,r=((xe.event.special[o.origType]||{}).handle||o.handler).apply(i.elem,l),void 0!==r&&(s.result=r)===!1&&(s.preventDefault(),s.stopPropagation()));return c.postDispatch&&c.postDispatch.call(this,s),s.result}},handlers:function(e,t){var n,r,i,o,a,s=[],l=t.delegateCount,u=e.target;if(l&&u.nodeType&&!("click"===e.type&&e.button>=1))for(;u!==this;u=u.parentNode||this)if(1===u.nodeType&&("click"!==e.type||u.disabled!==!0)){for(o=[],a={},n=0;n<l;n++)r=t[n],i=r.selector+" ",void 0===a[i]&&(a[i]=r.needsContext?xe(i,this).index(u)>-1:xe.find(i,this,null,[u]).length),a[i]&&o.push(r);o.length&&s.push({elem:u,handlers:o})}return u=this,l<t.length&&s.push({elem:u,handlers:t.slice(l)}),s},addProp:function(e,t){Object.defineProperty(xe.Event.prototype,e,{enumerable:!0,configurable:!0,get:xe.isFunction(t)?function(){if(this.originalEvent)return t(this.originalEvent)}:function(){if(this.originalEvent)return this.originalEvent[e]},set:function(t){Object.defineProperty(this,e,{enumerable:!0,configurable:!0,writable:!0,value:t})}})},fix:function(e){return e[xe.expando]?e:new xe.Event(e)},special:{load:{noBubble:!0},focus:{trigger:function(){if(this!==A()&&this.focus)return this.focus(),!1},delegateType:"focusin"},blur:{trigger:function(){if(this===A()&&this.blur)return this.blur(),!1},delegateType:"focusout"},click:{trigger:function(){if("checkbox"===this.type&&this.click&&l(this,"input"))return this.click(),!1},_default:function(e){return l(e.target,"a")}},beforeunload:{postDispatch:function(e){void 0!==e.result&&e.originalEvent&&(e.originalEvent.returnValue=e.result)}}}},xe.removeEvent=function(e,t,n){e.removeEventListener&&e.removeEventListener(t,n)},xe.Event=function(e,t){return this instanceof xe.Event?(e&&e.type?(this.originalEvent=e,this.type=e.type,this.isDefaultPrevented=e.defaultPrevented||void 0===e.defaultPrevented&&e.returnValue===!1?k:S,this.target=e.target&&3===e.target.nodeType?e.target.parentNode:e.target,this.currentTarget=e.currentTarget,this.relatedTarget=e.relatedTarget):this.type=e,t&&xe.extend(this,t),this.timeStamp=e&&e.timeStamp||xe.now(),void(this[xe.expando]=!0)):new xe.Event(e,t)},xe.Event.prototype={constructor:xe.Event,isDefaultPrevented:S,isPropagationStopped:S,isImmediatePropagationStopped:S,isSimulated:!1,preventDefault:function(){var e=this.originalEvent;this.isDefaultPrevented=k,e&&!this.isSimulated&&e.preventDefault()},stopPropagation:function(){var e=this.originalEvent;this.isPropagationStopped=k,e&&!this.isSimulated&&e.stopPropagation()},stopImmediatePropagation:function(){var e=this.originalEvent;this.isImmediatePropagationStopped=k,e&&!this.isSimulated&&e.stopImmediatePropagation(),this.stopPropagation()}},xe.each({altKey:!0,bubbles:!0,cancelable:!0,changedTouches:!0,ctrlKey:!0,detail:!0,eventPhase:!0,metaKey:!0,pageX:!0,pageY:!0,shiftKey:!0,view:!0,char:!0,charCode:!0,key:!0,keyCode:!0,button:!0,buttons:!0,clientX:!0,clientY:!0,offsetX:!0,offsetY:!0,pointerId:!0,pointerType:!0,screenX:!0,screenY:!0,targetTouches:!0,toElement:!0,touches:!0,which:function(e){var t=e.button;return null==e.which&&nt.test(e.type)?null!=e.charCode?e.charCode:e.keyCode:!e.which&&void 0!==t&&rt.test(e.type)?1&t?1:2&t?3:4&t?2:0:e.which}},xe.event.addProp),xe.each({mouseenter:"mouseover",mouseleave:"mouseout",pointerenter:"pointerover",pointerleave:"pointerout"},function(e,t){xe.event.special[e]={delegateType:t,bindType:t,handle:function(e){var n,r=this,i=e.relatedTarget,o=e.handleObj;return i&&(i===r||xe.contains(r,i))||(e.type=o.origType,n=o.handler.apply(this,arguments),e.type=t),n}}}),xe.fn.extend({on:function(e,t,n,r){return N(this,e,t,n,r)},one:function(e,t,n,r){return N(this,e,t,n,r,1)},off:function(e,t,n){var r,i;if(e&&e.preventDefault&&e.handleObj)return r=e.handleObj,xe(e.delegateTarget).off(r.namespace?r.origType+"."+r.namespace:r.origType,r.selector,r.handler),this;if("object"==typeof e){for(i in e)this.off(i,t,e[i]);return this}return t!==!1&&"function"!=typeof t||(n=t,t=void 0),n===!1&&(n=S),this.each(function(){xe.event.remove(this,e,n,t)})}});var ot=/<(?!area|br|col|embed|hr|img|input|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi,at=/<script|<style|<link/i,st=/checked\s*(?:[^=]|=\s*.checked.)/i,lt=/^true\/(.*)/,ut=/^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;xe.extend({htmlPrefilter:function(e){return e.replace(ot,"<$1></$2>")},clone:function(e,t,n){var r,i,o,a,s=e.cloneNode(!0),l=xe.contains(e.ownerDocument,e);if(!(ve.noCloneChecked||1!==e.nodeType&&11!==e.nodeType||xe.isXMLDoc(e)))for(a=T(s),o=T(e),r=0,i=o.length;r<i;r++)H(o[r],a[r]);if(t)if(n)for(o=o||T(e),a=a||T(s),r=0,i=o.length;r<i;r++)L(o[r],a[r]);else L(e,s);return a=T(s,"script"),a.length>0&&C(a,!l&&T(e,"script")),s},cleanData:function(e){for(var t,n,r,i=xe.event.special,o=0;void 0!==(n=e[o]);o++)if(Ie(n)){if(t=n[We.expando]){if(t.events)for(r in t.events)i[r]?xe.event.remove(n,r):xe.removeEvent(n,r,t.handle);n[We.expando]=void 0}n[$e.expando]&&(n[$e.expando]=void 0)}}}),xe.fn.extend({detach:function(e){return F(this,e,!0)},remove:function(e){return F(this,e)},text:function(e){return Pe(this,function(e){return void 0===e?xe.text(this):this.empty().each(function(){1!==this.nodeType&&11!==this.nodeType&&9!==this.nodeType||(this.textContent=e)})},null,e,arguments.length)},append:function(){return O(this,arguments,function(e){if(1===this.nodeType||11===this.nodeType||9===this.nodeType){var t=D(this,e);t.appendChild(e)}})},prepend:function(){return O(this,arguments,function(e){if(1===this.nodeType||11===this.nodeType||9===this.nodeType){var t=D(this,e);t.insertBefore(e,t.firstChild)}})},before:function(){return O(this,arguments,function(e){this.parentNode&&this.parentNode.insertBefore(e,this)})},after:function(){return O(this,arguments,function(e){this.parentNode&&this.parentNode.insertBefore(e,this.nextSibling)})},empty:function(){for(var e,t=0;null!=(e=this[t]);t++)1===e.nodeType&&(xe.cleanData(T(e,!1)),e.textContent="");return this},clone:function(e,t){return e=null!=e&&e,t=null==t?e:t,this.map(function(){return xe.clone(this,e,t)})},html:function(e){return Pe(this,function(e){var t=this[0]||{},n=0,r=this.length;if(void 0===e&&1===t.nodeType)return t.innerHTML;if("string"==typeof e&&!at.test(e)&&!Ze[(Je.exec(e)||["",""])[1].toLowerCase()]){e=xe.htmlPrefilter(e);try{for(;n<r;n++)t=this[n]||{},1===t.nodeType&&(xe.cleanData(T(t,!1)),t.innerHTML=e);t=0}catch(e){}}t&&this.empty().append(e)},null,e,arguments.length)},replaceWith:function(){var e=[];return O(this,arguments,function(t){var n=this.parentNode;xe.inArray(this,e)<0&&(xe.cleanData(T(this)),n&&n.replaceChild(t,this))},e)}}),xe.each({appendTo:"append",prependTo:"prepend",insertBefore:"before",insertAfter:"after",replaceAll:"replaceWith"},function(e,t){xe.fn[e]=function(e){for(var n,r=[],i=xe(e),o=i.length-1,a=0;a<=o;a++)n=a===o?this:this.clone(!0),xe(i[a])[t](n),ce.apply(r,n.get());return this.pushStack(r)}});var ct=/^margin/,ft=new RegExp("^("+_e+")(?!px)[a-z%]+$","i"),pt=function(e){var t=e.ownerDocument.defaultView;return t&&t.opener||(t=n),t.getComputedStyle(e)};!function(){function e(){if(s){s.style.cssText="box-sizing:border-box;position:relative;display:block;margin:auto;border:1px;padding:1px;top:1%;width:50%",s.innerHTML="",tt.appendChild(a);var e=n.getComputedStyle(s);t="1%"!==e.top,o="2px"===e.marginLeft,r="4px"===e.width,s.style.marginRight="50%",i="4px"===e.marginRight,tt.removeChild(a),s=null}}var t,r,i,o,a=ae.createElement("div"),s=ae.createElement("div");s.style&&(s.style.backgroundClip="content-box",s.cloneNode(!0).style.backgroundClip="",ve.clearCloneStyle="content-box"===s.style.backgroundClip,a.style.cssText="border:0;width:8px;height:0;top:0;left:-9999px;padding:0;margin-top:1px;position:absolute",a.appendChild(s),xe.extend(ve,{pixelPosition:function(){return e(),t},boxSizingReliable:function(){return e(),r},pixelMarginRight:function(){return e(),i},reliableMarginLeft:function(){return e(),o}}))}();var dt=/^(none|table(?!-c[ea]).+)/,ht=/^--/,gt={position:"absolute",visibility:"hidden",display:"block"},mt={letterSpacing:"0",fontWeight:"400"},vt=["Webkit","Moz","ms"],yt=ae.createElement("div").style;xe.extend({cssHooks:{opacity:{get:function(e,t){if(t){var n=M(e,"opacity");return""===n?"1":n}}}},cssNumber:{animationIterationCount:!0,columnCount:!0,fillOpacity:!0,flexGrow:!0,flexShrink:!0,fontWeight:!0,lineHeight:!0,opacity:!0,order:!0,orphans:!0,widows:!0,zIndex:!0,zoom:!0},cssProps:{float:"cssFloat"},style:function(e,t,n,r){if(e&&3!==e.nodeType&&8!==e.nodeType&&e.style){var i,o,a,s=xe.camelCase(t),l=ht.test(t),u=e.style;return l||(t=I(s)),a=xe.cssHooks[t]||xe.cssHooks[s],void 0===n?a&&"get"in a&&void 0!==(i=a.get(e,!1,r))?i:u[t]:(o=typeof n,"string"===o&&(i=Xe.exec(n))&&i[1]&&(n=x(e,t,i),o="number"),null!=n&&n===n&&("number"===o&&(n+=i&&i[3]||(xe.cssNumber[s]?"":"px")),ve.clearCloneStyle||""!==n||0!==t.indexOf("background")||(u[t]="inherit"),a&&"set"in a&&void 0===(n=a.set(e,n,r))||(l?u.setProperty(t,n):u[t]=n)),void 0)}},css:function(e,t,n,r){var i,o,a,s=xe.camelCase(t),l=ht.test(t);return l||(t=I(s)),a=xe.cssHooks[t]||xe.cssHooks[s],a&&"get"in a&&(i=a.get(e,!0,n)),void 0===i&&(i=M(e,t,r)),"normal"===i&&t in mt&&(i=mt[t]),""===n||n?(o=parseFloat(i),n===!0||isFinite(o)?o||0:i):i}}),xe.each(["height","width"],function(e,t){xe.cssHooks[t]={get:function(e,n,r){if(n)return!dt.test(xe.css(e,"display"))||e.getClientRects().length&&e.getBoundingClientRect().width?B(e,t,r):Ye(e,gt,function(){return B(e,t,r)})},set:function(e,n,r){var i,o=r&&pt(e),a=r&&$(e,t,r,"border-box"===xe.css(e,"boxSizing",!1,o),o);return a&&(i=Xe.exec(n))&&"px"!==(i[3]||"px")&&(e.style[t]=n,n=xe.css(e,t)),W(e,n,a)}}}),xe.cssHooks.marginLeft=R(ve.reliableMarginLeft,function(e,t){if(t)return(parseFloat(M(e,"marginLeft"))||e.getBoundingClientRect().left-Ye(e,{marginLeft:0},function(){return e.getBoundingClientRect().left}))+"px"}),xe.each({margin:"",padding:"",border:"Width"},function(e,t){xe.cssHooks[e+t]={expand:function(n){for(var r=0,i={},o="string"==typeof n?n.split(" "):[n];r<4;r++)i[e+Ue[r]+t]=o[r]||o[r-2]||o[0];return i}},ct.test(e)||(xe.cssHooks[e+t].set=W)}),xe.fn.extend({css:function(e,t){return Pe(this,function(e,t,n){var r,i,o={},a=0;if(Array.isArray(t)){for(r=pt(e),i=t.length;a<i;a++)o[t[a]]=xe.css(e,t[a],!1,r);return o}return void 0!==n?xe.style(e,t,n):xe.css(e,t)},e,t,arguments.length>1)}}),xe.Tween=z,z.prototype={constructor:z,init:function(e,t,n,r,i,o){this.elem=e,this.prop=n,this.easing=i||xe.easing._default,this.options=t,this.start=this.now=this.cur(),this.end=r,this.unit=o||(xe.cssNumber[n]?"":"px")},cur:function(){var e=z.propHooks[this.prop];return e&&e.get?e.get(this):z.propHooks._default.get(this)},run:function(e){var t,n=z.propHooks[this.prop];return this.options.duration?this.pos=t=xe.easing[this.easing](e,this.options.duration*e,0,1,this.options.duration):this.pos=t=e,this.now=(this.end-this.start)*t+this.start,this.options.step&&this.options.step.call(this.elem,this.now,this),n&&n.set?n.set(this):z.propHooks._default.set(this),this}},z.prototype.init.prototype=z.prototype,z.propHooks={_default:{get:function(e){var t;return 1!==e.elem.nodeType||null!=e.elem[e.prop]&&null==e.elem.style[e.prop]?e.elem[e.prop]:(t=xe.css(e.elem,e.prop,""),t&&"auto"!==t?t:0)},set:function(e){xe.fx.step[e.prop]?xe.fx.step[e.prop](e):1!==e.elem.nodeType||null==e.elem.style[xe.cssProps[e.prop]]&&!xe.cssHooks[e.prop]?e.elem[e.prop]=e.now:xe.style(e.elem,e.prop,e.now+e.unit)}}},z.propHooks.scrollTop=z.propHooks.scrollLeft={set:function(e){e.elem.nodeType&&e.elem.parentNode&&(e.elem[e.prop]=e.now)}},xe.easing={linear:function(e){return e},swing:function(e){return.5-Math.cos(e*Math.PI)/2},_default:"swing"},xe.fx=z.prototype.init,xe.fx.step={};var xt,bt,wt=/^(?:toggle|show|hide)$/,Tt=/queueHooks$/;xe.Animation=xe.extend(Q,{tweeners:{"*":[function(e,t){var n=this.createTween(e,t);return x(n.elem,e,Xe.exec(t),n),n}]},tweener:function(e,t){xe.isFunction(e)?(t=e,e=["*"]):e=e.match(Fe);for(var n,r=0,i=e.length;r<i;r++)n=e[r],Q.tweeners[n]=Q.tweeners[n]||[],Q.tweeners[n].unshift(t)},prefilters:[Y],prefilter:function(e,t){t?Q.prefilters.unshift(e):Q.prefilters.push(e)}}),xe.speed=function(e,t,n){var r=e&&"object"==typeof e?xe.extend({},e):{complete:n||!n&&t||xe.isFunction(e)&&e,duration:e,easing:n&&t||t&&!xe.isFunction(t)&&t};return xe.fx.off?r.duration=0:"number"!=typeof r.duration&&(r.duration in xe.fx.speeds?r.duration=xe.fx.speeds[r.duration]:r.duration=xe.fx.speeds._default),null!=r.queue&&r.queue!==!0||(r.queue="fx"),r.old=r.complete,r.complete=function(){xe.isFunction(r.old)&&r.old.call(this),r.queue&&xe.dequeue(this,r.queue)},r},xe.fn.extend({fadeTo:function(e,t,n,r){return this.filter(Ve).css("opacity",0).show().end().animate({opacity:t},e,n,r)},animate:function(e,t,n,r){var i=xe.isEmptyObject(e),o=xe.speed(t,n,r),a=function(){var t=Q(this,xe.extend({},e),o);(i||We.get(this,"finish"))&&t.stop(!0)};return a.finish=a,i||o.queue===!1?this.each(a):this.queue(o.queue,a)},stop:function(e,t,n){var r=function(e){var t=e.stop;delete e.stop,t(n)};return"string"!=typeof e&&(n=t,t=e,e=void 0),t&&e!==!1&&this.queue(e||"fx",[]),this.each(function(){var t=!0,i=null!=e&&e+"queueHooks",o=xe.timers,a=We.get(this);if(i)a[i]&&a[i].stop&&r(a[i]);else for(i in a)a[i]&&a[i].stop&&Tt.test(i)&&r(a[i]);for(i=o.length;i--;)o[i].elem!==this||null!=e&&o[i].queue!==e||(o[i].anim.stop(n),t=!1,o.splice(i,1));!t&&n||xe.dequeue(this,e)})},finish:function(e){return e!==!1&&(e=e||"fx"),this.each(function(){var t,n=We.get(this),r=n[e+"queue"],i=n[e+"queueHooks"],o=xe.timers,a=r?r.length:0;for(n.finish=!0,xe.queue(this,e,[]),i&&i.stop&&i.stop.call(this,!0),t=o.length;t--;)o[t].elem===this&&o[t].queue===e&&(o[t].anim.stop(!0),o.splice(t,1));for(t=0;t<a;t++)r[t]&&r[t].finish&&r[t].finish.call(this);delete n.finish})}}),xe.each(["toggle","show","hide"],function(e,t){var n=xe.fn[t];xe.fn[t]=function(e,r,i){return null==e||"boolean"==typeof e?n.apply(this,arguments):this.animate(U(t,!0),e,r,i)}}),xe.each({slideDown:U("show"),slideUp:U("hide"),slideToggle:U("toggle"),fadeIn:{opacity:"show"},fadeOut:{opacity:"hide"},fadeToggle:{opacity:"toggle"}},function(e,t){xe.fn[e]=function(e,n,r){return this.animate(t,e,n,r)}}),xe.timers=[],xe.fx.tick=function(){var e,t=0,n=xe.timers;for(xt=xe.now();t<n.length;t++)e=n[t],e()||n[t]!==e||n.splice(t--,1);n.length||xe.fx.stop(),xt=void 0},xe.fx.timer=function(e){xe.timers.push(e),xe.fx.start()},xe.fx.interval=13,xe.fx.start=function(){bt||(bt=!0,_())},xe.fx.stop=function(){bt=null},xe.fx.speeds={slow:600,fast:200,_default:400},xe.fn.delay=function(e,t){return e=xe.fx?xe.fx.speeds[e]||e:e,t=t||"fx",this.queue(t,function(t,r){var i=n.setTimeout(t,e);r.stop=function(){n.clearTimeout(i)}})},function(){var e=ae.createElement("input"),t=ae.createElement("select"),n=t.appendChild(ae.createElement("option"));e.type="checkbox",ve.checkOn=""!==e.value,ve.optSelected=n.selected,e=ae.createElement("input"),e.value="t",e.type="radio",ve.radioValue="t"===e.value}();var Ct,Et=xe.expr.attrHandle;xe.fn.extend({attr:function(e,t){return Pe(this,xe.attr,e,t,arguments.length>1)},removeAttr:function(e){return this.each(function(){xe.removeAttr(this,e)})}}),xe.extend({attr:function(e,t,n){var r,i,o=e.nodeType;if(3!==o&&8!==o&&2!==o)return"undefined"==typeof e.getAttribute?xe.prop(e,t,n):(1===o&&xe.isXMLDoc(e)||(i=xe.attrHooks[t.toLowerCase()]||(xe.expr.match.bool.test(t)?Ct:void 0)),void 0!==n?null===n?void xe.removeAttr(e,t):i&&"set"in i&&void 0!==(r=i.set(e,n,t))?r:(e.setAttribute(t,n+""),n):i&&"get"in i&&null!==(r=i.get(e,t))?r:(r=xe.find.attr(e,t),null==r?void 0:r))},attrHooks:{type:{set:function(e,t){if(!ve.radioValue&&"radio"===t&&l(e,"input")){var n=e.value;return e.setAttribute("type",t),n&&(e.value=n),t}}}},removeAttr:function(e,t){var n,r=0,i=t&&t.match(Fe);if(i&&1===e.nodeType)for(;n=i[r++];)e.removeAttribute(n)}}),Ct={set:function(e,t,n){return t===!1?xe.removeAttr(e,n):e.setAttribute(n,n),n}},xe.each(xe.expr.match.bool.source.match(/\w+/g),function(e,t){var n=Et[t]||xe.find.attr;Et[t]=function(e,t,r){var i,o,a=t.toLowerCase();return r||(o=Et[a],Et[a]=i,i=null!=n(e,t,r)?a:null,Et[a]=o),i}});var kt=/^(?:input|select|textarea|button)$/i,St=/^(?:a|area)$/i;xe.fn.extend({prop:function(e,t){return Pe(this,xe.prop,e,t,arguments.length>1)},removeProp:function(e){return this.each(function(){delete this[xe.propFix[e]||e]})}}),xe.extend({prop:function(e,t,n){var r,i,o=e.nodeType;if(3!==o&&8!==o&&2!==o)return 1===o&&xe.isXMLDoc(e)||(t=xe.propFix[t]||t,i=xe.propHooks[t]),void 0!==n?i&&"set"in i&&void 0!==(r=i.set(e,n,t))?r:e[t]=n:i&&"get"in i&&null!==(r=i.get(e,t))?r:e[t]},propHooks:{tabIndex:{get:function(e){var t=xe.find.attr(e,"tabindex");return t?parseInt(t,10):kt.test(e.nodeName)||St.test(e.nodeName)&&e.href?0:-1}}},propFix:{for:"htmlFor",class:"className"}}),ve.optSelected||(xe.propHooks.selected={get:function(e){var t=e.parentNode;return t&&t.parentNode&&t.parentNode.selectedIndex,null},set:function(e){var t=e.parentNode;t&&(t.selectedIndex,t.parentNode&&t.parentNode.selectedIndex)}}),xe.each(["tabIndex","readOnly","maxLength","cellSpacing","cellPadding","rowSpan","colSpan","useMap","frameBorder","contentEditable"],function(){xe.propFix[this.toLowerCase()]=this}),xe.fn.extend({addClass:function(e){var t,n,r,i,o,a,s,l=0;if(xe.isFunction(e))return this.each(function(t){xe(this).addClass(e.call(this,t,K(this)))});if("string"==typeof e&&e)for(t=e.match(Fe)||[];n=this[l++];)if(i=K(n),r=1===n.nodeType&&" "+J(i)+" "){for(a=0;o=t[a++];)r.indexOf(" "+o+" ")<0&&(r+=o+" ");s=J(r),i!==s&&n.setAttribute("class",s)}return this},removeClass:function(e){var t,n,r,i,o,a,s,l=0;if(xe.isFunction(e))return this.each(function(t){xe(this).removeClass(e.call(this,t,K(this)))});if(!arguments.length)return this.attr("class","");if("string"==typeof e&&e)for(t=e.match(Fe)||[];n=this[l++];)if(i=K(n),r=1===n.nodeType&&" "+J(i)+" "){for(a=0;o=t[a++];)for(;r.indexOf(" "+o+" ")>-1;)r=r.replace(" "+o+" "," ");s=J(r),i!==s&&n.setAttribute("class",s)}return this},toggleClass:function(e,t){var n=typeof e;return"boolean"==typeof t&&"string"===n?t?this.addClass(e):this.removeClass(e):xe.isFunction(e)?this.each(function(n){xe(this).toggleClass(e.call(this,n,K(this),t),t)}):this.each(function(){var t,r,i,o;if("string"===n)for(r=0,i=xe(this),o=e.match(Fe)||[];t=o[r++];)i.hasClass(t)?i.removeClass(t):i.addClass(t);else void 0!==e&&"boolean"!==n||(t=K(this),t&&We.set(this,"__className__",t),this.setAttribute&&this.setAttribute("class",t||e===!1?"":We.get(this,"__className__")||""))})},hasClass:function(e){var t,n,r=0;for(t=" "+e+" ";n=this[r++];)if(1===n.nodeType&&(" "+J(K(n))+" ").indexOf(t)>-1)return!0;return!1}});var At=/\r/g;xe.fn.extend({val:function(e){var t,n,r,i=this[0];{if(arguments.length)return r=xe.isFunction(e),this.each(function(n){var i;1===this.nodeType&&(i=r?e.call(this,n,xe(this).val()):e,null==i?i="":"number"==typeof i?i+="":Array.isArray(i)&&(i=xe.map(i,function(e){return null==e?"":e+""})),t=xe.valHooks[this.type]||xe.valHooks[this.nodeName.toLowerCase()],t&&"set"in t&&void 0!==t.set(this,i,"value")||(this.value=i))});if(i)return t=xe.valHooks[i.type]||xe.valHooks[i.nodeName.toLowerCase()],t&&"get"in t&&void 0!==(n=t.get(i,"value"))?n:(n=i.value,"string"==typeof n?n.replace(At,""):null==n?"":n)}}}),xe.extend({valHooks:{option:{get:function(e){var t=xe.find.attr(e,"value");return null!=t?t:J(xe.text(e))}},select:{get:function(e){var t,n,r,i=e.options,o=e.selectedIndex,a="select-one"===e.type,s=a?null:[],u=a?o+1:i.length;for(r=o<0?u:a?o:0;r<u;r++)if(n=i[r],(n.selected||r===o)&&!n.disabled&&(!n.parentNode.disabled||!l(n.parentNode,"optgroup"))){if(t=xe(n).val(),a)return t;s.push(t)}return s},set:function(e,t){for(var n,r,i=e.options,o=xe.makeArray(t),a=i.length;a--;)r=i[a],(r.selected=xe.inArray(xe.valHooks.option.get(r),o)>-1)&&(n=!0);return n||(e.selectedIndex=-1),o}}}}),xe.each(["radio","checkbox"],function(){xe.valHooks[this]={set:function(e,t){if(Array.isArray(t))return e.checked=xe.inArray(xe(e).val(),t)>-1}},ve.checkOn||(xe.valHooks[this].get=function(e){return null===e.getAttribute("value")?"on":e.value})});var Nt=/^(?:focusinfocus|focusoutblur)$/;xe.extend(xe.event,{trigger:function(e,t,r,i){var o,a,s,l,u,c,f,p=[r||ae],d=he.call(e,"type")?e.type:e,h=he.call(e,"namespace")?e.namespace.split("."):[];if(a=s=r=r||ae,3!==r.nodeType&&8!==r.nodeType&&!Nt.test(d+xe.event.triggered)&&(d.indexOf(".")>-1&&(h=d.split("."),d=h.shift(),h.sort()),u=d.indexOf(":")<0&&"on"+d,e=e[xe.expando]?e:new xe.Event(d,"object"==typeof e&&e),e.isTrigger=i?2:3,e.namespace=h.join("."),e.rnamespace=e.namespace?new RegExp("(^|\\.)"+h.join("\\.(?:.*\\.|)")+"(\\.|$)"):null,e.result=void 0,e.target||(e.target=r),t=null==t?[e]:xe.makeArray(t,[e]),f=xe.event.special[d]||{},i||!f.trigger||f.trigger.apply(r,t)!==!1)){if(!i&&!f.noBubble&&!xe.isWindow(r)){for(l=f.delegateType||d,Nt.test(l+d)||(a=a.parentNode);a;a=a.parentNode)p.push(a),s=a;s===(r.ownerDocument||ae)&&p.push(s.defaultView||s.parentWindow||n)}for(o=0;(a=p[o++])&&!e.isPropagationStopped();)e.type=o>1?l:f.bindType||d,c=(We.get(a,"events")||{})[e.type]&&We.get(a,"handle"),c&&c.apply(a,t),c=u&&a[u],c&&c.apply&&Ie(a)&&(e.result=c.apply(a,t),e.result===!1&&e.preventDefault());return e.type=d,i||e.isDefaultPrevented()||f._default&&f._default.apply(p.pop(),t)!==!1||!Ie(r)||u&&xe.isFunction(r[d])&&!xe.isWindow(r)&&(s=r[u],s&&(r[u]=null),xe.event.triggered=d,r[d](),xe.event.triggered=void 0,s&&(r[u]=s)),e.result}},simulate:function(e,t,n){var r=xe.extend(new xe.Event,n,{type:e,isSimulated:!0});xe.event.trigger(r,null,t)}}),xe.fn.extend({trigger:function(e,t){return this.each(function(){xe.event.trigger(e,t,this)})},triggerHandler:function(e,t){var n=this[0];if(n)return xe.event.trigger(e,t,n,!0)}}),xe.each("blur focus focusin focusout resize scroll click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup contextmenu".split(" "),function(e,t){xe.fn[t]=function(e,n){return arguments.length>0?this.on(t,null,e,n):this.trigger(t)}}),xe.fn.extend({hover:function(e,t){return this.mouseenter(e).mouseleave(t||e)}}),ve.focusin="onfocusin"in n,ve.focusin||xe.each({focus:"focusin",blur:"focusout"},function(e,t){var n=function(e){xe.event.simulate(t,e.target,xe.event.fix(e))};xe.event.special[t]={setup:function(){var r=this.ownerDocument||this,i=We.access(r,t);i||r.addEventListener(e,n,!0),We.access(r,t,(i||0)+1)},teardown:function(){var r=this.ownerDocument||this,i=We.access(r,t)-1;i?We.access(r,t,i):(r.removeEventListener(e,n,!0),We.remove(r,t))}}});var Dt=n.location,jt=xe.now(),qt=/\?/;xe.parseXML=function(e){var t;if(!e||"string"!=typeof e)return null;try{t=(new n.DOMParser).parseFromString(e,"text/xml")}catch(e){t=void 0}return t&&!t.getElementsByTagName("parsererror").length||xe.error("Invalid XML: "+e),t};var Lt=/\[\]$/,Ht=/\r?\n/g,Ot=/^(?:submit|button|image|reset|file)$/i,Ft=/^(?:input|select|textarea|keygen)/i;xe.param=function(e,t){var n,r=[],i=function(e,t){var n=xe.isFunction(t)?t():t;r[r.length]=encodeURIComponent(e)+"="+encodeURIComponent(null==n?"":n)};if(Array.isArray(e)||e.jquery&&!xe.isPlainObject(e))xe.each(e,function(){i(this.name,this.value)});else for(n in e)Z(n,e[n],t,i);return r.join("&")},xe.fn.extend({serialize:function(){return xe.param(this.serializeArray())},serializeArray:function(){return this.map(function(){var e=xe.prop(this,"elements");return e?xe.makeArray(e):this}).filter(function(){var e=this.type;return this.name&&!xe(this).is(":disabled")&&Ft.test(this.nodeName)&&!Ot.test(e)&&(this.checked||!Qe.test(e))}).map(function(e,t){var n=xe(this).val();return null==n?null:Array.isArray(n)?xe.map(n,function(e){return{name:t.name,value:e.replace(Ht,"\r\n")}}):{name:t.name,value:n.replace(Ht,"\r\n")}}).get()}});var Mt=/%20/g,Rt=/#.*$/,Pt=/([?&])_=[^&]*/,It=/^(.*?):[ \t]*([^\r\n]*)$/gm,Wt=/^(?:about|app|app-storage|.+-extension|file|res|widget):$/,$t=/^(?:GET|HEAD)$/,Bt=/^\/\//,zt={},_t={},Xt="*/".concat("*"),Ut=ae.createElement("a");Ut.href=Dt.href,xe.extend({active:0,lastModified:{},etag:{},ajaxSettings:{url:Dt.href,type:"GET",isLocal:Wt.test(Dt.protocol),global:!0,processData:!0,async:!0,contentType:"application/x-www-form-urlencoded; charset=UTF-8",accepts:{"*":Xt,text:"text/plain",html:"text/html",xml:"application/xml, text/xml",json:"application/json, text/javascript"},contents:{xml:/\bxml\b/,html:/\bhtml/,json:/\bjson\b/},responseFields:{xml:"responseXML",text:"responseText",json:"responseJSON"},converters:{"* text":String,"text html":!0,"text json":JSON.parse,"text xml":xe.parseXML},flatOptions:{url:!0,context:!0}},ajaxSetup:function(e,t){return t?ne(ne(e,xe.ajaxSettings),t):ne(xe.ajaxSettings,e)},ajaxPrefilter:ee(zt),ajaxTransport:ee(_t),ajax:function(e,t){function r(e,t,r,s){var u,p,d,b,w,T=t;c||(c=!0,l&&n.clearTimeout(l),i=void 0,a=s||"",C.readyState=e>0?4:0,u=e>=200&&e<300||304===e,r&&(b=re(h,C,r)),b=ie(h,b,C,u),u?(h.ifModified&&(w=C.getResponseHeader("Last-Modified"),w&&(xe.lastModified[o]=w),w=C.getResponseHeader("etag"),w&&(xe.etag[o]=w)),204===e||"HEAD"===h.type?T="nocontent":304===e?T="notmodified":(T=b.state,p=b.data,d=b.error,u=!d)):(d=T,!e&&T||(T="error",e<0&&(e=0))),C.status=e,C.statusText=(t||T)+"",u?v.resolveWith(g,[p,T,C]):v.rejectWith(g,[C,T,d]),C.statusCode(x),x=void 0,f&&m.trigger(u?"ajaxSuccess":"ajaxError",[C,h,u?p:d]),y.fireWith(g,[C,T]),f&&(m.trigger("ajaxComplete",[C,h]),--xe.active||xe.event.trigger("ajaxStop")))}"object"==typeof e&&(t=e,e=void 0),t=t||{};var i,o,a,s,l,u,c,f,p,d,h=xe.ajaxSetup({},t),g=h.context||h,m=h.context&&(g.nodeType||g.jquery)?xe(g):xe.event,v=xe.Deferred(),y=xe.Callbacks("once memory"),x=h.statusCode||{},b={},w={},T="canceled",C={readyState:0,getResponseHeader:function(e){var t;if(c){if(!s)for(s={};t=It.exec(a);)s[t[1].toLowerCase()]=t[2];t=s[e.toLowerCase()]}return null==t?null:t},getAllResponseHeaders:function(){return c?a:null},setRequestHeader:function(e,t){return null==c&&(e=w[e.toLowerCase()]=w[e.toLowerCase()]||e,b[e]=t),this},overrideMimeType:function(e){return null==c&&(h.mimeType=e),this},statusCode:function(e){var t;if(e)if(c)C.always(e[C.status]);else for(t in e)x[t]=[x[t],e[t]];return this},abort:function(e){var t=e||T;return i&&i.abort(t),r(0,t),this}};if(v.promise(C),h.url=((e||h.url||Dt.href)+"").replace(Bt,Dt.protocol+"//"),h.type=t.method||t.type||h.method||h.type,h.dataTypes=(h.dataType||"*").toLowerCase().match(Fe)||[""],null==h.crossDomain){u=ae.createElement("a");try{u.href=h.url,u.href=u.href,h.crossDomain=Ut.protocol+"//"+Ut.host!=u.protocol+"//"+u.host}catch(e){h.crossDomain=!0}}if(h.data&&h.processData&&"string"!=typeof h.data&&(h.data=xe.param(h.data,h.traditional)),te(zt,h,t,C),c)return C;f=xe.event&&h.global,f&&0===xe.active++&&xe.event.trigger("ajaxStart"),h.type=h.type.toUpperCase(),h.hasContent=!$t.test(h.type),o=h.url.replace(Rt,""),h.hasContent?h.data&&h.processData&&0===(h.contentType||"").indexOf("application/x-www-form-urlencoded")&&(h.data=h.data.replace(Mt,"+")):(d=h.url.slice(o.length),h.data&&(o+=(qt.test(o)?"&":"?")+h.data,delete h.data),h.cache===!1&&(o=o.replace(Pt,"$1"),d=(qt.test(o)?"&":"?")+"_="+jt++ +d),h.url=o+d),h.ifModified&&(xe.lastModified[o]&&C.setRequestHeader("If-Modified-Since",xe.lastModified[o]),xe.etag[o]&&C.setRequestHeader("If-None-Match",xe.etag[o])),(h.data&&h.hasContent&&h.contentType!==!1||t.contentType)&&C.setRequestHeader("Content-Type",h.contentType),C.setRequestHeader("Accept",h.dataTypes[0]&&h.accepts[h.dataTypes[0]]?h.accepts[h.dataTypes[0]]+("*"!==h.dataTypes[0]?", "+Xt+"; q=0.01":""):h.accepts["*"]);for(p in h.headers)C.setRequestHeader(p,h.headers[p]);if(h.beforeSend&&(h.beforeSend.call(g,C,h)===!1||c))return C.abort();if(T="abort",y.add(h.complete),C.done(h.success),C.fail(h.error),i=te(_t,h,t,C)){if(C.readyState=1,f&&m.trigger("ajaxSend",[C,h]),c)return C;h.async&&h.timeout>0&&(l=n.setTimeout(function(){C.abort("timeout")},h.timeout));try{c=!1,i.send(b,r)}catch(e){if(c)throw e;r(-1,e)}}else r(-1,"No Transport");return C},getJSON:function(e,t,n){return xe.get(e,t,n,"json")},getScript:function(e,t){return xe.get(e,void 0,t,"script")}}),xe.each(["get","post"],function(e,t){xe[t]=function(e,n,r,i){return xe.isFunction(n)&&(i=i||r,r=n,n=void 0),xe.ajax(xe.extend({url:e,type:t,dataType:i,data:n,success:r},xe.isPlainObject(e)&&e))}}),xe._evalUrl=function(e){return xe.ajax({url:e,type:"GET",dataType:"script",cache:!0,async:!1,global:!1,throws:!0})},xe.fn.extend({wrapAll:function(e){var t;return this[0]&&(xe.isFunction(e)&&(e=e.call(this[0])),t=xe(e,this[0].ownerDocument).eq(0).clone(!0),this[0].parentNode&&t.insertBefore(this[0]),t.map(function(){for(var e=this;e.firstElementChild;)e=e.firstElementChild;return e}).append(this)),this},wrapInner:function(e){return xe.isFunction(e)?this.each(function(t){xe(this).wrapInner(e.call(this,t))}):this.each(function(){var t=xe(this),n=t.contents();n.length?n.wrapAll(e):t.append(e)})},wrap:function(e){var t=xe.isFunction(e);return this.each(function(n){xe(this).wrapAll(t?e.call(this,n):e)})},unwrap:function(e){return this.parent(e).not("body").each(function(){xe(this).replaceWith(this.childNodes)}),this}}),xe.expr.pseudos.hidden=function(e){return!xe.expr.pseudos.visible(e)},xe.expr.pseudos.visible=function(e){return!!(e.offsetWidth||e.offsetHeight||e.getClientRects().length);
+},xe.ajaxSettings.xhr=function(){try{return new n.XMLHttpRequest}catch(e){}};var Vt={0:200,1223:204},Yt=xe.ajaxSettings.xhr();ve.cors=!!Yt&&"withCredentials"in Yt,ve.ajax=Yt=!!Yt,xe.ajaxTransport(function(e){var t,r;if(ve.cors||Yt&&!e.crossDomain)return{send:function(i,o){var a,s=e.xhr();if(s.open(e.type,e.url,e.async,e.username,e.password),e.xhrFields)for(a in e.xhrFields)s[a]=e.xhrFields[a];e.mimeType&&s.overrideMimeType&&s.overrideMimeType(e.mimeType),e.crossDomain||i["X-Requested-With"]||(i["X-Requested-With"]="XMLHttpRequest");for(a in i)s.setRequestHeader(a,i[a]);t=function(e){return function(){t&&(t=r=s.onload=s.onerror=s.onabort=s.onreadystatechange=null,"abort"===e?s.abort():"error"===e?"number"!=typeof s.status?o(0,"error"):o(s.status,s.statusText):o(Vt[s.status]||s.status,s.statusText,"text"!==(s.responseType||"text")||"string"!=typeof s.responseText?{binary:s.response}:{text:s.responseText},s.getAllResponseHeaders()))}},s.onload=t(),r=s.onerror=t("error"),void 0!==s.onabort?s.onabort=r:s.onreadystatechange=function(){4===s.readyState&&n.setTimeout(function(){t&&r()})},t=t("abort");try{s.send(e.hasContent&&e.data||null)}catch(e){if(t)throw e}},abort:function(){t&&t()}}}),xe.ajaxPrefilter(function(e){e.crossDomain&&(e.contents.script=!1)}),xe.ajaxSetup({accepts:{script:"text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"},contents:{script:/\b(?:java|ecma)script\b/},converters:{"text script":function(e){return xe.globalEval(e),e}}}),xe.ajaxPrefilter("script",function(e){void 0===e.cache&&(e.cache=!1),e.crossDomain&&(e.type="GET")}),xe.ajaxTransport("script",function(e){if(e.crossDomain){var t,n;return{send:function(r,i){t=xe("<script>").prop({charset:e.scriptCharset,src:e.url}).on("load error",n=function(e){t.remove(),n=null,e&&i("error"===e.type?404:200,e.type)}),ae.head.appendChild(t[0])},abort:function(){n&&n()}}}});var Gt=[],Qt=/(=)\?(?=&|$)|\?\?/;xe.ajaxSetup({jsonp:"callback",jsonpCallback:function(){var e=Gt.pop()||xe.expando+"_"+jt++;return this[e]=!0,e}}),xe.ajaxPrefilter("json jsonp",function(e,t,r){var i,o,a,s=e.jsonp!==!1&&(Qt.test(e.url)?"url":"string"==typeof e.data&&0===(e.contentType||"").indexOf("application/x-www-form-urlencoded")&&Qt.test(e.data)&&"data");if(s||"jsonp"===e.dataTypes[0])return i=e.jsonpCallback=xe.isFunction(e.jsonpCallback)?e.jsonpCallback():e.jsonpCallback,s?e[s]=e[s].replace(Qt,"$1"+i):e.jsonp!==!1&&(e.url+=(qt.test(e.url)?"&":"?")+e.jsonp+"="+i),e.converters["script json"]=function(){return a||xe.error(i+" was not called"),a[0]},e.dataTypes[0]="json",o=n[i],n[i]=function(){a=arguments},r.always(function(){void 0===o?xe(n).removeProp(i):n[i]=o,e[i]&&(e.jsonpCallback=t.jsonpCallback,Gt.push(i)),a&&xe.isFunction(o)&&o(a[0]),a=o=void 0}),"script"}),ve.createHTMLDocument=function(){var e=ae.implementation.createHTMLDocument("").body;return e.innerHTML="<form></form><form></form>",2===e.childNodes.length}(),xe.parseHTML=function(e,t,n){if("string"!=typeof e)return[];"boolean"==typeof t&&(n=t,t=!1);var r,i,o;return t||(ve.createHTMLDocument?(t=ae.implementation.createHTMLDocument(""),r=t.createElement("base"),r.href=ae.location.href,t.head.appendChild(r)):t=ae),i=Ne.exec(e),o=!n&&[],i?[t.createElement(i[1])]:(i=E([e],t,o),o&&o.length&&xe(o).remove(),xe.merge([],i.childNodes))},xe.fn.load=function(e,t,n){var r,i,o,a=this,s=e.indexOf(" ");return s>-1&&(r=J(e.slice(s)),e=e.slice(0,s)),xe.isFunction(t)?(n=t,t=void 0):t&&"object"==typeof t&&(i="POST"),a.length>0&&xe.ajax({url:e,type:i||"GET",dataType:"html",data:t}).done(function(e){o=arguments,a.html(r?xe("<div>").append(xe.parseHTML(e)).find(r):e)}).always(n&&function(e,t){a.each(function(){n.apply(this,o||[e.responseText,t,e])})}),this},xe.each(["ajaxStart","ajaxStop","ajaxComplete","ajaxError","ajaxSuccess","ajaxSend"],function(e,t){xe.fn[t]=function(e){return this.on(t,e)}}),xe.expr.pseudos.animated=function(e){return xe.grep(xe.timers,function(t){return e===t.elem}).length},xe.offset={setOffset:function(e,t,n){var r,i,o,a,s,l,u,c=xe.css(e,"position"),f=xe(e),p={};"static"===c&&(e.style.position="relative"),s=f.offset(),o=xe.css(e,"top"),l=xe.css(e,"left"),u=("absolute"===c||"fixed"===c)&&(o+l).indexOf("auto")>-1,u?(r=f.position(),a=r.top,i=r.left):(a=parseFloat(o)||0,i=parseFloat(l)||0),xe.isFunction(t)&&(t=t.call(e,n,xe.extend({},s))),null!=t.top&&(p.top=t.top-s.top+a),null!=t.left&&(p.left=t.left-s.left+i),"using"in t?t.using.call(e,p):f.css(p)}},xe.fn.extend({offset:function(e){if(arguments.length)return void 0===e?this:this.each(function(t){xe.offset.setOffset(this,e,t)});var t,n,r,i,o=this[0];if(o)return o.getClientRects().length?(r=o.getBoundingClientRect(),t=o.ownerDocument,n=t.documentElement,i=t.defaultView,{top:r.top+i.pageYOffset-n.clientTop,left:r.left+i.pageXOffset-n.clientLeft}):{top:0,left:0}},position:function(){if(this[0]){var e,t,n=this[0],r={top:0,left:0};return"fixed"===xe.css(n,"position")?t=n.getBoundingClientRect():(e=this.offsetParent(),t=this.offset(),l(e[0],"html")||(r=e.offset()),r={top:r.top+xe.css(e[0],"borderTopWidth",!0),left:r.left+xe.css(e[0],"borderLeftWidth",!0)}),{top:t.top-r.top-xe.css(n,"marginTop",!0),left:t.left-r.left-xe.css(n,"marginLeft",!0)}}},offsetParent:function(){return this.map(function(){for(var e=this.offsetParent;e&&"static"===xe.css(e,"position");)e=e.offsetParent;return e||tt})}}),xe.each({scrollLeft:"pageXOffset",scrollTop:"pageYOffset"},function(e,t){var n="pageYOffset"===t;xe.fn[e]=function(r){return Pe(this,function(e,r,i){var o;return xe.isWindow(e)?o=e:9===e.nodeType&&(o=e.defaultView),void 0===i?o?o[t]:e[r]:void(o?o.scrollTo(n?o.pageXOffset:i,n?i:o.pageYOffset):e[r]=i)},e,r,arguments.length)}}),xe.each(["top","left"],function(e,t){xe.cssHooks[t]=R(ve.pixelPosition,function(e,n){if(n)return n=M(e,t),ft.test(n)?xe(e).position()[t]+"px":n})}),xe.each({Height:"height",Width:"width"},function(e,t){xe.each({padding:"inner"+e,content:t,"":"outer"+e},function(n,r){xe.fn[r]=function(i,o){var a=arguments.length&&(n||"boolean"!=typeof i),s=n||(i===!0||o===!0?"margin":"border");return Pe(this,function(t,n,i){var o;return xe.isWindow(t)?0===r.indexOf("outer")?t["inner"+e]:t.document.documentElement["client"+e]:9===t.nodeType?(o=t.documentElement,Math.max(t.body["scroll"+e],o["scroll"+e],t.body["offset"+e],o["offset"+e],o["client"+e])):void 0===i?xe.css(t,n,s):xe.style(t,n,i,s)},t,a?i:void 0,a)}})}),xe.fn.extend({bind:function(e,t,n){return this.on(e,null,t,n)},unbind:function(e,t){return this.off(e,null,t)},delegate:function(e,t,n,r){return this.on(t,e,n,r)},undelegate:function(e,t,n){return 1===arguments.length?this.off(e,"**"):this.off(t,e||"**",n)}}),xe.holdReady=function(e){e?xe.readyWait++:xe.ready(!0)},xe.isArray=Array.isArray,xe.parseJSON=JSON.parse,xe.nodeName=l,r=[],i=function(){return xe}.apply(t,r),!(void 0!==i&&(e.exports=i));var Jt=n.jQuery,Kt=n.$;return xe.noConflict=function(e){return n.$===xe&&(n.$=Kt),e&&n.jQuery===xe&&(n.jQuery=Jt),xe},o||(n.jQuery=n.$=xe),xe})},function(e,t){!function(e,t,n,r){"use strict";e.fn.simpleLightbox=function(r){var i,r=e.extend({sourceAttr:"href",overlay:!0,spinner:!0,nav:!0,navText:["&lsaquo;","&rsaquo;"],captions:!0,captionDelay:0,captionSelector:"img",captionType:"attr",captionsData:"title",captionPosition:"bottom",close:!0,closeText:"×",swipeClose:!0,showCounter:!0,fileExt:"png|jpg|jpeg|gif",animationSlide:!0,animationSpeed:250,preloading:!0,enableKeyboard:!0,loop:!0,rel:!1,docClose:!0,swipeTolerance:50,className:"simple-lightbox",widthRatio:.8,heightRatio:.9,disableRightClick:!1,disableScroll:!0,alertError:!0,alertErrorMessage:"Image not found, next image will be loaded",additionalHtml:!1,history:!0},r),o=(t.navigator.pointerEnabled||t.navigator.msPointerEnabled,0),a=0,s=e(),l=function(){var e=n.body||n.documentElement;return e=e.style,""===e.WebkitTransition?"-webkit-":""===e.MozTransition?"-moz-":""===e.OTransition?"-o-":""===e.transition&&""},u=!1,c=[],f=function(t,n){var r=e(n.selector).filter(function(){return e(this).attr("rel")===t});return r},p=r.rel&&r.rel!==!1?f(r.rel,this):this,l=l(),d=0,h=l!==!1,g="pushState"in history,m=!1,v=t.location,y=function(){return v.hash.substring(1)},x=y(),b=function(){var e=(y(),"pid="+(j+1)),t=v.href.split("#")[0]+"#"+e;g?history[m?"replaceState":"pushState"]("",n.title,t):m?v.replace(t):v.hash=e,m=!0},w=function(){g?history.pushState("",n.title,v.pathname+v.search):v.hash="",clearTimeout(i)},T=function(){m?i=setTimeout(b,800):b()},C="simplelb",E=e("<div>").addClass("sl-overlay"),k=e("<button>").addClass("sl-close").html(r.closeText),S=e("<div>").addClass("sl-spinner").html("<div></div>"),A=e("<div>").addClass("sl-navigation").html('<button class="sl-prev">'+r.navText[0]+'</button><button class="sl-next">'+r.navText[1]+"</button>"),N=e("<div>").addClass("sl-counter").html('<span class="sl-current"></span>/<span class="sl-total"></span>'),D=!1,j=0,q=e("<div>").addClass("sl-caption pos-"+r.captionPosition),L=e("<div>").addClass("sl-image"),H=e("<div>").addClass("sl-wrapper").addClass(r.className),O=function(t){if(!r.fileExt)return!0;var n=/\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$/gim,i=e(t).attr(r.sourceAttr).match(n);return i&&"a"==e(t).prop("tagName").toLowerCase()&&new RegExp(".("+r.fileExt+")$","i").test(i)},F=function(){r.close&&k.appendTo(H),r.showCounter&&p.length>1&&(N.appendTo(H),N.find(".sl-total").text(p.length)),r.nav&&A.appendTo(H),r.spinner&&S.appendTo(H)},M=function(t){t.trigger(e.Event("show.simplelightbox")),r.disableScroll&&(d=X("hide")),H.appendTo("body"),L.appendTo(H),r.overlay&&E.appendTo(e("body")),D=!0,j=p.index(t),s=e("<img/>").hide().attr("src",t.attr(r.sourceAttr)),c.indexOf(t.attr(r.sourceAttr))==-1&&c.push(t.attr(r.sourceAttr)),L.html("").attr("style",""),s.appendTo(L),W(),E.fadeIn("fast"),e(".sl-close").fadeIn("fast"),S.show(),A.fadeIn("fast"),e(".sl-wrapper .sl-counter .sl-current").text(j+1),N.fadeIn("fast"),R(),r.preloading&&B(),setTimeout(function(){t.trigger(e.Event("shown.simplelightbox"))},r.animationSpeed)},R=function(n){if(s.length){var i=new Image,o=e(t).width()*r.widthRatio,a=e(t).height()*r.heightRatio;i.src=s.attr("src"),e(i).bind("error",function(t){p.eq(j).trigger(e.Event("error.simplelightbox")),D=!1,u=!0,S.hide(),r.alertError&&alert(r.alertErrorMessage),z(1==n||n==-1?n:1)}),i.onload=function(){"undefined"!=typeof n&&p.eq(j).trigger(e.Event("changed.simplelightbox")).trigger(e.Event((1===n?"nextDone":"prevDone")+".simplelightbox")),r.history&&T(),c.indexOf(s.attr("src"))==-1&&c.push(s.attr("src"));var l=i.width,f=i.height;if(l>o||f>a){var g=l/f>o/a?l/o:f/a;l/=g,f/=g}e(".sl-image").css({top:(e(t).height()-f)/2+"px",left:(e(t).width()-l-d)/2+"px"}),S.hide(),s.css({width:l+"px",height:f+"px"}).fadeIn("fast"),u=!0;var m,v="self"==r.captionSelector?p.eq(j):p.eq(j).find(r.captionSelector);if(m="data"==r.captionType?v.data(r.captionsData):"text"==r.captionType?v.html():v.prop(r.captionsData),r.loop||(0===j&&e(".sl-prev").hide(),j>=p.length-1&&e(".sl-next").hide(),j>0&&e(".sl-prev").show(),j<p.length-1&&e(".sl-next").show()),1==p.length&&e(".sl-prev, .sl-next").hide(),1==n||n==-1){var y={opacity:1};r.animationSlide&&(h?(I(0,100*n+"px"),setTimeout(function(){I(r.animationSpeed/1e3,"0px")},50)):y.left=parseInt(e(".sl-image").css("left"))+100*n+"px"),e(".sl-image").animate(y,r.animationSpeed,function(){D=!1,P(m)})}else D=!1,P(m);r.additionalHtml&&0===e(".sl-additional-html").length&&e("<div>").html(r.additionalHtml).addClass("sl-additional-html").appendTo(e(".sl-image"))}}},P=function(t){""!==t&&"undefined"!=typeof t&&r.captions&&q.html(t).hide().appendTo(e(".sl-image")).delay(r.captionDelay).fadeIn("fast")},I=function(t,n){var r={};r[l+"transform"]="translateX("+n+")",r[l+"transition"]=l+"transform "+t+"s linear",e(".sl-image").css(r)},W=function(){e(t).on("resize."+C,R),e(n).on("click."+C+" touchstart."+C,".sl-close",function(e){e.preventDefault(),u&&_()}),r.history&&setTimeout(function(){e(t).on("hashchange."+C,function(){if(u&&y()===x)return void _()})},40),A.on("click."+C,"button",function(t){t.preventDefault(),o=0,z(e(this).hasClass("sl-next")?1:-1)});var i=0,s=0,l=0,c=0,f=!1,d=0;L.on("touchstart."+C+" mousedown."+C,function(e){return!!f||(h&&(d=parseInt(L.css("left"))),f=!0,i=e.originalEvent.pageX||e.originalEvent.touches[0].pageX,l=e.originalEvent.pageY||e.originalEvent.touches[0].pageY,!1)}).on("touchmove."+C+" mousemove."+C+" pointermove MSPointerMove",function(e){return!f||(e.preventDefault(),s=e.originalEvent.pageX||e.originalEvent.touches[0].pageX,c=e.originalEvent.pageY||e.originalEvent.touches[0].pageY,o=i-s,a=l-c,void(r.animationSlide&&(h?I(0,-o+"px"):L.css("left",d-o+"px"))))}).on("touchend."+C+" mouseup."+C+" touchcancel."+C+" mouseleave."+C+" pointerup pointercancel MSPointerUp MSPointerCancel",function(e){if(f){f=!1;var t=!0;r.loop||(0===j&&o<0&&(t=!1),j>=p.length-1&&o>0&&(t=!1)),Math.abs(o)>r.swipeTolerance&&t?z(o>0?1:-1):r.animationSlide&&(h?I(r.animationSpeed/1e3,"0px"):L.animate({left:d+"px"},r.animationSpeed/2)),r.swipeClose&&Math.abs(a)>50&&Math.abs(o)<r.swipeTolerance&&_()}})},$=function(){A.off("click","button"),e(n).off("click."+C,".sl-close"),e(t).off("resize."+C),e(t).off("hashchange."+C)},B=function(){var t=j+1<0?p.length-1:j+1>=p.length-1?0:j+1,n=j-1<0?p.length-1:j-1>=p.length-1?0:j-1;e("<img />").attr("src",p.eq(t).attr(r.sourceAttr)).on("load",function(){c.indexOf(e(this).attr("src"))==-1&&c.push(e(this).attr("src")),p.eq(j).trigger(e.Event("nextImageLoaded.simplelightbox"))}),e("<img />").attr("src",p.eq(n).attr(r.sourceAttr)).on("load",function(){c.indexOf(e(this).attr("src"))==-1&&c.push(e(this).attr("src")),p.eq(j).trigger(e.Event("prevImageLoaded.simplelightbox"))})},z=function(t){p.eq(j).trigger(e.Event("change.simplelightbox")).trigger(e.Event((1===t?"next":"prev")+".simplelightbox"));var n=j+t;if(!(D||(n<0||n>=p.length)&&r.loop===!1)){j=n<0?p.length-1:n>p.length-1?0:n,e(".sl-wrapper .sl-counter .sl-current").text(j+1);var i={opacity:0};r.animationSlide&&(h?I(r.animationSpeed/1e3,-100*t-o+"px"):i.left=parseInt(e(".sl-image").css("left"))+-100*t+"px"),e(".sl-image").animate(i,r.animationSpeed,function(){setTimeout(function(){var n=p.eq(j);s.attr("src",n.attr(r.sourceAttr)),c.indexOf(n.attr(r.sourceAttr))==-1&&S.show(),e(".sl-caption").remove(),R(t),r.preloading&&B()},100)})}},_=function(){if(!D){var t=p.eq(j),n=!1;t.trigger(e.Event("close.simplelightbox")),r.history&&w(),e(".sl-image img, .sl-overlay, .sl-close, .sl-navigation, .sl-image .sl-caption, .sl-counter").fadeOut("fast",function(){r.disableScroll&&X("show"),e(".sl-wrapper, .sl-overlay").remove(),$(),n||t.trigger(e.Event("closed.simplelightbox")),n=!0}),s=e(),u=!1,D=!1}},X=function(r){var i=0;if("hide"==r){var o=t.innerWidth;if(!o){var a=n.documentElement.getBoundingClientRect();o=a.right-Math.abs(a.left)}if(n.body.clientWidth<o){var s=n.createElement("div"),l=parseInt(e("body").css("padding-right"),10);s.className="sl-scrollbar-measure",e("body").append(s),i=s.offsetWidth-s.clientWidth,e(n.body)[0].removeChild(s),e("body").data("padding",l),i>0&&e("body").addClass("hidden-scroll").css({"padding-right":l+i})}}else e("body").removeClass("hidden-scroll").css({"padding-right":e("body").data("padding")});return i};return F(),p.on("click."+C,function(t){if(O(this)){if(t.preventDefault(),D)return!1;M(e(this))}}),e(n).on("click."+C+" touchstart."+C,function(t){u&&r.docClose&&0===e(t.target).closest(".sl-image").length&&0===e(t.target).closest(".sl-navigation").length&&_()}),r.disableRightClick&&e(n).on("contextmenu",".sl-image img",function(e){return!1}),r.enableKeyboard&&e(n).on("keyup."+C,function(e){if(o=0,u){e.preventDefault();var t=e.keyCode;27==t&&_(),37!=t&&39!=e.keyCode||z(39==e.keyCode?1:-1)}}),this.open=function(t){t=t||e(this[0]),M(t)},this.next=function(){z(1)},this.prev=function(){z(-1)},this.close=function(){_()},this.destroy=function(){e(n).unbind("click."+C).unbind("keyup."+C),_(),e(".sl-overlay, .sl-wrapper").remove(),this.off("click")},this.refresh=function(){this.destroy(),e(this.selector).simpleLightbox(r)},this}}(jQuery,window,document)},function(e,t){e.exports=' <div> <div class=my-gallery :class=album_class> <a :href=image.src v-for="image,key in images"> <img :src=image.src alt="" :title=image.title :class=image_class /> </a> </div> </div> '},function(e,t,n){function r(e,t){for(var n=0;n<e.length;n++){var r=e[n],i=f[r.id];if(i){i.refs++;for(var o=0;o<i.parts.length;o++)i.parts[o](r.parts[o]);for(;o<r.parts.length;o++)i.parts.push(l(r.parts[o],t))}else{for(var a=[],o=0;o<r.parts.length;o++)a.push(l(r.parts[o],t));f[r.id]={id:r.id,refs:1,parts:a}}}}function i(e){for(var t=[],n={},r=0;r<e.length;r++){var i=e[r],o=i[0],a=i[1],s=i[2],l=i[3],u={css:a,media:s,sourceMap:l};n[o]?n[o].parts.push(u):t.push(n[o]={id:o,parts:[u]})}return t}function o(e,t){var n=h(),r=v[v.length-1];if("top"===e.insertAt)r?r.nextSibling?n.insertBefore(t,r.nextSibling):n.appendChild(t):n.insertBefore(t,n.firstChild),v.push(t);else{if("bottom"!==e.insertAt)throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");n.appendChild(t)}}function a(e){e.parentNode.removeChild(e);var t=v.indexOf(e);t>=0&&v.splice(t,1)}function s(e){var t=document.createElement("style");return t.type="text/css",o(e,t),t}function l(e,t){var n,r,i;if(t.singleton){var o=m++;n=g||(g=s(t)),r=u.bind(null,n,o,!1),i=u.bind(null,n,o,!0)}else n=s(t),r=c.bind(null,n),i=function(){a(n)};return r(e),function(t){if(t){if(t.css===e.css&&t.media===e.media&&t.sourceMap===e.sourceMap)return;r(e=t)}else i()}}function u(e,t,n,r){var i=n?"":r.css;if(e.styleSheet)e.styleSheet.cssText=y(t,i);else{var o=document.createTextNode(i),a=e.childNodes;a[t]&&e.removeChild(a[t]),a.length?e.insertBefore(o,a[t]):e.appendChild(o)}}function c(e,t){var n=t.css,r=t.media,i=t.sourceMap;if(r&&e.setAttribute("media",r),i&&(n+="\n/*# sourceURL="+i.sources[0]+" */",n+="\n/*# sourceMappingURL=data:application/json;base64,"+btoa(unescape(encodeURIComponent(JSON.stringify(i))))+" */"),e.styleSheet)e.styleSheet.cssText=n;else{for(;e.firstChild;)e.removeChild(e.firstChild);e.appendChild(document.createTextNode(n))}}var f={},p=function(e){var t;return function(){return"undefined"==typeof t&&(t=e.apply(this,arguments)),t}},d=p(function(){return/msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase())}),h=p(function(){return document.head||document.getElementsByTagName("head")[0]}),g=null,m=0,v=[];e.exports=function(e,t){t=t||{},"undefined"==typeof t.singleton&&(t.singleton=d()),"undefined"==typeof t.insertAt&&(t.insertAt="bottom");var n=i(e);return r(n,t),function(e){for(var o=[],a=0;a<n.length;a++){var s=n[a],l=f[s.id];l.refs--,o.push(l)}if(e){var u=i(e);r(u,t)}for(var a=0;a<o.length;a++){var l=o[a];if(0===l.refs){for(var c=0;c<l.parts.length;c++)l.parts[c]();delete f[l.id]}}}};var y=function(){var e=[];return function(t,n){return e[t]=n,e.filter(Boolean).join("\n")}}()},function(e,t,n){var r=n(4);"string"==typeof r&&(r=[[e.id,r,""]]);n(8)(r,{});r.locals&&(e.exports=r.locals)}])});
 
 /***/ }),
-/* 261 */
+/* 266 */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=\"message\">\r\n    <div class=\"uk-container\">\r\n        <vk-grid class=\"uk-grid-small\">\r\n            <!-- left column -->\r\n            <div class=\"uk-width-1-4@m crop scrollbox\">\r\n                <br/>\r\n                <div>\r\n                    <p class=\"uk-label uk-label-warning sticky\">Consult ID {{currentConsult.consult_id}}</p>\r\n                </div>\r\n                <!-- Consult Request -->\r\n                <br/>\r\n                <div id=\"consultinfo\">\r\n                    <div class=\"uk-text-left\">\r\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\r\n                    </div>\r\n                    <div class=\"uk-form-horizontal\">\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief\r\n                                Complain</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>{{currentConsult.consult_complain}}</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and\r\n                                plan</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>{{currentConsult.consult_plan}}</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <!-- Not Require -->\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Consult\r\n                                Order</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>{{currentConsult.consult_order}}</p>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <br/>\r\n                <vk-offcanvas-content>\r\n                        <vk-button @click=\"show = !show\" class=\"uk-align-center\">Click to view Information</vk-button>\r\n                        <vk-offcanvas :show.sync=\"show\">\r\n                                <vk-offcanvas-close @click=\"show = false\"></vk-offcanvas-close>\r\n                                <div id=\"personalinfo\">\r\n                                        <div class=\"uk-text-left\">\r\n                                            <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\r\n                                        </div>\r\n                                        <div class=\"uk-form-horizontal\">\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's\r\n                                                    name</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.patient_firstname}} {{currentConsult.patient_lastname}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                                    Birth</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.patient_dob}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.patient_gender}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>\r\n                                                        {{currentConsult.patient_address}}\r\n                                                    </p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary\r\n                                                    Doctor</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.primary_doctor}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                        </div>\r\n                                    </div>\r\n                                <div id=\"medicalinfo\">\r\n                                        <div class=\"uk-text-left\">\r\n                                            <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\r\n                                        </div>\r\n                                        <div class=\"uk-form-horizontal\">\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health\r\n                                                    Condition</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.health_condition}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.med_dx}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.med_bw}} kg</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\r\n                                                <div class=\"uk-form-controls unit\">\r\n                                                    <p>{{currentConsult.med_bmi}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\r\n                                                <div class=\"uk-form-controls unit\">\r\n                                                    <p>{{currentConsult.med_t}} °C</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                                <div class=\"uk-form-controls unit\">\r\n                                                    <p>{{currentConsult.med_fbs}} mg%</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\r\n                                                <div class=\"uk-form-controls unit\">\r\n                                                    <p>{{currentConsult.med_cr}} Cr</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.med_clearance}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.med_stage}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                        </div>\r\n                                    </div>\r\n                                    <br/>\r\n                                    <!-- Record -->\r\n                                    <div id=\"recordinfo\">\r\n                                        <div class=\"uk-text-left\">\r\n                                            <h2 class=\"uk-heading-line\"><span>Record</span></h2>\r\n                                        </div>\r\n                                        <div class=\"uk-margin\">\r\n                                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\r\n                                        </div>\r\n                                        <div class=\"uk-form-horizontal unit\">\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                                    Diagnosis</label>\r\n                                                <div class=\"uk-form-controls \">\r\n                                                    <p>{{currentConsult.rec01_date}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                                <div class=\"uk-form-controls \">\r\n                                                    <p>{{currentConsult.rec01_fbs}} mg%</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.rec01_bp1}} mmHg</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.rec01_bp2}} mmHg</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.rec01_p}} /min</p>\r\n                                                </div>\r\n                                            </div>\r\n                                        </div>\r\n                    \r\n                                        <div class=\"uk-margin\">\r\n                                            <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\r\n                                        </div>\r\n                                        <div class=\"uk-form-horizontal unit\">\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                                    Diagnosis</label>\r\n                                                <div class=\"uk-form-controls \">\r\n                                                    <p>{{currentConsult.rec02_date}}</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                                                <div class=\"uk-form-controls \">\r\n                                                    <p>{{currentConsult.rec02_fbs}} mg%</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.rec02_bp1}} mmHg</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.rec02_bp2}} mmHg</p>\r\n                                                </div>\r\n                                            </div>\r\n                                            <div class=\"uk-margin\">\r\n                                                <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\r\n                                                <div class=\"uk-form-controls\">\r\n                                                    <p>{{currentConsult.rec02_p}} /min</p>\r\n                                                </div>\r\n                                            </div>\r\n                                        </div>\r\n                                    </div>\r\n                        </vk-offcanvas>\r\n                      </vk-offcanvas-content>\r\n            </div>\r\n\r\n            <!-- center column -->\r\n            <div class=\"uk-width-expand@m\">\r\n                <div class=\"scrollbox\">\r\n                    <ol class=\"chat\">\r\n                        <li v-for=\"message in messages\"\r\n                            v-bind:class=\"{ self: isSelf(message.user_id), 'other': !isSelf(message.user_id) }\">\r\n                            <div class=\"msg\">\r\n                                <p>{{message.user.first_name}} {{message.user.last_name}}</p>\r\n                                <p>{{message.message}}</p>\r\n                                <time>{{message.created_at}}</time>\r\n                            </div>\r\n                        </li>\r\n                    </ol>\r\n                </div>\r\n                <div class=\"centered\" v-if=\"isPending()\">\r\n                    <textarea v-model=\"message\" v-on:keyup.enter=\"sendMessage\" class=\"uk-textarea center-block chatbox\" id=\"message-box\" rows=\"2\" type=\"text\" placeholder=\"Type here\"></textarea>\r\n                    <button v-on:click=\"sendMessage\" class=\"uk-button uk-button-primary\" id=\"send-btn\">Send</button>\r\n                </div>\r\n            </div>\r\n            <div class=\"vertical-divider\"></div>\r\n            <!-- right column -->\r\n            <div class=\"uk-width-1-4@m\">\r\n                <div v-if=\"isPending()\" class=\"js-upload uk-placeholder uk-text-center upload\">\r\n                    <span><vk-icon icon=\"cloud-upload\"></vk-icon></span>\r\n                    <span class=\"uk-text-middle\">Upload file(s) here</span>\r\n                    <div uk-form-custom>\r\n                        <input type=\"file\" multiple v-on:change=\"onFilesChange\">\r\n                        <!-- <span class=\"uk-link\">selecting one</span> -->\r\n                        <button v-on:click=\"uploadFiles\">Upload</button>\r\n                    </div>\r\n                </div>\r\n                <progress id=\"js-progressbar\" class=\"uk-progress\" value=\"0\" max=\"100\" hidden></progress>\r\n                <!-- Uploaded file(s) position -->\r\n                <div class=\"scrollbox\">\r\n                    <vk-grid gutter=\"small\" class=\"uk-child-width-1-1@s uk-child-width-1-1@m uk-text-center\" style=\"max-height: 60vh;\">\r\n                        <div v-for=\"attachment in attachments\">\r\n                            <vk-card style=\"word-wrap: break-word;\" v-if=\"isImage(attachment)\" width=\"100px\">\r\n                                <div id=\"app\">\r\n                                        <lightbox\r\n                                        id=\"mylightbox\"\r\n                                        :images=\"lightbox_image(attachment.file_name)\"\r\n                                        :image_class=\" 'img-responsive img-rounded' \"\r\n                                        :options=\"options\">\r\n                                      </lightbox>\r\n                                        <!--<a class=\"uk-inline\" v-bind:src=\"image_path(attachment.file_name)\" data-caption=\"Caption 1\">-->\r\n                                            <!--<img v-bind:src=\"image_path(attachment.file_name)\">-->\r\n                                        <!--</a>-->\r\n                                </div>\r\n                                <!-- <img v-bind:src=\"image_path(attachment.file_name)\"> <br> -->\r\n                                <!--path to file: {{image_path}}{{attachment.file_name}}-->\r\n                            </vk-card>\r\n                            <vk-card v-on:click=\"downloadAttachment(attachment.attachment_id)\" v-if=\"!isImage(attachment)\" style=\"word-wrap: break-word;\">\r\n                                [Download]<br>\r\n                                {{attachment.file_name}}\r\n                            </vk-card>\r\n                        </div>\r\n                    </vk-grid>\r\n                </div>\r\n            </div>\r\n        </vk-grid>\r\n    </div>\r\n</div>";
+
+/***/ }),
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(262)
+  __webpack_require__(268)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(264)
+var __vue_script__ = __webpack_require__(270)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -42109,7 +44291,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-ceb12dcc"
+var __vue_scopeId__ = "data-v-4b485300"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -42120,7 +44302,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/message/order/reply.vue"
+Component.options.__file = "resources\\assets\\js\\components\\message\\order\\reply.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -42129,9 +44311,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-ceb12dcc", Component.options)
+    hotAPI.createRecord("data-v-4b485300", Component.options)
   } else {
-    hotAPI.reload("data-v-ceb12dcc", Component.options)
+    hotAPI.reload("data-v-4b485300", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -42142,23 +44324,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 262 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(263);
+var content = __webpack_require__(269);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("3203354a", content, false, {});
+var update = __webpack_require__(5)("2e19e863", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ceb12dcc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./reply.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ceb12dcc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./reply.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4b485300\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./reply.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4b485300\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./reply.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -42168,7 +44350,7 @@ if(false) {
 }
 
 /***/ }),
-/* 263 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -42176,20 +44358,20 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\n.scrollbox[data-v-ceb12dcc] {\n    height: 80vh;\n    overflow: auto;\n}\n.vertical-divider[data-v-ceb12dcc] {\n    border-left: 2px solid #F8F8F8;\n    max-height: 100%;\n    margin-top: 20px;\n    margin-bottom: 20px;\n}\n", ""]);
+exports.push([module.i, "\n.scrollbox[data-v-4b485300] {\n    height: 80vh;\n    overflow: auto;\n}\n.vertical-divider[data-v-4b485300] {\n    border-left: 2px solid #F8F8F8;\n    max-height: 100%;\n    margin-top: 20px;\n    margin-bottom: 20px;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 264 */
+/* 270 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(265),
+    template: __webpack_require__(271),
     data: function data() {
         return {
             consult_order: ''
@@ -42229,23 +44411,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 265 */
+/* 271 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"reply\">\n    <div class=\"uk-container\">\n        <div>\n            <br/>\n            <p class=\"uk-label uk-label-warning sticky\">Consult ID 601235554</p>\n        </div>\n        <vk-grid class=\"uk-grid-small\">\n            <!-- left column -->\n            <div class=\"uk-width-1-3@m crop scrollbox\">\n                <div id=\"personalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\n                    </div>\n                    <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's\n                                name</label>\n                            <div class=\"uk-form-controls\">\n                                <p>Sammy Read</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                Birth</label>\n                            <div class=\"uk-form-controls\">\n                                <p>13/12/1995</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>\n                            <div class=\"uk-form-controls\">\n                                <p>Male</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\n                            <div class=\"uk-form-controls\">\n                                <p>\n                                    123/6 moo3 Banndu Mueang Lampang 57100\n                                </p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary\n                                Doctor</label>\n                            <div class=\"uk-form-controls\">\n                                <p>Mr. John Ruper</p>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <!-- Medical Information -->\n                <br/>\n                <div id=\"medicalinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\n                    </div>\n                    <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health\n                                Condition</label>\n                            <div class=\"uk-form-controls\">\n                                <p>High Blood Pressure</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\n                            <div class=\"uk-form-controls\">\n                                <p>61223</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\n                            <div class=\"uk-form-controls\">\n                                <p>DM</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\n                            <div class=\"uk-form-controls\">\n                                <p>65 kg</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>26.6</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>37 °C</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>100 mg%</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\n                            <div class=\"uk-form-controls unit\">\n                                <p>0.43 Cr</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\n                            <div class=\"uk-form-controls\">\n                                <p>122.1</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\n                            <div class=\"uk-form-controls\">\n                                <p>1</p>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <br/>\n                <!-- Record -->\n                <div id=\"recordinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Record</span></h2>\n                    </div>\n                    <div class=\"uk-margin\">\n                        <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                Diagnosis</label>\n                            <div class=\"uk-form-controls \">\n                                <p>14/04/2018</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                            <div class=\"uk-form-controls \">\n                                <p>100 mg%</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                            <div class=\"uk-form-controls\">\n                                <p>200/90 mmHg</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                            <div class=\"uk-form-controls\">\n                                <p>110/90 mmHg</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                            <div class=\"uk-form-controls\">\n                                <p>120 /min</p>\n                            </div>\n                        </div>\n                    </div>\n\n                    <div class=\"uk-margin\">\n                        <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\n                    </div>\n                    <div class=\"uk-form-horizontal unit\">\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\n                                Diagnosis</label>\n                            <div class=\"uk-form-controls \">\n                                <p>12/06/2018</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\n                            <div class=\"uk-form-controls \">\n                                <p>100 mg%</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\n                            <div class=\"uk-form-controls\">\n                                <p>115/89 mmHg</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\n                            <div class=\"uk-form-controls\">\n                                <p>110/90 mmHg</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\n                            <div class=\"uk-form-controls\">\n                                <p>80 /min</p>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n\n                <!-- Consult Request -->\n                <br/>\n                <div id=\"consultinfo\">\n                    <div class=\"uk-text-left\">\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\n                    </div>\n                    <div class=\"uk-form-horizontal\">\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief\n                                Complain</label>\n                            <div class=\"uk-form-controls\">\n                                <p>FBS >= 130 mg% 2 visit</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and\n                                plan</label>\n                            <div class=\"uk-form-controls\">\n                                <p>MFM 1x2 0pc, Slmvas 1209 ½ x ns</p>\n                            </div>\n                        </div>\n                        <div class=\"uk-margin\">\n                            <!-- Not Require -->\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress\n                                notes</label>\n                            <div class=\"uk-form-controls\">\n                                <p>-</p>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class=\"vertical-divider\"></div>\n            <!-- right column -->\n            <div class=\"uk-width-expand@m\">\n                <form class=\"uk-margin-large\">\n                    <!-- Consult Request -->\n                    <div id=\"consultinfo\">\n                        <div class=\"uk-text-left\">\n                            <h2 class=\"uk-heading-line\"><span>Consult Order</span></h2>\n                        </div>\n                        <div class=\"uk-form-horizontal\">\n                            <div class=\"uk-margin\">\n                                <!-- Not Require -->\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Order</label>\n                                <div class=\"uk-form-controls\">\n                                    <textarea v-model=\"consult_order\" class=\"uk-textarea\" id=\"form-horizontal-text\" rows=\"20\"\n                                              placeholder=\"Type here...\"></textarea>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <botton v-on:click=\"replyConsult\" class=\"uk-button uk-button-primary uk-align-right\">Send</botton>\n                </form>\n            </div>\n\n        </vk-grid>\n    </div>\n</div>   \n    \n    ";
+module.exports = "<div id=\"reply\">\r\n    <div class=\"uk-container\">\r\n        <div>\r\n            <br/>\r\n            <p class=\"uk-label uk-label-warning sticky\">Consult ID 601235554</p>\r\n        </div>\r\n        <vk-grid class=\"uk-grid-small\">\r\n            <!-- left column -->\r\n            <div class=\"uk-width-1-3@m crop scrollbox\">\r\n                <div id=\"personalinfo\">\r\n                    <div class=\"uk-text-left\">\r\n                        <h2 class=\"uk-heading-line\"><span>Patient's Information</span></h2>\r\n                    </div>\r\n                    <div class=\"uk-form-horizontal\">\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Patient's\r\n                                name</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>Sammy Read</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                Birth</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>13/12/1995</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Gender</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>Male</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Address</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>\r\n                                    123/6 moo3 Banndu Mueang Lampang 57100\r\n                                </p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Primary\r\n                                Doctor</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>Mr. John Ruper</p>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <!-- Medical Information -->\r\n                <br/>\r\n                <div id=\"medicalinfo\">\r\n                    <div class=\"uk-text-left\">\r\n                        <h2 class=\"uk-heading-line\"><span>Physical examination</span></h2>\r\n                    </div>\r\n                    <div class=\"uk-form-horizontal\">\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Health\r\n                                Condition</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>High Blood Pressure</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">HN</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>61223</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Dx</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>DM</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BW</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>65 kg</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BMI</label>\r\n                            <div class=\"uk-form-controls unit\">\r\n                                <p>26.6</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">T</label>\r\n                            <div class=\"uk-form-controls unit\">\r\n                                <p>37 °C</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                            <div class=\"uk-form-controls unit\">\r\n                                <p>100 mg%</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Cr</label>\r\n                            <div class=\"uk-form-controls unit\">\r\n                                <p>0.43 Cr</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Clearance</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>122.1</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">Stage</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>1</p>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <br/>\r\n                <!-- Record -->\r\n                <div id=\"recordinfo\">\r\n                    <div class=\"uk-text-left\">\r\n                        <h2 class=\"uk-heading-line\"><span>Record</span></h2>\r\n                    </div>\r\n                    <div class=\"uk-margin\">\r\n                        <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 1</label>\r\n                    </div>\r\n                    <div class=\"uk-form-horizontal unit\">\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                Diagnosis</label>\r\n                            <div class=\"uk-form-controls \">\r\n                                <p>14/04/2018</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                            <div class=\"uk-form-controls \">\r\n                                <p>100 mg%</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>200/90 mmHg</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>110/90 mmHg</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>120 /min</p>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n\r\n                    <div class=\"uk-margin\">\r\n                        <label class=\"uk-form-label uk-text-lead\" for=\"form-horizontal-text\">Hx : OLD RECORD 2</label>\r\n                    </div>\r\n                    <div class=\"uk-form-horizontal unit\">\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Date of\r\n                                Diagnosis</label>\r\n                            <div class=\"uk-form-controls \">\r\n                                <p>12/06/2018</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">FBS</label>\r\n                            <div class=\"uk-form-controls \">\r\n                                <p>100 mg%</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP1</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>115/89 mmHg</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">BP2</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>110/90 mmHg</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label\" for=\"form-horizontal-text\">P</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>80 /min</p>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <!-- Consult Request -->\r\n                <br/>\r\n                <div id=\"consultinfo\">\r\n                    <div class=\"uk-text-left\">\r\n                        <h2 class=\"uk-heading-line\"><span>Consult Request</span></h2>\r\n                    </div>\r\n                    <div class=\"uk-form-horizontal\">\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Chief\r\n                                Complain</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>FBS >= 130 mg% 2 visit</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Assessment and\r\n                                plan</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>MFM 1x2 0pc, Slmvas 1209 ½ x ns</p>\r\n                            </div>\r\n                        </div>\r\n                        <div class=\"uk-margin\">\r\n                            <!-- Not Require -->\r\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Progress\r\n                                notes</label>\r\n                            <div class=\"uk-form-controls\">\r\n                                <p>-</p>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"vertical-divider\"></div>\r\n            <!-- right column -->\r\n            <div class=\"uk-width-expand@m\">\r\n                <form class=\"uk-margin-large\">\r\n                    <!-- Consult Request -->\r\n                    <div id=\"consultinfo\">\r\n                        <div class=\"uk-text-left\">\r\n                            <h2 class=\"uk-heading-line\"><span>Consult Order</span></h2>\r\n                        </div>\r\n                        <div class=\"uk-form-horizontal\">\r\n                            <div class=\"uk-margin\">\r\n                                <!-- Not Require -->\r\n                                <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Order</label>\r\n                                <div class=\"uk-form-controls\">\r\n                                    <textarea v-model=\"consult_order\" class=\"uk-textarea\" id=\"form-horizontal-text\" rows=\"20\"\r\n                                              placeholder=\"Type here...\"></textarea>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                    </div>\r\n                    <botton v-on:click=\"replyConsult\" class=\"uk-button uk-button-primary uk-align-right\">Send</botton>\r\n                </form>\r\n            </div>\r\n\r\n        </vk-grid>\r\n    </div>\r\n</div>   \r\n    \r\n    ";
 
 /***/ }),
-/* 266 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(267)
+  __webpack_require__(273)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(269)
+var __vue_script__ = __webpack_require__(275)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -42253,7 +44435,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-1fc2df48"
+var __vue_scopeId__ = "data-v-34db8d7c"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -42264,7 +44446,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/graph/view/graph.vue"
+Component.options.__file = "resources\\assets\\js\\components\\graph\\view\\graph.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -42273,9 +44455,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1fc2df48", Component.options)
+    hotAPI.createRecord("data-v-34db8d7c", Component.options)
   } else {
-    hotAPI.reload("data-v-1fc2df48", Component.options)
+    hotAPI.reload("data-v-34db8d7c", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -42286,23 +44468,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 267 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(268);
+var content = __webpack_require__(274);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("2a798597", content, false, {});
+var update = __webpack_require__(5)("cb682b38", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1fc2df48\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./graph.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1fc2df48\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./graph.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-34db8d7c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./graph.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-34db8d7c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./graph.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -42312,7 +44494,7 @@ if(false) {
 }
 
 /***/ }),
-/* 268 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -42320,38 +44502,115 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\nh1[data-v-1fc2df48] {\n    margin-top: -3px;\n    font-size: 3em;\n}\nh5[data-v-1fc2df48] {\n    margin-top: -10px;\n}\n.span-font-style[data-v-1fc2df48] {\n    font-size: 1.5em;\n}\n#wrap[data-v-1fc2df48] {\n    margin-top: 100px;\n}\n", ""]);
+exports.push([module.i, "\nh1[data-v-34db8d7c] {\n    margin-top: -3px;\n    font-size: 3em;\n}\nh5[data-v-34db8d7c] {\n    margin-top: -10px;\n}\n.span-font-style[data-v-34db8d7c] {\n    font-size: 1.5em;\n}\n#wrap[data-v-34db8d7c] {\n    margin-top: 100px;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 269 */
+/* 275 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__LineChart_vue__ = __webpack_require__(270);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__LineChart_vue__ = __webpack_require__(276);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__LineChart_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__LineChart_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(323),
+    template: __webpack_require__(325),
     name: 'graph',
     components: {
         LineChart: __WEBPACK_IMPORTED_MODULE_0__LineChart_vue___default.a
+    },
+    data: function data() {
+        return {
+            datacollection: null,
+            start_date: null,
+            end_date: null
+        };
+    },
+    mounted: function mounted() {
+        console.log('mounted');
+        this.getAllSummary();
+    },
+
+    methods: {
+        fillData: function fillData(data) {
+            console.log('FILL DATA');
+
+            var self = this;
+            var labels = [];
+            var data_set = [];
+            var backgroundColors = [];
+
+            data.forEach(function (item) {
+                labels.push(item.disease_name);
+                data_set.push(item.amount);
+                backgroundColors.push(self.randomColor());
+            });
+
+            this.datacollection = {
+                labels: labels,
+                datasets: [{
+                    label: 'Bipolar disorder',
+                    borderColor: '#05CBE1',
+                    pointBackgroundColor: 'white',
+                    pointBorderColor: '#05CBE1',
+                    borderWidth: 1,
+                    data: data_set,
+                    backgroundColor: backgroundColors
+                }]
+            };
+        },
+        getAllSummary: function getAllSummary() {
+            var _this = this;
+
+            setTimeout(function () {
+                __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("/consults/summary/?token=" + localStorage.getItem('token')).then(function (response) {
+                    console.log(response);
+                    _this.fillData(response.data);
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }, 1000);
+        },
+        getSummary: function getSummary() {
+            var _this2 = this;
+
+            setTimeout(function () {
+                __WEBPACK_IMPORTED_MODULE_1_axios___default.a.post("/consults/summary/?token=" + localStorage.getItem('token'), {
+                    start_date: _this2.start_date,
+                    end_date: _this2.end_date
+                }).then(function (response) {
+                    console.log(response);
+                    _this2.fillData(response.data);
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }, 1000);
+        },
+        randomColor: function randomColor() {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            return "rgb(" + r + "," + g + "," + b + ")";
+        }
     }
 });
 
 /***/ }),
-/* 270 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(271)
+var __vue_script__ = __webpack_require__(277)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -42370,7 +44629,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/graph/view/LineChart.vue"
+Component.options.__file = "resources\\assets\\js\\components\\graph\\view\\LineChart.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -42379,9 +44638,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-06d48638", Component.options)
+    hotAPI.createRecord("data-v-7c8df358", Component.options)
   } else {
-    hotAPI.reload("data-v-06d48638", Component.options)
+    hotAPI.reload("data-v-7c8df358", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -42392,59 +44651,68 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 271 */
+/* 277 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_chartjs__ = __webpack_require__(272);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_chartjs__ = __webpack_require__(278);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  extends: __WEBPACK_IMPORTED_MODULE_0_vue_chartjs__["a" /* Doughnut */],
-  data: function data() {
-    return {
-      gradient: null,
-      gradient2: null
-    };
-  },
-  mounted: function mounted() {
-    // Graph Color
-    this.gradient = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450);
-    this.gradient.addColorStop(0, 'rgba(255, 0,0, 0.5)');
-    this.gradient.addColorStop(0.5, 'rgba(255, 0, 0, 0.25)');
-    this.gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+    extends: __WEBPACK_IMPORTED_MODULE_0_vue_chartjs__["a" /* Doughnut */],
+    mixins: [__WEBPACK_IMPORTED_MODULE_0_vue_chartjs__["b" /* mixins */].reactiveProp],
+    data: function data() {
+        return {
+            gradient: null,
+            gradient2: null
+        };
+    },
+    mounted: function mounted() {
+        // Graph Color
+        this.gradient = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450);
+        this.gradient.addColorStop(0, 'rgba(255, 0,0, 0.5)');
+        this.gradient.addColorStop(0.5, 'rgba(255, 0, 0, 0.25)');
+        this.gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
 
-    this.gradient2 = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450);
-    this.gradient2.addColorStop(0, 'rgba(0, 231, 255, 0.9)');
-    this.gradient2.addColorStop(0.5, 'rgba(0, 231, 255, 0.25)');
-    this.gradient2.addColorStop(1, 'rgba(0, 231, 255, 0)');
+        this.gradient2 = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450);
+        this.gradient2.addColorStop(0, 'rgba(0, 231, 255, 0.9)');
+        this.gradient2.addColorStop(0.5, 'rgba(0, 231, 255, 0.25)');
+        this.gradient2.addColorStop(1, 'rgba(0, 231, 255, 0)');
 
-    // Overwriting base render method with actual data.
-    this.renderChart({
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-      datasets: [{
-        label: 'Bipolar disorder',
-        borderColor: '#05CBE1',
-        pointBackgroundColor: 'white',
-        pointBorderColor: '#05CBE1',
-        borderWidth: 1,
-        backgroundColor: this.gradient2,
-        data: [10, 3, 22, 30, 5, 20, 29, 50, 60, 40, 10, 10]
-      }]
-    }, { responsive: true, maintainAspectRatio: false });
-  }
+        // Overwriting base render method with actual data.
+        // this.renderChart({
+        //         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        //         datasets: [
+        //             {
+        //                 label: 'Bipolar disorder',
+        //                 borderColor: '#05CBE1',
+        //                 pointBackgroundColor: 'white',
+        //                 pointBorderColor: '#05CBE1',
+        //                 borderWidth: 1,
+        //                 backgroundColor: this.gradient2,
+        //                 data: [10, 3, 22, 30, 5, 20, 29, 50, 60, 40, 10, 10]
+        //             }
+        //         ]
+        //     }, {responsive: true, maintainAspectRatio: false}
+        // );
+
+        this.renderChart(this.chartData, { responsive: true, maintainAspectRatio: false });
+    }
 });
 
 /***/ }),
-/* 272 */
+/* 278 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* unused harmony export VueCharts */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_index_js__ = __webpack_require__(273);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__BaseCharts__ = __webpack_require__(274);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_index_js__ = __webpack_require__(279);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__BaseCharts__ = __webpack_require__(280);
 /* unused harmony reexport Bar */
 /* unused harmony reexport HorizontalBar */
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_1__BaseCharts__["c"]; });
@@ -42454,7 +44722,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* unused harmony reexport Radar */
 /* unused harmony reexport Bubble */
 /* unused harmony reexport Scatter */
-/* unused harmony reexport mixins */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_0__mixins_index_js__["a"]; });
 /* unused harmony reexport generateChart */
 
 
@@ -42478,7 +44746,7 @@ var VueCharts = {
 
 
 /***/ }),
-/* 273 */
+/* 279 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42578,7 +44846,7 @@ var reactiveProp = {
 });
 
 /***/ }),
-/* 274 */
+/* 280 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42592,7 +44860,7 @@ var reactiveProp = {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return Radar; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return Bubble; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return Scatter; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_chart_js__ = __webpack_require__(275);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_chart_js__ = __webpack_require__(281);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_chart_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_chart_js__);
 
 function generateChart(chartId, chartType) {
@@ -42691,63 +44959,63 @@ var Scatter = generateChart('scatter-chart', 'scatter');
 });
 
 /***/ }),
-/* 275 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
  * @namespace Chart
  */
-var Chart = __webpack_require__(276)();
+var Chart = __webpack_require__(282)();
 
 Chart.helpers = __webpack_require__(1);
 
 // @todo dispatch these helpers into appropriated helpers/helpers.* file and write unit tests!
-__webpack_require__(280)(Chart);
+__webpack_require__(286)(Chart);
 
-Chart.Animation = __webpack_require__(291);
-Chart.animationService = __webpack_require__(345);
+Chart.Animation = __webpack_require__(29);
+Chart.animationService = __webpack_require__(30);
 Chart.defaults = __webpack_require__(2);
 Chart.Element = __webpack_require__(7);
-Chart.elements = __webpack_require__(8);
-Chart.Interaction = __webpack_require__(27);
-Chart.layouts = __webpack_require__(10);
-Chart.platform = __webpack_require__(28);
-Chart.plugins = __webpack_require__(29);
-Chart.Scale = __webpack_require__(295);
-Chart.scaleService = __webpack_require__(294);
-Chart.Ticks = __webpack_require__(11);
-Chart.Tooltip = __webpack_require__(296);
-
-__webpack_require__(292)(Chart);
-__webpack_require__(293)(Chart);
+Chart.elements = __webpack_require__(10);
+Chart.Interaction = __webpack_require__(31);
+Chart.layouts = __webpack_require__(11);
+Chart.platform = __webpack_require__(32);
+Chart.plugins = __webpack_require__(33);
+Chart.Scale = __webpack_require__(12);
+Chart.scaleService = __webpack_require__(9);
+Chart.Ticks = __webpack_require__(13);
+Chart.Tooltip = __webpack_require__(34);
 
 __webpack_require__(297)(Chart);
 __webpack_require__(298)(Chart);
+
 __webpack_require__(299)(Chart);
 __webpack_require__(300)(Chart);
 __webpack_require__(301)(Chart);
 __webpack_require__(302)(Chart);
+__webpack_require__(303)(Chart);
+__webpack_require__(304)(Chart);
 
 // Controllers must be loaded after elements
 // See Chart.core.datasetController.dataElementType
-__webpack_require__(305)(Chart);
-__webpack_require__(306)(Chart);
 __webpack_require__(307)(Chart);
 __webpack_require__(308)(Chart);
 __webpack_require__(309)(Chart);
 __webpack_require__(310)(Chart);
 __webpack_require__(311)(Chart);
-
 __webpack_require__(312)(Chart);
 __webpack_require__(313)(Chart);
+
 __webpack_require__(314)(Chart);
 __webpack_require__(315)(Chart);
 __webpack_require__(316)(Chart);
 __webpack_require__(317)(Chart);
 __webpack_require__(318)(Chart);
+__webpack_require__(319)(Chart);
+__webpack_require__(320)(Chart);
 
 // Loading built-in plugins
-var plugins = __webpack_require__(319);
+var plugins = __webpack_require__(321);
 for (var k in plugins) {
 	if (plugins.hasOwnProperty(k)) {
 		Chart.plugins.register(plugins[k]);
@@ -42820,7 +45088,7 @@ Chart.layoutService = Chart.layouts;
 
 
 /***/ }),
-/* 276 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42876,13 +45144,13 @@ module.exports = function() {
 
 
 /***/ }),
-/* 277 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(13);
+var helpers = __webpack_require__(15);
 
 /**
  * Easing functions adapted from Robert Penner's easing equations.
@@ -43133,13 +45401,13 @@ helpers.easingEffects = effects;
 
 
 /***/ }),
-/* 278 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(13);
+var helpers = __webpack_require__(15);
 
 /**
  * @namespace Chart.helpers.canvas
@@ -43166,25 +45434,30 @@ var exports = module.exports = {
 	 */
 	roundedRect: function(ctx, x, y, width, height, radius) {
 		if (radius) {
-			var rx = Math.min(radius, width / 2);
-			var ry = Math.min(radius, height / 2);
+			// NOTE(SB) `epsilon` helps to prevent minor artifacts appearing
+			// on Chrome when `r` is exactly half the height or the width.
+			var epsilon = 0.0000001;
+			var r = Math.min(radius, (height / 2) - epsilon, (width / 2) - epsilon);
 
-			ctx.moveTo(x + rx, y);
-			ctx.lineTo(x + width - rx, y);
-			ctx.quadraticCurveTo(x + width, y, x + width, y + ry);
-			ctx.lineTo(x + width, y + height - ry);
-			ctx.quadraticCurveTo(x + width, y + height, x + width - rx, y + height);
-			ctx.lineTo(x + rx, y + height);
-			ctx.quadraticCurveTo(x, y + height, x, y + height - ry);
-			ctx.lineTo(x, y + ry);
-			ctx.quadraticCurveTo(x, y, x + rx, y);
+			ctx.moveTo(x + r, y);
+			ctx.lineTo(x + width - r, y);
+			ctx.arcTo(x + width, y, x + width, y + r, r);
+			ctx.lineTo(x + width, y + height - r);
+			ctx.arcTo(x + width, y + height, x + width - r, y + height, r);
+			ctx.lineTo(x + r, y + height);
+			ctx.arcTo(x, y + height, x, y + height - r, r);
+			ctx.lineTo(x, y + r);
+			ctx.arcTo(x, y, x + r, y, r);
+			ctx.closePath();
+			ctx.moveTo(x, y);
 		} else {
 			ctx.rect(x, y, width, height);
 		}
 	},
 
-	drawPoint: function(ctx, style, radius, x, y) {
+	drawPoint: function(ctx, style, radius, x, y, rotation) {
 		var type, edgeLength, xOffset, yOffset, height, size;
+		rotation = rotation || 0;
 
 		if (style && typeof style === 'object') {
 			type = style.toString();
@@ -43198,97 +45471,88 @@ var exports = module.exports = {
 			return;
 		}
 
+		ctx.save();
+		ctx.translate(x, y);
+		ctx.rotate(rotation * Math.PI / 180);
+		ctx.beginPath();
+
 		switch (style) {
 		// Default includes circle
 		default:
-			ctx.beginPath();
-			ctx.arc(x, y, radius, 0, Math.PI * 2);
+			ctx.arc(0, 0, radius, 0, Math.PI * 2);
 			ctx.closePath();
-			ctx.fill();
 			break;
 		case 'triangle':
-			ctx.beginPath();
 			edgeLength = 3 * radius / Math.sqrt(3);
 			height = edgeLength * Math.sqrt(3) / 2;
-			ctx.moveTo(x - edgeLength / 2, y + height / 3);
-			ctx.lineTo(x + edgeLength / 2, y + height / 3);
-			ctx.lineTo(x, y - 2 * height / 3);
+			ctx.moveTo(-edgeLength / 2, height / 3);
+			ctx.lineTo(edgeLength / 2, height / 3);
+			ctx.lineTo(0, -2 * height / 3);
 			ctx.closePath();
-			ctx.fill();
 			break;
 		case 'rect':
 			size = 1 / Math.SQRT2 * radius;
-			ctx.beginPath();
-			ctx.fillRect(x - size, y - size, 2 * size, 2 * size);
-			ctx.strokeRect(x - size, y - size, 2 * size, 2 * size);
+			ctx.rect(-size, -size, 2 * size, 2 * size);
 			break;
 		case 'rectRounded':
 			var offset = radius / Math.SQRT2;
-			var leftX = x - offset;
-			var topY = y - offset;
+			var leftX = -offset;
+			var topY = -offset;
 			var sideSize = Math.SQRT2 * radius;
-			ctx.beginPath();
-			this.roundedRect(ctx, leftX, topY, sideSize, sideSize, radius / 2);
-			ctx.closePath();
-			ctx.fill();
+
+			// NOTE(SB) the rounded rect implementation changed to use `arcTo`
+			// instead of `quadraticCurveTo` since it generates better results
+			// when rect is almost a circle. 0.425 (instead of 0.5) produces
+			// results visually closer to the previous impl.
+			this.roundedRect(ctx, leftX, topY, sideSize, sideSize, radius * 0.425);
 			break;
 		case 'rectRot':
 			size = 1 / Math.SQRT2 * radius;
-			ctx.beginPath();
-			ctx.moveTo(x - size, y);
-			ctx.lineTo(x, y + size);
-			ctx.lineTo(x + size, y);
-			ctx.lineTo(x, y - size);
+			ctx.moveTo(-size, 0);
+			ctx.lineTo(0, size);
+			ctx.lineTo(size, 0);
+			ctx.lineTo(0, -size);
 			ctx.closePath();
-			ctx.fill();
 			break;
 		case 'cross':
-			ctx.beginPath();
-			ctx.moveTo(x, y + radius);
-			ctx.lineTo(x, y - radius);
-			ctx.moveTo(x - radius, y);
-			ctx.lineTo(x + radius, y);
-			ctx.closePath();
+			ctx.moveTo(0, radius);
+			ctx.lineTo(0, -radius);
+			ctx.moveTo(-radius, 0);
+			ctx.lineTo(radius, 0);
 			break;
 		case 'crossRot':
-			ctx.beginPath();
 			xOffset = Math.cos(Math.PI / 4) * radius;
 			yOffset = Math.sin(Math.PI / 4) * radius;
-			ctx.moveTo(x - xOffset, y - yOffset);
-			ctx.lineTo(x + xOffset, y + yOffset);
-			ctx.moveTo(x - xOffset, y + yOffset);
-			ctx.lineTo(x + xOffset, y - yOffset);
-			ctx.closePath();
+			ctx.moveTo(-xOffset, -yOffset);
+			ctx.lineTo(xOffset, yOffset);
+			ctx.moveTo(-xOffset, yOffset);
+			ctx.lineTo(xOffset, -yOffset);
 			break;
 		case 'star':
-			ctx.beginPath();
-			ctx.moveTo(x, y + radius);
-			ctx.lineTo(x, y - radius);
-			ctx.moveTo(x - radius, y);
-			ctx.lineTo(x + radius, y);
+			ctx.moveTo(0, radius);
+			ctx.lineTo(0, -radius);
+			ctx.moveTo(-radius, 0);
+			ctx.lineTo(radius, 0);
 			xOffset = Math.cos(Math.PI / 4) * radius;
 			yOffset = Math.sin(Math.PI / 4) * radius;
-			ctx.moveTo(x - xOffset, y - yOffset);
-			ctx.lineTo(x + xOffset, y + yOffset);
-			ctx.moveTo(x - xOffset, y + yOffset);
-			ctx.lineTo(x + xOffset, y - yOffset);
-			ctx.closePath();
+			ctx.moveTo(-xOffset, -yOffset);
+			ctx.lineTo(xOffset, yOffset);
+			ctx.moveTo(-xOffset, yOffset);
+			ctx.lineTo(xOffset, -yOffset);
 			break;
 		case 'line':
-			ctx.beginPath();
-			ctx.moveTo(x - radius, y);
-			ctx.lineTo(x + radius, y);
-			ctx.closePath();
+			ctx.moveTo(-radius, 0);
+			ctx.lineTo(radius, 0);
 			break;
 		case 'dash':
-			ctx.beginPath();
-			ctx.moveTo(x, y);
-			ctx.lineTo(x + radius, y);
-			ctx.closePath();
+			ctx.moveTo(0, 0);
+			ctx.lineTo(radius, 0);
 			break;
 		}
 
+		ctx.fill();
 		ctx.stroke();
+		ctx.restore();
 	},
 
 	clipArea: function(ctx, area) {
@@ -43349,18 +45613,17 @@ helpers.clear = exports.clear;
 helpers.drawRoundedRectangle = function(ctx) {
 	ctx.beginPath();
 	exports.roundedRect.apply(exports, arguments);
-	ctx.closePath();
 };
 
 
 /***/ }),
-/* 279 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(13);
+var helpers = __webpack_require__(15);
 
 /**
  * @alias Chart.helpers.options
@@ -43457,7 +45720,7 @@ module.exports = {
 
 
 /***/ }),
-/* 280 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43465,10 +45728,10 @@ module.exports = {
 /* global document: false */
 
 
-var color = __webpack_require__(26);
+var color = __webpack_require__(28);
 var defaults = __webpack_require__(2);
 var helpers = __webpack_require__(1);
-var scaleService = __webpack_require__(294);
+var scaleService = __webpack_require__(9);
 
 module.exports = function() {
 
@@ -44098,10 +46361,10 @@ module.exports = function() {
 
 
 /***/ }),
-/* 281 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var conversions = __webpack_require__(282);
+var conversions = __webpack_require__(288);
 
 var convert = function() {
    return new Converter();
@@ -44195,7 +46458,7 @@ Converter.prototype.getValues = function(space) {
 module.exports = convert;
 
 /***/ }),
-/* 282 */
+/* 288 */
 /***/ (function(module, exports) {
 
 /* MIT license */
@@ -44899,11 +47162,11 @@ for (var key in cssKeywords) {
 
 
 /***/ }),
-/* 283 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* MIT license */
-var colorNames = __webpack_require__(284);
+var colorNames = __webpack_require__(290);
 
 module.exports = {
    getRgba: getRgba,
@@ -45126,7 +47389,7 @@ for (var name in colorNames) {
 
 
 /***/ }),
-/* 284 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45285,7 +47548,7 @@ module.exports = {
 
 
 /***/ }),
-/* 285 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45399,7 +47662,7 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 286 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45497,7 +47760,7 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 287 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45593,7 +47856,7 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 288 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45817,7 +48080,7 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 289 */
+/* 295 */
 /***/ (function(module, exports) {
 
 /**
@@ -45838,7 +48101,7 @@ module.exports = {
 
 
 /***/ }),
-/* 290 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46302,72 +48565,22 @@ helpers.removeEvent = removeEventListener;
 
 
 /***/ }),
-/* 291 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Element = __webpack_require__(7);
-
-var exports = module.exports = Element.extend({
-	chart: null, // the animation associated chart instance
-	currentStep: 0, // the current animation step
-	numSteps: 60, // default number of steps
-	easing: '', // the easing to use for this animation
-	render: null, // render function used by the animation service
-
-	onAnimationProgress: null, // user specified callback to fire on each step of the animation
-	onAnimationComplete: null, // user specified callback to fire when the animation finishes
-});
-
-// DEPRECATIONS
-
-/**
- * Provided for backward compatibility, use Chart.Animation instead
- * @prop Chart.Animation#animationObject
- * @deprecated since version 2.6.0
- * @todo remove at version 3
- */
-Object.defineProperty(exports.prototype, 'animationObject', {
-	get: function() {
-		return this;
-	}
-});
-
-/**
- * Provided for backward compatibility, use Chart.Animation#chart instead
- * @prop Chart.Animation#chartInstance
- * @deprecated since version 2.6.0
- * @todo remove at version 3
- */
-Object.defineProperty(exports.prototype, 'chartInstance', {
-	get: function() {
-		return this.chart;
-	},
-	set: function(value) {
-		this.chart = value;
-	}
-});
-
-
-/***/ }),
-/* 292 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Animation = __webpack_require__(291);
-var animations = __webpack_require__(345);
+var Animation = __webpack_require__(29);
+var animations = __webpack_require__(30);
 var defaults = __webpack_require__(2);
 var helpers = __webpack_require__(1);
-var Interaction = __webpack_require__(27);
-var layouts = __webpack_require__(10);
-var platform = __webpack_require__(28);
-var plugins = __webpack_require__(29);
-var scaleService = __webpack_require__(294);
-var Tooltip = __webpack_require__(296);
+var Interaction = __webpack_require__(31);
+var layouts = __webpack_require__(11);
+var platform = __webpack_require__(32);
+var plugins = __webpack_require__(33);
+var scaleService = __webpack_require__(9);
+var Tooltip = __webpack_require__(34);
 
 module.exports = function(Chart) {
 
@@ -47319,7 +49532,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 293 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47655,1959 +49868,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 294 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var defaults = __webpack_require__(2);
-var helpers = __webpack_require__(1);
-var layouts = __webpack_require__(10);
-
-module.exports = {
-	// Scale registration object. Extensions can register new scale types (such as log or DB scales) and then
-	// use the new chart options to grab the correct scale
-	constructors: {},
-	// Use a registration function so that we can move to an ES6 map when we no longer need to support
-	// old browsers
-
-	// Scale config defaults
-	defaults: {},
-	registerScaleType: function(type, scaleConstructor, scaleDefaults) {
-		this.constructors[type] = scaleConstructor;
-		this.defaults[type] = helpers.clone(scaleDefaults);
-	},
-	getScaleConstructor: function(type) {
-		return this.constructors.hasOwnProperty(type) ? this.constructors[type] : undefined;
-	},
-	getScaleDefaults: function(type) {
-		// Return the scale defaults merged with the global settings so that we always use the latest ones
-		return this.defaults.hasOwnProperty(type) ? helpers.merge({}, [defaults.scale, this.defaults[type]]) : {};
-	},
-	updateScaleDefaults: function(type, additions) {
-		var me = this;
-		if (me.defaults.hasOwnProperty(type)) {
-			me.defaults[type] = helpers.extend(me.defaults[type], additions);
-		}
-	},
-	addScalesToLayout: function(chart) {
-		// Adds each scale to the chart.boxes array to be sized accordingly
-		helpers.each(chart.scales, function(scale) {
-			// Set ILayoutItem parameters for backwards compatibility
-			scale.fullWidth = scale.options.fullWidth;
-			scale.position = scale.options.position;
-			scale.weight = scale.options.weight;
-			layouts.addBox(chart, scale);
-		});
-	}
-};
-
-
-/***/ }),
-/* 295 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var defaults = __webpack_require__(2);
-var Element = __webpack_require__(7);
-var helpers = __webpack_require__(1);
-var Ticks = __webpack_require__(11);
-
-defaults._set('scale', {
-	display: true,
-	position: 'left',
-	offset: false,
-
-	// grid line settings
-	gridLines: {
-		display: true,
-		color: 'rgba(0, 0, 0, 0.1)',
-		lineWidth: 1,
-		drawBorder: true,
-		drawOnChartArea: true,
-		drawTicks: true,
-		tickMarkLength: 10,
-		zeroLineWidth: 1,
-		zeroLineColor: 'rgba(0,0,0,0.25)',
-		zeroLineBorderDash: [],
-		zeroLineBorderDashOffset: 0.0,
-		offsetGridLines: false,
-		borderDash: [],
-		borderDashOffset: 0.0
-	},
-
-	// scale label
-	scaleLabel: {
-		// display property
-		display: false,
-
-		// actual label
-		labelString: '',
-
-		// line height
-		lineHeight: 1.2,
-
-		// top/bottom padding
-		padding: {
-			top: 4,
-			bottom: 4
-		}
-	},
-
-	// label settings
-	ticks: {
-		beginAtZero: false,
-		minRotation: 0,
-		maxRotation: 50,
-		mirror: false,
-		padding: 0,
-		reverse: false,
-		display: true,
-		autoSkip: true,
-		autoSkipPadding: 0,
-		labelOffset: 0,
-		// We pass through arrays to be rendered as multiline labels, we convert Others to strings here.
-		callback: Ticks.formatters.values,
-		minor: {},
-		major: {}
-	}
-});
-
-function labelsFromTicks(ticks) {
-	var labels = [];
-	var i, ilen;
-
-	for (i = 0, ilen = ticks.length; i < ilen; ++i) {
-		labels.push(ticks[i].label);
-	}
-
-	return labels;
-}
-
-function getLineValue(scale, index, offsetGridLines) {
-	var lineValue = scale.getPixelForTick(index);
-
-	if (offsetGridLines) {
-		if (index === 0) {
-			lineValue -= (scale.getPixelForTick(1) - lineValue) / 2;
-		} else {
-			lineValue -= (lineValue - scale.getPixelForTick(index - 1)) / 2;
-		}
-	}
-	return lineValue;
-}
-
-function computeTextSize(context, tick, font) {
-	return helpers.isArray(tick) ?
-		helpers.longestText(context, font, tick) :
-		context.measureText(tick).width;
-}
-
-function parseFontOptions(options) {
-	var valueOrDefault = helpers.valueOrDefault;
-	var globalDefaults = defaults.global;
-	var size = valueOrDefault(options.fontSize, globalDefaults.defaultFontSize);
-	var style = valueOrDefault(options.fontStyle, globalDefaults.defaultFontStyle);
-	var family = valueOrDefault(options.fontFamily, globalDefaults.defaultFontFamily);
-
-	return {
-		size: size,
-		style: style,
-		family: family,
-		font: helpers.fontString(size, style, family)
-	};
-}
-
-function parseLineHeight(options) {
-	return helpers.options.toLineHeight(
-		helpers.valueOrDefault(options.lineHeight, 1.2),
-		helpers.valueOrDefault(options.fontSize, defaults.global.defaultFontSize));
-}
-
-module.exports = Element.extend({
-	/**
-	 * Get the padding needed for the scale
-	 * @method getPadding
-	 * @private
-	 * @returns {Padding} the necessary padding
-	 */
-	getPadding: function() {
-		var me = this;
-		return {
-			left: me.paddingLeft || 0,
-			top: me.paddingTop || 0,
-			right: me.paddingRight || 0,
-			bottom: me.paddingBottom || 0
-		};
-	},
-
-	/**
-	 * Returns the scale tick objects ({label, major})
-	 * @since 2.7
-	 */
-	getTicks: function() {
-		return this._ticks;
-	},
-
-	// These methods are ordered by lifecyle. Utilities then follow.
-	// Any function defined here is inherited by all scale types.
-	// Any function can be extended by the scale type
-
-	mergeTicksOptions: function() {
-		var ticks = this.options.ticks;
-		if (ticks.minor === false) {
-			ticks.minor = {
-				display: false
-			};
-		}
-		if (ticks.major === false) {
-			ticks.major = {
-				display: false
-			};
-		}
-		for (var key in ticks) {
-			if (key !== 'major' && key !== 'minor') {
-				if (typeof ticks.minor[key] === 'undefined') {
-					ticks.minor[key] = ticks[key];
-				}
-				if (typeof ticks.major[key] === 'undefined') {
-					ticks.major[key] = ticks[key];
-				}
-			}
-		}
-	},
-	beforeUpdate: function() {
-		helpers.callback(this.options.beforeUpdate, [this]);
-	},
-
-	update: function(maxWidth, maxHeight, margins) {
-		var me = this;
-		var i, ilen, labels, label, ticks, tick;
-
-		// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
-		me.beforeUpdate();
-
-		// Absorb the master measurements
-		me.maxWidth = maxWidth;
-		me.maxHeight = maxHeight;
-		me.margins = helpers.extend({
-			left: 0,
-			right: 0,
-			top: 0,
-			bottom: 0
-		}, margins);
-		me.longestTextCache = me.longestTextCache || {};
-
-		// Dimensions
-		me.beforeSetDimensions();
-		me.setDimensions();
-		me.afterSetDimensions();
-
-		// Data min/max
-		me.beforeDataLimits();
-		me.determineDataLimits();
-		me.afterDataLimits();
-
-		// Ticks - `this.ticks` is now DEPRECATED!
-		// Internal ticks are now stored as objects in the PRIVATE `this._ticks` member
-		// and must not be accessed directly from outside this class. `this.ticks` being
-		// around for long time and not marked as private, we can't change its structure
-		// without unexpected breaking changes. If you need to access the scale ticks,
-		// use scale.getTicks() instead.
-
-		me.beforeBuildTicks();
-
-		// New implementations should return an array of objects but for BACKWARD COMPAT,
-		// we still support no return (`this.ticks` internally set by calling this method).
-		ticks = me.buildTicks() || [];
-
-		me.afterBuildTicks();
-
-		me.beforeTickToLabelConversion();
-
-		// New implementations should return the formatted tick labels but for BACKWARD
-		// COMPAT, we still support no return (`this.ticks` internally changed by calling
-		// this method and supposed to contain only string values).
-		labels = me.convertTicksToLabels(ticks) || me.ticks;
-
-		me.afterTickToLabelConversion();
-
-		me.ticks = labels;   // BACKWARD COMPATIBILITY
-
-		// IMPORTANT: from this point, we consider that `this.ticks` will NEVER change!
-
-		// BACKWARD COMPAT: synchronize `_ticks` with labels (so potentially `this.ticks`)
-		for (i = 0, ilen = labels.length; i < ilen; ++i) {
-			label = labels[i];
-			tick = ticks[i];
-			if (!tick) {
-				ticks.push(tick = {
-					label: label,
-					major: false
-				});
-			} else {
-				tick.label = label;
-			}
-		}
-
-		me._ticks = ticks;
-
-		// Tick Rotation
-		me.beforeCalculateTickRotation();
-		me.calculateTickRotation();
-		me.afterCalculateTickRotation();
-		// Fit
-		me.beforeFit();
-		me.fit();
-		me.afterFit();
-		//
-		me.afterUpdate();
-
-		return me.minSize;
-
-	},
-	afterUpdate: function() {
-		helpers.callback(this.options.afterUpdate, [this]);
-	},
-
-	//
-
-	beforeSetDimensions: function() {
-		helpers.callback(this.options.beforeSetDimensions, [this]);
-	},
-	setDimensions: function() {
-		var me = this;
-		// Set the unconstrained dimension before label rotation
-		if (me.isHorizontal()) {
-			// Reset position before calculating rotation
-			me.width = me.maxWidth;
-			me.left = 0;
-			me.right = me.width;
-		} else {
-			me.height = me.maxHeight;
-
-			// Reset position before calculating rotation
-			me.top = 0;
-			me.bottom = me.height;
-		}
-
-		// Reset padding
-		me.paddingLeft = 0;
-		me.paddingTop = 0;
-		me.paddingRight = 0;
-		me.paddingBottom = 0;
-	},
-	afterSetDimensions: function() {
-		helpers.callback(this.options.afterSetDimensions, [this]);
-	},
-
-	// Data limits
-	beforeDataLimits: function() {
-		helpers.callback(this.options.beforeDataLimits, [this]);
-	},
-	determineDataLimits: helpers.noop,
-	afterDataLimits: function() {
-		helpers.callback(this.options.afterDataLimits, [this]);
-	},
-
-	//
-	beforeBuildTicks: function() {
-		helpers.callback(this.options.beforeBuildTicks, [this]);
-	},
-	buildTicks: helpers.noop,
-	afterBuildTicks: function() {
-		helpers.callback(this.options.afterBuildTicks, [this]);
-	},
-
-	beforeTickToLabelConversion: function() {
-		helpers.callback(this.options.beforeTickToLabelConversion, [this]);
-	},
-	convertTicksToLabels: function() {
-		var me = this;
-		// Convert ticks to strings
-		var tickOpts = me.options.ticks;
-		me.ticks = me.ticks.map(tickOpts.userCallback || tickOpts.callback, this);
-	},
-	afterTickToLabelConversion: function() {
-		helpers.callback(this.options.afterTickToLabelConversion, [this]);
-	},
-
-	//
-
-	beforeCalculateTickRotation: function() {
-		helpers.callback(this.options.beforeCalculateTickRotation, [this]);
-	},
-	calculateTickRotation: function() {
-		var me = this;
-		var context = me.ctx;
-		var tickOpts = me.options.ticks;
-		var labels = labelsFromTicks(me._ticks);
-
-		// Get the width of each grid by calculating the difference
-		// between x offsets between 0 and 1.
-		var tickFont = parseFontOptions(tickOpts);
-		context.font = tickFont.font;
-
-		var labelRotation = tickOpts.minRotation || 0;
-
-		if (labels.length && me.options.display && me.isHorizontal()) {
-			var originalLabelWidth = helpers.longestText(context, tickFont.font, labels, me.longestTextCache);
-			var labelWidth = originalLabelWidth;
-			var cosRotation, sinRotation;
-
-			// Allow 3 pixels x2 padding either side for label readability
-			var tickWidth = me.getPixelForTick(1) - me.getPixelForTick(0) - 6;
-
-			// Max label rotation can be set or default to 90 - also act as a loop counter
-			while (labelWidth > tickWidth && labelRotation < tickOpts.maxRotation) {
-				var angleRadians = helpers.toRadians(labelRotation);
-				cosRotation = Math.cos(angleRadians);
-				sinRotation = Math.sin(angleRadians);
-
-				if (sinRotation * originalLabelWidth > me.maxHeight) {
-					// go back one step
-					labelRotation--;
-					break;
-				}
-
-				labelRotation++;
-				labelWidth = cosRotation * originalLabelWidth;
-			}
-		}
-
-		me.labelRotation = labelRotation;
-	},
-	afterCalculateTickRotation: function() {
-		helpers.callback(this.options.afterCalculateTickRotation, [this]);
-	},
-
-	//
-
-	beforeFit: function() {
-		helpers.callback(this.options.beforeFit, [this]);
-	},
-	fit: function() {
-		var me = this;
-		// Reset
-		var minSize = me.minSize = {
-			width: 0,
-			height: 0
-		};
-
-		var labels = labelsFromTicks(me._ticks);
-
-		var opts = me.options;
-		var tickOpts = opts.ticks;
-		var scaleLabelOpts = opts.scaleLabel;
-		var gridLineOpts = opts.gridLines;
-		var display = opts.display;
-		var isHorizontal = me.isHorizontal();
-
-		var tickFont = parseFontOptions(tickOpts);
-		var tickMarkLength = opts.gridLines.tickMarkLength;
-
-		// Width
-		if (isHorizontal) {
-			// subtract the margins to line up with the chartArea if we are a full width scale
-			minSize.width = me.isFullWidth() ? me.maxWidth - me.margins.left - me.margins.right : me.maxWidth;
-		} else {
-			minSize.width = display && gridLineOpts.drawTicks ? tickMarkLength : 0;
-		}
-
-		// height
-		if (isHorizontal) {
-			minSize.height = display && gridLineOpts.drawTicks ? tickMarkLength : 0;
-		} else {
-			minSize.height = me.maxHeight; // fill all the height
-		}
-
-		// Are we showing a title for the scale?
-		if (scaleLabelOpts.display && display) {
-			var scaleLabelLineHeight = parseLineHeight(scaleLabelOpts);
-			var scaleLabelPadding = helpers.options.toPadding(scaleLabelOpts.padding);
-			var deltaHeight = scaleLabelLineHeight + scaleLabelPadding.height;
-
-			if (isHorizontal) {
-				minSize.height += deltaHeight;
-			} else {
-				minSize.width += deltaHeight;
-			}
-		}
-
-		// Don't bother fitting the ticks if we are not showing them
-		if (tickOpts.display && display) {
-			var largestTextWidth = helpers.longestText(me.ctx, tickFont.font, labels, me.longestTextCache);
-			var tallestLabelHeightInLines = helpers.numberOfLabelLines(labels);
-			var lineSpace = tickFont.size * 0.5;
-			var tickPadding = me.options.ticks.padding;
-
-			if (isHorizontal) {
-				// A horizontal axis is more constrained by the height.
-				me.longestLabelWidth = largestTextWidth;
-
-				var angleRadians = helpers.toRadians(me.labelRotation);
-				var cosRotation = Math.cos(angleRadians);
-				var sinRotation = Math.sin(angleRadians);
-
-				// TODO - improve this calculation
-				var labelHeight = (sinRotation * largestTextWidth)
-					+ (tickFont.size * tallestLabelHeightInLines)
-					+ (lineSpace * (tallestLabelHeightInLines - 1))
-					+ lineSpace; // padding
-
-				minSize.height = Math.min(me.maxHeight, minSize.height + labelHeight + tickPadding);
-
-				me.ctx.font = tickFont.font;
-				var firstLabelWidth = computeTextSize(me.ctx, labels[0], tickFont.font);
-				var lastLabelWidth = computeTextSize(me.ctx, labels[labels.length - 1], tickFont.font);
-
-				// Ensure that our ticks are always inside the canvas. When rotated, ticks are right aligned
-				// which means that the right padding is dominated by the font height
-				if (me.labelRotation !== 0) {
-					me.paddingLeft = opts.position === 'bottom' ? (cosRotation * firstLabelWidth) + 3 : (cosRotation * lineSpace) + 3; // add 3 px to move away from canvas edges
-					me.paddingRight = opts.position === 'bottom' ? (cosRotation * lineSpace) + 3 : (cosRotation * lastLabelWidth) + 3;
-				} else {
-					me.paddingLeft = firstLabelWidth / 2 + 3; // add 3 px to move away from canvas edges
-					me.paddingRight = lastLabelWidth / 2 + 3;
-				}
-			} else {
-				// A vertical axis is more constrained by the width. Labels are the
-				// dominant factor here, so get that length first and account for padding
-				if (tickOpts.mirror) {
-					largestTextWidth = 0;
-				} else {
-					// use lineSpace for consistency with horizontal axis
-					// tickPadding is not implemented for horizontal
-					largestTextWidth += tickPadding + lineSpace;
-				}
-
-				minSize.width = Math.min(me.maxWidth, minSize.width + largestTextWidth);
-
-				me.paddingTop = tickFont.size / 2;
-				me.paddingBottom = tickFont.size / 2;
-			}
-		}
-
-		me.handleMargins();
-
-		me.width = minSize.width;
-		me.height = minSize.height;
-	},
-
-	/**
-	 * Handle margins and padding interactions
-	 * @private
-	 */
-	handleMargins: function() {
-		var me = this;
-		if (me.margins) {
-			me.paddingLeft = Math.max(me.paddingLeft - me.margins.left, 0);
-			me.paddingTop = Math.max(me.paddingTop - me.margins.top, 0);
-			me.paddingRight = Math.max(me.paddingRight - me.margins.right, 0);
-			me.paddingBottom = Math.max(me.paddingBottom - me.margins.bottom, 0);
-		}
-	},
-
-	afterFit: function() {
-		helpers.callback(this.options.afterFit, [this]);
-	},
-
-	// Shared Methods
-	isHorizontal: function() {
-		return this.options.position === 'top' || this.options.position === 'bottom';
-	},
-	isFullWidth: function() {
-		return (this.options.fullWidth);
-	},
-
-	// Get the correct value. NaN bad inputs, If the value type is object get the x or y based on whether we are horizontal or not
-	getRightValue: function(rawValue) {
-		// Null and undefined values first
-		if (helpers.isNullOrUndef(rawValue)) {
-			return NaN;
-		}
-		// isNaN(object) returns true, so make sure NaN is checking for a number; Discard Infinite values
-		if (typeof rawValue === 'number' && !isFinite(rawValue)) {
-			return NaN;
-		}
-		// If it is in fact an object, dive in one more level
-		if (rawValue) {
-			if (this.isHorizontal()) {
-				if (rawValue.x !== undefined) {
-					return this.getRightValue(rawValue.x);
-				}
-			} else if (rawValue.y !== undefined) {
-				return this.getRightValue(rawValue.y);
-			}
-		}
-
-		// Value is good, return it
-		return rawValue;
-	},
-
-	/**
-	 * Used to get the value to display in the tooltip for the data at the given index
-	 * @param index
-	 * @param datasetIndex
-	 */
-	getLabelForIndex: helpers.noop,
-
-	/**
-	 * Returns the location of the given data point. Value can either be an index or a numerical value
-	 * The coordinate (0, 0) is at the upper-left corner of the canvas
-	 * @param value
-	 * @param index
-	 * @param datasetIndex
-	 */
-	getPixelForValue: helpers.noop,
-
-	/**
-	 * Used to get the data value from a given pixel. This is the inverse of getPixelForValue
-	 * The coordinate (0, 0) is at the upper-left corner of the canvas
-	 * @param pixel
-	 */
-	getValueForPixel: helpers.noop,
-
-	/**
-	 * Returns the location of the tick at the given index
-	 * The coordinate (0, 0) is at the upper-left corner of the canvas
-	 */
-	getPixelForTick: function(index) {
-		var me = this;
-		var offset = me.options.offset;
-		if (me.isHorizontal()) {
-			var innerWidth = me.width - (me.paddingLeft + me.paddingRight);
-			var tickWidth = innerWidth / Math.max((me._ticks.length - (offset ? 0 : 1)), 1);
-			var pixel = (tickWidth * index) + me.paddingLeft;
-
-			if (offset) {
-				pixel += tickWidth / 2;
-			}
-
-			var finalVal = me.left + Math.round(pixel);
-			finalVal += me.isFullWidth() ? me.margins.left : 0;
-			return finalVal;
-		}
-		var innerHeight = me.height - (me.paddingTop + me.paddingBottom);
-		return me.top + (index * (innerHeight / (me._ticks.length - 1)));
-	},
-
-	/**
-	 * Utility for getting the pixel location of a percentage of scale
-	 * The coordinate (0, 0) is at the upper-left corner of the canvas
-	 */
-	getPixelForDecimal: function(decimal) {
-		var me = this;
-		if (me.isHorizontal()) {
-			var innerWidth = me.width - (me.paddingLeft + me.paddingRight);
-			var valueOffset = (innerWidth * decimal) + me.paddingLeft;
-
-			var finalVal = me.left + Math.round(valueOffset);
-			finalVal += me.isFullWidth() ? me.margins.left : 0;
-			return finalVal;
-		}
-		return me.top + (decimal * me.height);
-	},
-
-	/**
-	 * Returns the pixel for the minimum chart value
-	 * The coordinate (0, 0) is at the upper-left corner of the canvas
-	 */
-	getBasePixel: function() {
-		return this.getPixelForValue(this.getBaseValue());
-	},
-
-	getBaseValue: function() {
-		var me = this;
-		var min = me.min;
-		var max = me.max;
-
-		return me.beginAtZero ? 0 :
-			min < 0 && max < 0 ? max :
-			min > 0 && max > 0 ? min :
-			0;
-	},
-
-	/**
-	 * Returns a subset of ticks to be plotted to avoid overlapping labels.
-	 * @private
-	 */
-	_autoSkip: function(ticks) {
-		var skipRatio;
-		var me = this;
-		var isHorizontal = me.isHorizontal();
-		var optionTicks = me.options.ticks.minor;
-		var tickCount = ticks.length;
-		var labelRotationRadians = helpers.toRadians(me.labelRotation);
-		var cosRotation = Math.cos(labelRotationRadians);
-		var longestRotatedLabel = me.longestLabelWidth * cosRotation;
-		var result = [];
-		var i, tick, shouldSkip;
-
-		// figure out the maximum number of gridlines to show
-		var maxTicks;
-		if (optionTicks.maxTicksLimit) {
-			maxTicks = optionTicks.maxTicksLimit;
-		}
-
-		if (isHorizontal) {
-			skipRatio = false;
-
-			if ((longestRotatedLabel + optionTicks.autoSkipPadding) * tickCount > (me.width - (me.paddingLeft + me.paddingRight))) {
-				skipRatio = 1 + Math.floor(((longestRotatedLabel + optionTicks.autoSkipPadding) * tickCount) / (me.width - (me.paddingLeft + me.paddingRight)));
-			}
-
-			// if they defined a max number of optionTicks,
-			// increase skipRatio until that number is met
-			if (maxTicks && tickCount > maxTicks) {
-				skipRatio = Math.max(skipRatio, Math.floor(tickCount / maxTicks));
-			}
-		}
-
-		for (i = 0; i < tickCount; i++) {
-			tick = ticks[i];
-
-			// Since we always show the last tick,we need may need to hide the last shown one before
-			shouldSkip = (skipRatio > 1 && i % skipRatio > 0) || (i % skipRatio === 0 && i + skipRatio >= tickCount);
-			if (shouldSkip && i !== tickCount - 1) {
-				// leave tick in place but make sure it's not displayed (#4635)
-				delete tick.label;
-			}
-			result.push(tick);
-		}
-		return result;
-	},
-
-	// Actually draw the scale on the canvas
-	// @param {rectangle} chartArea : the area of the chart to draw full grid lines on
-	draw: function(chartArea) {
-		var me = this;
-		var options = me.options;
-		if (!options.display) {
-			return;
-		}
-
-		var context = me.ctx;
-		var globalDefaults = defaults.global;
-		var optionTicks = options.ticks.minor;
-		var optionMajorTicks = options.ticks.major || optionTicks;
-		var gridLines = options.gridLines;
-		var scaleLabel = options.scaleLabel;
-
-		var isRotated = me.labelRotation !== 0;
-		var isHorizontal = me.isHorizontal();
-
-		var ticks = optionTicks.autoSkip ? me._autoSkip(me.getTicks()) : me.getTicks();
-		var tickFontColor = helpers.valueOrDefault(optionTicks.fontColor, globalDefaults.defaultFontColor);
-		var tickFont = parseFontOptions(optionTicks);
-		var majorTickFontColor = helpers.valueOrDefault(optionMajorTicks.fontColor, globalDefaults.defaultFontColor);
-		var majorTickFont = parseFontOptions(optionMajorTicks);
-
-		var tl = gridLines.drawTicks ? gridLines.tickMarkLength : 0;
-
-		var scaleLabelFontColor = helpers.valueOrDefault(scaleLabel.fontColor, globalDefaults.defaultFontColor);
-		var scaleLabelFont = parseFontOptions(scaleLabel);
-		var scaleLabelPadding = helpers.options.toPadding(scaleLabel.padding);
-		var labelRotationRadians = helpers.toRadians(me.labelRotation);
-
-		var itemsToDraw = [];
-
-		var axisWidth = me.options.gridLines.lineWidth;
-		var xTickStart = options.position === 'right' ? me.left : me.right - axisWidth - tl;
-		var xTickEnd = options.position === 'right' ? me.left + tl : me.right;
-		var yTickStart = options.position === 'bottom' ? me.top + axisWidth : me.bottom - tl - axisWidth;
-		var yTickEnd = options.position === 'bottom' ? me.top + axisWidth + tl : me.bottom + axisWidth;
-
-		helpers.each(ticks, function(tick, index) {
-			// autoskipper skipped this tick (#4635)
-			if (helpers.isNullOrUndef(tick.label)) {
-				return;
-			}
-
-			var label = tick.label;
-			var lineWidth, lineColor, borderDash, borderDashOffset;
-			if (index === me.zeroLineIndex && options.offset === gridLines.offsetGridLines) {
-				// Draw the first index specially
-				lineWidth = gridLines.zeroLineWidth;
-				lineColor = gridLines.zeroLineColor;
-				borderDash = gridLines.zeroLineBorderDash;
-				borderDashOffset = gridLines.zeroLineBorderDashOffset;
-			} else {
-				lineWidth = helpers.valueAtIndexOrDefault(gridLines.lineWidth, index);
-				lineColor = helpers.valueAtIndexOrDefault(gridLines.color, index);
-				borderDash = helpers.valueOrDefault(gridLines.borderDash, globalDefaults.borderDash);
-				borderDashOffset = helpers.valueOrDefault(gridLines.borderDashOffset, globalDefaults.borderDashOffset);
-			}
-
-			// Common properties
-			var tx1, ty1, tx2, ty2, x1, y1, x2, y2, labelX, labelY;
-			var textAlign = 'middle';
-			var textBaseline = 'middle';
-			var tickPadding = optionTicks.padding;
-
-			if (isHorizontal) {
-				var labelYOffset = tl + tickPadding;
-
-				if (options.position === 'bottom') {
-					// bottom
-					textBaseline = !isRotated ? 'top' : 'middle';
-					textAlign = !isRotated ? 'center' : 'right';
-					labelY = me.top + labelYOffset;
-				} else {
-					// top
-					textBaseline = !isRotated ? 'bottom' : 'middle';
-					textAlign = !isRotated ? 'center' : 'left';
-					labelY = me.bottom - labelYOffset;
-				}
-
-				var xLineValue = getLineValue(me, index, gridLines.offsetGridLines && ticks.length > 1);
-				if (xLineValue < me.left) {
-					lineColor = 'rgba(0,0,0,0)';
-				}
-				xLineValue += helpers.aliasPixel(lineWidth);
-
-				labelX = me.getPixelForTick(index) + optionTicks.labelOffset; // x values for optionTicks (need to consider offsetLabel option)
-
-				tx1 = tx2 = x1 = x2 = xLineValue;
-				ty1 = yTickStart;
-				ty2 = yTickEnd;
-				y1 = chartArea.top;
-				y2 = chartArea.bottom + axisWidth;
-			} else {
-				var isLeft = options.position === 'left';
-				var labelXOffset;
-
-				if (optionTicks.mirror) {
-					textAlign = isLeft ? 'left' : 'right';
-					labelXOffset = tickPadding;
-				} else {
-					textAlign = isLeft ? 'right' : 'left';
-					labelXOffset = tl + tickPadding;
-				}
-
-				labelX = isLeft ? me.right - labelXOffset : me.left + labelXOffset;
-
-				var yLineValue = getLineValue(me, index, gridLines.offsetGridLines && ticks.length > 1);
-				if (yLineValue < me.top) {
-					lineColor = 'rgba(0,0,0,0)';
-				}
-				yLineValue += helpers.aliasPixel(lineWidth);
-
-				labelY = me.getPixelForTick(index) + optionTicks.labelOffset;
-
-				tx1 = xTickStart;
-				tx2 = xTickEnd;
-				x1 = chartArea.left;
-				x2 = chartArea.right + axisWidth;
-				ty1 = ty2 = y1 = y2 = yLineValue;
-			}
-
-			itemsToDraw.push({
-				tx1: tx1,
-				ty1: ty1,
-				tx2: tx2,
-				ty2: ty2,
-				x1: x1,
-				y1: y1,
-				x2: x2,
-				y2: y2,
-				labelX: labelX,
-				labelY: labelY,
-				glWidth: lineWidth,
-				glColor: lineColor,
-				glBorderDash: borderDash,
-				glBorderDashOffset: borderDashOffset,
-				rotation: -1 * labelRotationRadians,
-				label: label,
-				major: tick.major,
-				textBaseline: textBaseline,
-				textAlign: textAlign
-			});
-		});
-
-		// Draw all of the tick labels, tick marks, and grid lines at the correct places
-		helpers.each(itemsToDraw, function(itemToDraw) {
-			if (gridLines.display) {
-				context.save();
-				context.lineWidth = itemToDraw.glWidth;
-				context.strokeStyle = itemToDraw.glColor;
-				if (context.setLineDash) {
-					context.setLineDash(itemToDraw.glBorderDash);
-					context.lineDashOffset = itemToDraw.glBorderDashOffset;
-				}
-
-				context.beginPath();
-
-				if (gridLines.drawTicks) {
-					context.moveTo(itemToDraw.tx1, itemToDraw.ty1);
-					context.lineTo(itemToDraw.tx2, itemToDraw.ty2);
-				}
-
-				if (gridLines.drawOnChartArea) {
-					context.moveTo(itemToDraw.x1, itemToDraw.y1);
-					context.lineTo(itemToDraw.x2, itemToDraw.y2);
-				}
-
-				context.stroke();
-				context.restore();
-			}
-
-			if (optionTicks.display) {
-				// Make sure we draw text in the correct color and font
-				context.save();
-				context.translate(itemToDraw.labelX, itemToDraw.labelY);
-				context.rotate(itemToDraw.rotation);
-				context.font = itemToDraw.major ? majorTickFont.font : tickFont.font;
-				context.fillStyle = itemToDraw.major ? majorTickFontColor : tickFontColor;
-				context.textBaseline = itemToDraw.textBaseline;
-				context.textAlign = itemToDraw.textAlign;
-
-				var label = itemToDraw.label;
-				if (helpers.isArray(label)) {
-					var lineCount = label.length;
-					var lineHeight = tickFont.size * 1.5;
-					var y = me.isHorizontal() ? 0 : -lineHeight * (lineCount - 1) / 2;
-
-					for (var i = 0; i < lineCount; ++i) {
-						// We just make sure the multiline element is a string here..
-						context.fillText('' + label[i], 0, y);
-						// apply same lineSpacing as calculated @ L#320
-						y += lineHeight;
-					}
-				} else {
-					context.fillText(label, 0, 0);
-				}
-				context.restore();
-			}
-		});
-
-		if (scaleLabel.display) {
-			// Draw the scale label
-			var scaleLabelX;
-			var scaleLabelY;
-			var rotation = 0;
-			var halfLineHeight = parseLineHeight(scaleLabel) / 2;
-
-			if (isHorizontal) {
-				scaleLabelX = me.left + ((me.right - me.left) / 2); // midpoint of the width
-				scaleLabelY = options.position === 'bottom'
-					? me.bottom - halfLineHeight - scaleLabelPadding.bottom
-					: me.top + halfLineHeight + scaleLabelPadding.top;
-			} else {
-				var isLeft = options.position === 'left';
-				scaleLabelX = isLeft
-					? me.left + halfLineHeight + scaleLabelPadding.top
-					: me.right - halfLineHeight - scaleLabelPadding.top;
-				scaleLabelY = me.top + ((me.bottom - me.top) / 2);
-				rotation = isLeft ? -0.5 * Math.PI : 0.5 * Math.PI;
-			}
-
-			context.save();
-			context.translate(scaleLabelX, scaleLabelY);
-			context.rotate(rotation);
-			context.textAlign = 'center';
-			context.textBaseline = 'middle';
-			context.fillStyle = scaleLabelFontColor; // render in correct colour
-			context.font = scaleLabelFont.font;
-			context.fillText(scaleLabel.labelString, 0, 0);
-			context.restore();
-		}
-
-		if (gridLines.drawBorder) {
-			// Draw the line at the edge of the axis
-			context.lineWidth = helpers.valueAtIndexOrDefault(gridLines.lineWidth, 0);
-			context.strokeStyle = helpers.valueAtIndexOrDefault(gridLines.color, 0);
-			var x1 = me.left;
-			var x2 = me.right + axisWidth;
-			var y1 = me.top;
-			var y2 = me.bottom + axisWidth;
-
-			var aliasPixel = helpers.aliasPixel(context.lineWidth);
-			if (isHorizontal) {
-				y1 = y2 = options.position === 'top' ? me.bottom : me.top;
-				y1 += aliasPixel;
-				y2 += aliasPixel;
-			} else {
-				x1 = x2 = options.position === 'left' ? me.right : me.left;
-				x1 += aliasPixel;
-				x2 += aliasPixel;
-			}
-
-			context.beginPath();
-			context.moveTo(x1, y1);
-			context.lineTo(x2, y2);
-			context.stroke();
-		}
-	}
-});
-
-
-/***/ }),
-/* 296 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var defaults = __webpack_require__(2);
-var Element = __webpack_require__(7);
-var helpers = __webpack_require__(1);
-
-defaults._set('global', {
-	tooltips: {
-		enabled: true,
-		custom: null,
-		mode: 'nearest',
-		position: 'average',
-		intersect: true,
-		backgroundColor: 'rgba(0,0,0,0.8)',
-		titleFontStyle: 'bold',
-		titleSpacing: 2,
-		titleMarginBottom: 6,
-		titleFontColor: '#fff',
-		titleAlign: 'left',
-		bodySpacing: 2,
-		bodyFontColor: '#fff',
-		bodyAlign: 'left',
-		footerFontStyle: 'bold',
-		footerSpacing: 2,
-		footerMarginTop: 6,
-		footerFontColor: '#fff',
-		footerAlign: 'left',
-		yPadding: 6,
-		xPadding: 6,
-		caretPadding: 2,
-		caretSize: 5,
-		cornerRadius: 6,
-		multiKeyBackground: '#fff',
-		displayColors: true,
-		borderColor: 'rgba(0,0,0,0)',
-		borderWidth: 0,
-		callbacks: {
-			// Args are: (tooltipItems, data)
-			beforeTitle: helpers.noop,
-			title: function(tooltipItems, data) {
-				// Pick first xLabel for now
-				var title = '';
-				var labels = data.labels;
-				var labelCount = labels ? labels.length : 0;
-
-				if (tooltipItems.length > 0) {
-					var item = tooltipItems[0];
-
-					if (item.xLabel) {
-						title = item.xLabel;
-					} else if (labelCount > 0 && item.index < labelCount) {
-						title = labels[item.index];
-					}
-				}
-
-				return title;
-			},
-			afterTitle: helpers.noop,
-
-			// Args are: (tooltipItems, data)
-			beforeBody: helpers.noop,
-
-			// Args are: (tooltipItem, data)
-			beforeLabel: helpers.noop,
-			label: function(tooltipItem, data) {
-				var label = data.datasets[tooltipItem.datasetIndex].label || '';
-
-				if (label) {
-					label += ': ';
-				}
-				label += tooltipItem.yLabel;
-				return label;
-			},
-			labelColor: function(tooltipItem, chart) {
-				var meta = chart.getDatasetMeta(tooltipItem.datasetIndex);
-				var activeElement = meta.data[tooltipItem.index];
-				var view = activeElement._view;
-				return {
-					borderColor: view.borderColor,
-					backgroundColor: view.backgroundColor
-				};
-			},
-			labelTextColor: function() {
-				return this._options.bodyFontColor;
-			},
-			afterLabel: helpers.noop,
-
-			// Args are: (tooltipItems, data)
-			afterBody: helpers.noop,
-
-			// Args are: (tooltipItems, data)
-			beforeFooter: helpers.noop,
-			footer: helpers.noop,
-			afterFooter: helpers.noop
-		}
-	}
-});
-
-module.exports = function(Chart) {
-
-	/**
- 	 * Helper method to merge the opacity into a color
- 	 */
-	function mergeOpacity(colorString, opacity) {
-		var color = helpers.color(colorString);
-		return color.alpha(opacity * color.alpha()).rgbaString();
-	}
-
-	// Helper to push or concat based on if the 2nd parameter is an array or not
-	function pushOrConcat(base, toPush) {
-		if (toPush) {
-			if (helpers.isArray(toPush)) {
-				// base = base.concat(toPush);
-				Array.prototype.push.apply(base, toPush);
-			} else {
-				base.push(toPush);
-			}
-		}
-
-		return base;
-	}
-
-	// Private helper to create a tooltip item model
-	// @param element : the chart element (point, arc, bar) to create the tooltip item for
-	// @return : new tooltip item
-	function createTooltipItem(element) {
-		var xScale = element._xScale;
-		var yScale = element._yScale || element._scale; // handle radar || polarArea charts
-		var index = element._index;
-		var datasetIndex = element._datasetIndex;
-
-		return {
-			xLabel: xScale ? xScale.getLabelForIndex(index, datasetIndex) : '',
-			yLabel: yScale ? yScale.getLabelForIndex(index, datasetIndex) : '',
-			index: index,
-			datasetIndex: datasetIndex,
-			x: element._model.x,
-			y: element._model.y
-		};
-	}
-
-	/**
-	 * Helper to get the reset model for the tooltip
-	 * @param tooltipOpts {Object} the tooltip options
-	 */
-	function getBaseModel(tooltipOpts) {
-		var globalDefaults = defaults.global;
-		var valueOrDefault = helpers.valueOrDefault;
-
-		return {
-			// Positioning
-			xPadding: tooltipOpts.xPadding,
-			yPadding: tooltipOpts.yPadding,
-			xAlign: tooltipOpts.xAlign,
-			yAlign: tooltipOpts.yAlign,
-
-			// Body
-			bodyFontColor: tooltipOpts.bodyFontColor,
-			_bodyFontFamily: valueOrDefault(tooltipOpts.bodyFontFamily, globalDefaults.defaultFontFamily),
-			_bodyFontStyle: valueOrDefault(tooltipOpts.bodyFontStyle, globalDefaults.defaultFontStyle),
-			_bodyAlign: tooltipOpts.bodyAlign,
-			bodyFontSize: valueOrDefault(tooltipOpts.bodyFontSize, globalDefaults.defaultFontSize),
-			bodySpacing: tooltipOpts.bodySpacing,
-
-			// Title
-			titleFontColor: tooltipOpts.titleFontColor,
-			_titleFontFamily: valueOrDefault(tooltipOpts.titleFontFamily, globalDefaults.defaultFontFamily),
-			_titleFontStyle: valueOrDefault(tooltipOpts.titleFontStyle, globalDefaults.defaultFontStyle),
-			titleFontSize: valueOrDefault(tooltipOpts.titleFontSize, globalDefaults.defaultFontSize),
-			_titleAlign: tooltipOpts.titleAlign,
-			titleSpacing: tooltipOpts.titleSpacing,
-			titleMarginBottom: tooltipOpts.titleMarginBottom,
-
-			// Footer
-			footerFontColor: tooltipOpts.footerFontColor,
-			_footerFontFamily: valueOrDefault(tooltipOpts.footerFontFamily, globalDefaults.defaultFontFamily),
-			_footerFontStyle: valueOrDefault(tooltipOpts.footerFontStyle, globalDefaults.defaultFontStyle),
-			footerFontSize: valueOrDefault(tooltipOpts.footerFontSize, globalDefaults.defaultFontSize),
-			_footerAlign: tooltipOpts.footerAlign,
-			footerSpacing: tooltipOpts.footerSpacing,
-			footerMarginTop: tooltipOpts.footerMarginTop,
-
-			// Appearance
-			caretSize: tooltipOpts.caretSize,
-			cornerRadius: tooltipOpts.cornerRadius,
-			backgroundColor: tooltipOpts.backgroundColor,
-			opacity: 0,
-			legendColorBackground: tooltipOpts.multiKeyBackground,
-			displayColors: tooltipOpts.displayColors,
-			borderColor: tooltipOpts.borderColor,
-			borderWidth: tooltipOpts.borderWidth
-		};
-	}
-
-	/**
-	 * Get the size of the tooltip
-	 */
-	function getTooltipSize(tooltip, model) {
-		var ctx = tooltip._chart.ctx;
-
-		var height = model.yPadding * 2; // Tooltip Padding
-		var width = 0;
-
-		// Count of all lines in the body
-		var body = model.body;
-		var combinedBodyLength = body.reduce(function(count, bodyItem) {
-			return count + bodyItem.before.length + bodyItem.lines.length + bodyItem.after.length;
-		}, 0);
-		combinedBodyLength += model.beforeBody.length + model.afterBody.length;
-
-		var titleLineCount = model.title.length;
-		var footerLineCount = model.footer.length;
-		var titleFontSize = model.titleFontSize;
-		var bodyFontSize = model.bodyFontSize;
-		var footerFontSize = model.footerFontSize;
-
-		height += titleLineCount * titleFontSize; // Title Lines
-		height += titleLineCount ? (titleLineCount - 1) * model.titleSpacing : 0; // Title Line Spacing
-		height += titleLineCount ? model.titleMarginBottom : 0; // Title's bottom Margin
-		height += combinedBodyLength * bodyFontSize; // Body Lines
-		height += combinedBodyLength ? (combinedBodyLength - 1) * model.bodySpacing : 0; // Body Line Spacing
-		height += footerLineCount ? model.footerMarginTop : 0; // Footer Margin
-		height += footerLineCount * (footerFontSize); // Footer Lines
-		height += footerLineCount ? (footerLineCount - 1) * model.footerSpacing : 0; // Footer Line Spacing
-
-		// Title width
-		var widthPadding = 0;
-		var maxLineWidth = function(line) {
-			width = Math.max(width, ctx.measureText(line).width + widthPadding);
-		};
-
-		ctx.font = helpers.fontString(titleFontSize, model._titleFontStyle, model._titleFontFamily);
-		helpers.each(model.title, maxLineWidth);
-
-		// Body width
-		ctx.font = helpers.fontString(bodyFontSize, model._bodyFontStyle, model._bodyFontFamily);
-		helpers.each(model.beforeBody.concat(model.afterBody), maxLineWidth);
-
-		// Body lines may include some extra width due to the color box
-		widthPadding = model.displayColors ? (bodyFontSize + 2) : 0;
-		helpers.each(body, function(bodyItem) {
-			helpers.each(bodyItem.before, maxLineWidth);
-			helpers.each(bodyItem.lines, maxLineWidth);
-			helpers.each(bodyItem.after, maxLineWidth);
-		});
-
-		// Reset back to 0
-		widthPadding = 0;
-
-		// Footer width
-		ctx.font = helpers.fontString(footerFontSize, model._footerFontStyle, model._footerFontFamily);
-		helpers.each(model.footer, maxLineWidth);
-
-		// Add padding
-		width += 2 * model.xPadding;
-
-		return {
-			width: width,
-			height: height
-		};
-	}
-
-	/**
-	 * Helper to get the alignment of a tooltip given the size
-	 */
-	function determineAlignment(tooltip, size) {
-		var model = tooltip._model;
-		var chart = tooltip._chart;
-		var chartArea = tooltip._chart.chartArea;
-		var xAlign = 'center';
-		var yAlign = 'center';
-
-		if (model.y < size.height) {
-			yAlign = 'top';
-		} else if (model.y > (chart.height - size.height)) {
-			yAlign = 'bottom';
-		}
-
-		var lf, rf; // functions to determine left, right alignment
-		var olf, orf; // functions to determine if left/right alignment causes tooltip to go outside chart
-		var yf; // function to get the y alignment if the tooltip goes outside of the left or right edges
-		var midX = (chartArea.left + chartArea.right) / 2;
-		var midY = (chartArea.top + chartArea.bottom) / 2;
-
-		if (yAlign === 'center') {
-			lf = function(x) {
-				return x <= midX;
-			};
-			rf = function(x) {
-				return x > midX;
-			};
-		} else {
-			lf = function(x) {
-				return x <= (size.width / 2);
-			};
-			rf = function(x) {
-				return x >= (chart.width - (size.width / 2));
-			};
-		}
-
-		olf = function(x) {
-			return x + size.width + model.caretSize + model.caretPadding > chart.width;
-		};
-		orf = function(x) {
-			return x - size.width - model.caretSize - model.caretPadding < 0;
-		};
-		yf = function(y) {
-			return y <= midY ? 'top' : 'bottom';
-		};
-
-		if (lf(model.x)) {
-			xAlign = 'left';
-
-			// Is tooltip too wide and goes over the right side of the chart.?
-			if (olf(model.x)) {
-				xAlign = 'center';
-				yAlign = yf(model.y);
-			}
-		} else if (rf(model.x)) {
-			xAlign = 'right';
-
-			// Is tooltip too wide and goes outside left edge of canvas?
-			if (orf(model.x)) {
-				xAlign = 'center';
-				yAlign = yf(model.y);
-			}
-		}
-
-		var opts = tooltip._options;
-		return {
-			xAlign: opts.xAlign ? opts.xAlign : xAlign,
-			yAlign: opts.yAlign ? opts.yAlign : yAlign
-		};
-	}
-
-	/**
-	 * @Helper to get the location a tooltip needs to be placed at given the initial position (via the vm) and the size and alignment
-	 */
-	function getBackgroundPoint(vm, size, alignment, chart) {
-		// Background Position
-		var x = vm.x;
-		var y = vm.y;
-
-		var caretSize = vm.caretSize;
-		var caretPadding = vm.caretPadding;
-		var cornerRadius = vm.cornerRadius;
-		var xAlign = alignment.xAlign;
-		var yAlign = alignment.yAlign;
-		var paddingAndSize = caretSize + caretPadding;
-		var radiusAndPadding = cornerRadius + caretPadding;
-
-		if (xAlign === 'right') {
-			x -= size.width;
-		} else if (xAlign === 'center') {
-			x -= (size.width / 2);
-			if (x + size.width > chart.width) {
-				x = chart.width - size.width;
-			}
-			if (x < 0) {
-				x = 0;
-			}
-		}
-
-		if (yAlign === 'top') {
-			y += paddingAndSize;
-		} else if (yAlign === 'bottom') {
-			y -= size.height + paddingAndSize;
-		} else {
-			y -= (size.height / 2);
-		}
-
-		if (yAlign === 'center') {
-			if (xAlign === 'left') {
-				x += paddingAndSize;
-			} else if (xAlign === 'right') {
-				x -= paddingAndSize;
-			}
-		} else if (xAlign === 'left') {
-			x -= radiusAndPadding;
-		} else if (xAlign === 'right') {
-			x += radiusAndPadding;
-		}
-
-		return {
-			x: x,
-			y: y
-		};
-	}
-
-	Chart.Tooltip = Element.extend({
-		initialize: function() {
-			this._model = getBaseModel(this._options);
-			this._lastActive = [];
-		},
-
-		// Get the title
-		// Args are: (tooltipItem, data)
-		getTitle: function() {
-			var me = this;
-			var opts = me._options;
-			var callbacks = opts.callbacks;
-
-			var beforeTitle = callbacks.beforeTitle.apply(me, arguments);
-			var title = callbacks.title.apply(me, arguments);
-			var afterTitle = callbacks.afterTitle.apply(me, arguments);
-
-			var lines = [];
-			lines = pushOrConcat(lines, beforeTitle);
-			lines = pushOrConcat(lines, title);
-			lines = pushOrConcat(lines, afterTitle);
-
-			return lines;
-		},
-
-		// Args are: (tooltipItem, data)
-		getBeforeBody: function() {
-			var lines = this._options.callbacks.beforeBody.apply(this, arguments);
-			return helpers.isArray(lines) ? lines : lines !== undefined ? [lines] : [];
-		},
-
-		// Args are: (tooltipItem, data)
-		getBody: function(tooltipItems, data) {
-			var me = this;
-			var callbacks = me._options.callbacks;
-			var bodyItems = [];
-
-			helpers.each(tooltipItems, function(tooltipItem) {
-				var bodyItem = {
-					before: [],
-					lines: [],
-					after: []
-				};
-				pushOrConcat(bodyItem.before, callbacks.beforeLabel.call(me, tooltipItem, data));
-				pushOrConcat(bodyItem.lines, callbacks.label.call(me, tooltipItem, data));
-				pushOrConcat(bodyItem.after, callbacks.afterLabel.call(me, tooltipItem, data));
-
-				bodyItems.push(bodyItem);
-			});
-
-			return bodyItems;
-		},
-
-		// Args are: (tooltipItem, data)
-		getAfterBody: function() {
-			var lines = this._options.callbacks.afterBody.apply(this, arguments);
-			return helpers.isArray(lines) ? lines : lines !== undefined ? [lines] : [];
-		},
-
-		// Get the footer and beforeFooter and afterFooter lines
-		// Args are: (tooltipItem, data)
-		getFooter: function() {
-			var me = this;
-			var callbacks = me._options.callbacks;
-
-			var beforeFooter = callbacks.beforeFooter.apply(me, arguments);
-			var footer = callbacks.footer.apply(me, arguments);
-			var afterFooter = callbacks.afterFooter.apply(me, arguments);
-
-			var lines = [];
-			lines = pushOrConcat(lines, beforeFooter);
-			lines = pushOrConcat(lines, footer);
-			lines = pushOrConcat(lines, afterFooter);
-
-			return lines;
-		},
-
-		update: function(changed) {
-			var me = this;
-			var opts = me._options;
-
-			// Need to regenerate the model because its faster than using extend and it is necessary due to the optimization in Chart.Element.transition
-			// that does _view = _model if ease === 1. This causes the 2nd tooltip update to set properties in both the view and model at the same time
-			// which breaks any animations.
-			var existingModel = me._model;
-			var model = me._model = getBaseModel(opts);
-			var active = me._active;
-
-			var data = me._data;
-
-			// In the case where active.length === 0 we need to keep these at existing values for good animations
-			var alignment = {
-				xAlign: existingModel.xAlign,
-				yAlign: existingModel.yAlign
-			};
-			var backgroundPoint = {
-				x: existingModel.x,
-				y: existingModel.y
-			};
-			var tooltipSize = {
-				width: existingModel.width,
-				height: existingModel.height
-			};
-			var tooltipPosition = {
-				x: existingModel.caretX,
-				y: existingModel.caretY
-			};
-
-			var i, len;
-
-			if (active.length) {
-				model.opacity = 1;
-
-				var labelColors = [];
-				var labelTextColors = [];
-				tooltipPosition = Chart.Tooltip.positioners[opts.position].call(me, active, me._eventPosition);
-
-				var tooltipItems = [];
-				for (i = 0, len = active.length; i < len; ++i) {
-					tooltipItems.push(createTooltipItem(active[i]));
-				}
-
-				// If the user provided a filter function, use it to modify the tooltip items
-				if (opts.filter) {
-					tooltipItems = tooltipItems.filter(function(a) {
-						return opts.filter(a, data);
-					});
-				}
-
-				// If the user provided a sorting function, use it to modify the tooltip items
-				if (opts.itemSort) {
-					tooltipItems = tooltipItems.sort(function(a, b) {
-						return opts.itemSort(a, b, data);
-					});
-				}
-
-				// Determine colors for boxes
-				helpers.each(tooltipItems, function(tooltipItem) {
-					labelColors.push(opts.callbacks.labelColor.call(me, tooltipItem, me._chart));
-					labelTextColors.push(opts.callbacks.labelTextColor.call(me, tooltipItem, me._chart));
-				});
-
-
-				// Build the Text Lines
-				model.title = me.getTitle(tooltipItems, data);
-				model.beforeBody = me.getBeforeBody(tooltipItems, data);
-				model.body = me.getBody(tooltipItems, data);
-				model.afterBody = me.getAfterBody(tooltipItems, data);
-				model.footer = me.getFooter(tooltipItems, data);
-
-				// Initial positioning and colors
-				model.x = Math.round(tooltipPosition.x);
-				model.y = Math.round(tooltipPosition.y);
-				model.caretPadding = opts.caretPadding;
-				model.labelColors = labelColors;
-				model.labelTextColors = labelTextColors;
-
-				// data points
-				model.dataPoints = tooltipItems;
-
-				// We need to determine alignment of the tooltip
-				tooltipSize = getTooltipSize(this, model);
-				alignment = determineAlignment(this, tooltipSize);
-				// Final Size and Position
-				backgroundPoint = getBackgroundPoint(model, tooltipSize, alignment, me._chart);
-			} else {
-				model.opacity = 0;
-			}
-
-			model.xAlign = alignment.xAlign;
-			model.yAlign = alignment.yAlign;
-			model.x = backgroundPoint.x;
-			model.y = backgroundPoint.y;
-			model.width = tooltipSize.width;
-			model.height = tooltipSize.height;
-
-			// Point where the caret on the tooltip points to
-			model.caretX = tooltipPosition.x;
-			model.caretY = tooltipPosition.y;
-
-			me._model = model;
-
-			if (changed && opts.custom) {
-				opts.custom.call(me, model);
-			}
-
-			return me;
-		},
-		drawCaret: function(tooltipPoint, size) {
-			var ctx = this._chart.ctx;
-			var vm = this._view;
-			var caretPosition = this.getCaretPosition(tooltipPoint, size, vm);
-
-			ctx.lineTo(caretPosition.x1, caretPosition.y1);
-			ctx.lineTo(caretPosition.x2, caretPosition.y2);
-			ctx.lineTo(caretPosition.x3, caretPosition.y3);
-		},
-		getCaretPosition: function(tooltipPoint, size, vm) {
-			var x1, x2, x3, y1, y2, y3;
-			var caretSize = vm.caretSize;
-			var cornerRadius = vm.cornerRadius;
-			var xAlign = vm.xAlign;
-			var yAlign = vm.yAlign;
-			var ptX = tooltipPoint.x;
-			var ptY = tooltipPoint.y;
-			var width = size.width;
-			var height = size.height;
-
-			if (yAlign === 'center') {
-				y2 = ptY + (height / 2);
-
-				if (xAlign === 'left') {
-					x1 = ptX;
-					x2 = x1 - caretSize;
-					x3 = x1;
-
-					y1 = y2 + caretSize;
-					y3 = y2 - caretSize;
-				} else {
-					x1 = ptX + width;
-					x2 = x1 + caretSize;
-					x3 = x1;
-
-					y1 = y2 - caretSize;
-					y3 = y2 + caretSize;
-				}
-			} else {
-				if (xAlign === 'left') {
-					x2 = ptX + cornerRadius + (caretSize);
-					x1 = x2 - caretSize;
-					x3 = x2 + caretSize;
-				} else if (xAlign === 'right') {
-					x2 = ptX + width - cornerRadius - caretSize;
-					x1 = x2 - caretSize;
-					x3 = x2 + caretSize;
-				} else {
-					x2 = vm.caretX;
-					x1 = x2 - caretSize;
-					x3 = x2 + caretSize;
-				}
-				if (yAlign === 'top') {
-					y1 = ptY;
-					y2 = y1 - caretSize;
-					y3 = y1;
-				} else {
-					y1 = ptY + height;
-					y2 = y1 + caretSize;
-					y3 = y1;
-					// invert drawing order
-					var tmp = x3;
-					x3 = x1;
-					x1 = tmp;
-				}
-			}
-			return {x1: x1, x2: x2, x3: x3, y1: y1, y2: y2, y3: y3};
-		},
-		drawTitle: function(pt, vm, ctx, opacity) {
-			var title = vm.title;
-
-			if (title.length) {
-				ctx.textAlign = vm._titleAlign;
-				ctx.textBaseline = 'top';
-
-				var titleFontSize = vm.titleFontSize;
-				var titleSpacing = vm.titleSpacing;
-
-				ctx.fillStyle = mergeOpacity(vm.titleFontColor, opacity);
-				ctx.font = helpers.fontString(titleFontSize, vm._titleFontStyle, vm._titleFontFamily);
-
-				var i, len;
-				for (i = 0, len = title.length; i < len; ++i) {
-					ctx.fillText(title[i], pt.x, pt.y);
-					pt.y += titleFontSize + titleSpacing; // Line Height and spacing
-
-					if (i + 1 === title.length) {
-						pt.y += vm.titleMarginBottom - titleSpacing; // If Last, add margin, remove spacing
-					}
-				}
-			}
-		},
-		drawBody: function(pt, vm, ctx, opacity) {
-			var bodyFontSize = vm.bodyFontSize;
-			var bodySpacing = vm.bodySpacing;
-			var body = vm.body;
-
-			ctx.textAlign = vm._bodyAlign;
-			ctx.textBaseline = 'top';
-			ctx.font = helpers.fontString(bodyFontSize, vm._bodyFontStyle, vm._bodyFontFamily);
-
-			// Before Body
-			var xLinePadding = 0;
-			var fillLineOfText = function(line) {
-				ctx.fillText(line, pt.x + xLinePadding, pt.y);
-				pt.y += bodyFontSize + bodySpacing;
-			};
-
-			// Before body lines
-			ctx.fillStyle = mergeOpacity(vm.bodyFontColor, opacity);
-			helpers.each(vm.beforeBody, fillLineOfText);
-
-			var drawColorBoxes = vm.displayColors;
-			xLinePadding = drawColorBoxes ? (bodyFontSize + 2) : 0;
-
-			// Draw body lines now
-			helpers.each(body, function(bodyItem, i) {
-				var textColor = mergeOpacity(vm.labelTextColors[i], opacity);
-				ctx.fillStyle = textColor;
-				helpers.each(bodyItem.before, fillLineOfText);
-
-				helpers.each(bodyItem.lines, function(line) {
-					// Draw Legend-like boxes if needed
-					if (drawColorBoxes) {
-						// Fill a white rect so that colours merge nicely if the opacity is < 1
-						ctx.fillStyle = mergeOpacity(vm.legendColorBackground, opacity);
-						ctx.fillRect(pt.x, pt.y, bodyFontSize, bodyFontSize);
-
-						// Border
-						ctx.lineWidth = 1;
-						ctx.strokeStyle = mergeOpacity(vm.labelColors[i].borderColor, opacity);
-						ctx.strokeRect(pt.x, pt.y, bodyFontSize, bodyFontSize);
-
-						// Inner square
-						ctx.fillStyle = mergeOpacity(vm.labelColors[i].backgroundColor, opacity);
-						ctx.fillRect(pt.x + 1, pt.y + 1, bodyFontSize - 2, bodyFontSize - 2);
-						ctx.fillStyle = textColor;
-					}
-
-					fillLineOfText(line);
-				});
-
-				helpers.each(bodyItem.after, fillLineOfText);
-			});
-
-			// Reset back to 0 for after body
-			xLinePadding = 0;
-
-			// After body lines
-			helpers.each(vm.afterBody, fillLineOfText);
-			pt.y -= bodySpacing; // Remove last body spacing
-		},
-		drawFooter: function(pt, vm, ctx, opacity) {
-			var footer = vm.footer;
-
-			if (footer.length) {
-				pt.y += vm.footerMarginTop;
-
-				ctx.textAlign = vm._footerAlign;
-				ctx.textBaseline = 'top';
-
-				ctx.fillStyle = mergeOpacity(vm.footerFontColor, opacity);
-				ctx.font = helpers.fontString(vm.footerFontSize, vm._footerFontStyle, vm._footerFontFamily);
-
-				helpers.each(footer, function(line) {
-					ctx.fillText(line, pt.x, pt.y);
-					pt.y += vm.footerFontSize + vm.footerSpacing;
-				});
-			}
-		},
-		drawBackground: function(pt, vm, ctx, tooltipSize, opacity) {
-			ctx.fillStyle = mergeOpacity(vm.backgroundColor, opacity);
-			ctx.strokeStyle = mergeOpacity(vm.borderColor, opacity);
-			ctx.lineWidth = vm.borderWidth;
-			var xAlign = vm.xAlign;
-			var yAlign = vm.yAlign;
-			var x = pt.x;
-			var y = pt.y;
-			var width = tooltipSize.width;
-			var height = tooltipSize.height;
-			var radius = vm.cornerRadius;
-
-			ctx.beginPath();
-			ctx.moveTo(x + radius, y);
-			if (yAlign === 'top') {
-				this.drawCaret(pt, tooltipSize);
-			}
-			ctx.lineTo(x + width - radius, y);
-			ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-			if (yAlign === 'center' && xAlign === 'right') {
-				this.drawCaret(pt, tooltipSize);
-			}
-			ctx.lineTo(x + width, y + height - radius);
-			ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-			if (yAlign === 'bottom') {
-				this.drawCaret(pt, tooltipSize);
-			}
-			ctx.lineTo(x + radius, y + height);
-			ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-			if (yAlign === 'center' && xAlign === 'left') {
-				this.drawCaret(pt, tooltipSize);
-			}
-			ctx.lineTo(x, y + radius);
-			ctx.quadraticCurveTo(x, y, x + radius, y);
-			ctx.closePath();
-
-			ctx.fill();
-
-			if (vm.borderWidth > 0) {
-				ctx.stroke();
-			}
-		},
-		draw: function() {
-			var ctx = this._chart.ctx;
-			var vm = this._view;
-
-			if (vm.opacity === 0) {
-				return;
-			}
-
-			var tooltipSize = {
-				width: vm.width,
-				height: vm.height
-			};
-			var pt = {
-				x: vm.x,
-				y: vm.y
-			};
-
-			// IE11/Edge does not like very small opacities, so snap to 0
-			var opacity = Math.abs(vm.opacity < 1e-3) ? 0 : vm.opacity;
-
-			// Truthy/falsey value for empty tooltip
-			var hasTooltipContent = vm.title.length || vm.beforeBody.length || vm.body.length || vm.afterBody.length || vm.footer.length;
-
-			if (this._options.enabled && hasTooltipContent) {
-				// Draw Background
-				this.drawBackground(pt, vm, ctx, tooltipSize, opacity);
-
-				// Draw Title, Body, and Footer
-				pt.x += vm.xPadding;
-				pt.y += vm.yPadding;
-
-				// Titles
-				this.drawTitle(pt, vm, ctx, opacity);
-
-				// Body
-				this.drawBody(pt, vm, ctx, opacity);
-
-				// Footer
-				this.drawFooter(pt, vm, ctx, opacity);
-			}
-		},
-
-		/**
-		 * Handle an event
-		 * @private
-		 * @param {IEvent} event - The event to handle
-		 * @returns {Boolean} true if the tooltip changed
-		 */
-		handleEvent: function(e) {
-			var me = this;
-			var options = me._options;
-			var changed = false;
-
-			me._lastActive = me._lastActive || [];
-
-			// Find Active Elements for tooltips
-			if (e.type === 'mouseout') {
-				me._active = [];
-			} else {
-				me._active = me._chart.getElementsAtEventForMode(e, options.mode, options);
-			}
-
-			// Remember Last Actives
-			changed = !helpers.arrayEquals(me._active, me._lastActive);
-
-			// Only handle target event on tooltip change
-			if (changed) {
-				me._lastActive = me._active;
-
-				if (options.enabled || options.custom) {
-					me._eventPosition = {
-						x: e.x,
-						y: e.y
-					};
-
-					me.update(true);
-					me.pivot();
-				}
-			}
-
-			return changed;
-		}
-	});
-
-	/**
-	 * @namespace Chart.Tooltip.positioners
-	 */
-	Chart.Tooltip.positioners = {
-		/**
-		 * Average mode places the tooltip at the average position of the elements shown
-		 * @function Chart.Tooltip.positioners.average
-		 * @param elements {ChartElement[]} the elements being displayed in the tooltip
-		 * @returns {Point} tooltip position
-		 */
-		average: function(elements) {
-			if (!elements.length) {
-				return false;
-			}
-
-			var i, len;
-			var x = 0;
-			var y = 0;
-			var count = 0;
-
-			for (i = 0, len = elements.length; i < len; ++i) {
-				var el = elements[i];
-				if (el && el.hasValue()) {
-					var pos = el.tooltipPosition();
-					x += pos.x;
-					y += pos.y;
-					++count;
-				}
-			}
-
-			return {
-				x: Math.round(x / count),
-				y: Math.round(y / count)
-			};
-		},
-
-		/**
-		 * Gets the tooltip position nearest of the item nearest to the event position
-		 * @function Chart.Tooltip.positioners.nearest
-		 * @param elements {Chart.Element[]} the tooltip elements
-		 * @param eventPosition {Point} the position of the event in canvas coordinates
-		 * @returns {Point} the tooltip position
-		 */
-		nearest: function(elements, eventPosition) {
-			var x = eventPosition.x;
-			var y = eventPosition.y;
-			var minDistance = Number.POSITIVE_INFINITY;
-			var i, len, nearestElement;
-
-			for (i = 0, len = elements.length; i < len; ++i) {
-				var el = elements[i];
-				if (el && el.hasValue()) {
-					var center = el.getCenterPoint();
-					var d = helpers.distanceBetweenPoints(eventPosition, center);
-
-					if (d < minDistance) {
-						minDistance = d;
-						nearestElement = el;
-					}
-				}
-			}
-
-			if (nearestElement) {
-				var tp = nearestElement.tooltipPosition();
-				x = tp.x;
-				y = tp.y;
-			}
-
-			return {
-				x: x,
-				y: y
-			};
-		}
-	};
-};
-
-
-/***/ }),
-/* 297 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var helpers = __webpack_require__(1);
+var Scale = __webpack_require__(12);
 
 /**
  * Generate a set of linear ticks
@@ -49621,18 +49889,28 @@ function generateTicks(generationOptions, dataRange) {
 	// "nice number" algorithm. See http://stackoverflow.com/questions/8506881/nice-label-algorithm-for-charts-with-minimum-ticks
 	// for details.
 
+	var factor;
+	var precision;
 	var spacing;
+
 	if (generationOptions.stepSize && generationOptions.stepSize > 0) {
 		spacing = generationOptions.stepSize;
 	} else {
 		var niceRange = helpers.niceNum(dataRange.max - dataRange.min, false);
 		spacing = helpers.niceNum(niceRange / (generationOptions.maxTicks - 1), true);
+
+		precision = generationOptions.precision;
+		if (precision !== undefined) {
+			// If the user specified a precision, round to that number of decimal places
+			factor = Math.pow(10, precision);
+			spacing = Math.ceil(spacing * factor) / factor;
+		}
 	}
 	var niceMin = Math.floor(dataRange.min / spacing) * spacing;
 	var niceMax = Math.ceil(dataRange.max / spacing) * spacing;
 
 	// If min, max and stepSize is set and they make an evenly spaced scale use it.
-	if (generationOptions.min && generationOptions.max && generationOptions.stepSize) {
+	if (!helpers.isNullOrUndef(generationOptions.min) && !helpers.isNullOrUndef(generationOptions.max) && generationOptions.stepSize) {
 		// If very close to our whole number, use it.
 		if (helpers.almostWhole((generationOptions.max - generationOptions.min) / generationOptions.stepSize, spacing / 1000)) {
 			niceMin = generationOptions.min;
@@ -49648,9 +49926,9 @@ function generateTicks(generationOptions, dataRange) {
 		numSpaces = Math.ceil(numSpaces);
 	}
 
-	var precision = 1;
+	precision = 1;
 	if (spacing < 1) {
-		precision = Math.pow(10, spacing.toString().length - 2);
+		precision = Math.pow(10, 1 - Math.floor(helpers.log10(spacing)));
 		niceMin = Math.round(niceMin * precision) / precision;
 		niceMax = Math.round(niceMax * precision) / precision;
 	}
@@ -49663,17 +49941,16 @@ function generateTicks(generationOptions, dataRange) {
 	return ticks;
 }
 
-
 module.exports = function(Chart) {
 
 	var noop = helpers.noop;
 
-	Chart.LinearScaleBase = Chart.Scale.extend({
+	Chart.LinearScaleBase = Scale.extend({
 		getRightValue: function(value) {
 			if (typeof value === 'string') {
 				return +value;
 			}
-			return Chart.Scale.prototype.getRightValue.call(this, value);
+			return Scale.prototype.getRightValue.call(this, value);
 		},
 
 		handleTickRangeOptions: function() {
@@ -49761,6 +50038,7 @@ module.exports = function(Chart) {
 				maxTicks: maxTicks,
 				min: tickOpts.min,
 				max: tickOpts.max,
+				precision: tickOpts.precision,
 				stepSize: helpers.valueOrDefault(tickOpts.fixedStepSize, tickOpts.stepSize)
 			};
 			var ticks = me.ticks = generateTicks(numericGeneratorOptions, me);
@@ -49787,27 +50065,30 @@ module.exports = function(Chart) {
 			me.ticksAsNumbers = me.ticks.slice();
 			me.zeroLineIndex = me.ticks.indexOf(0);
 
-			Chart.Scale.prototype.convertTicksToLabels.call(me);
+			Scale.prototype.convertTicksToLabels.call(me);
 		}
 	});
 };
 
 
 /***/ }),
-/* 298 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = function(Chart) {
+var Scale = __webpack_require__(12);
+var scaleService = __webpack_require__(9);
+
+module.exports = function() {
 
 	// Default config for a category scale
 	var defaultConfig = {
 		position: 'bottom'
 	};
 
-	var DatasetScale = Chart.Scale.extend({
+	var DatasetScale = Scale.extend({
 		/**
 		* Internal function to get the correct labels. If data.xLabels or data.yLabels are defined, use those
 		* else fall back to data.labels
@@ -49928,13 +50209,12 @@ module.exports = function(Chart) {
 		}
 	});
 
-	Chart.scaleService.registerScaleType('category', DatasetScale, defaultConfig);
-
+	scaleService.registerScaleType('category', DatasetScale, defaultConfig);
 };
 
 
 /***/ }),
-/* 299 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -49942,7 +50222,8 @@ module.exports = function(Chart) {
 
 var defaults = __webpack_require__(2);
 var helpers = __webpack_require__(1);
-var Ticks = __webpack_require__(11);
+var scaleService = __webpack_require__(9);
+var Ticks = __webpack_require__(13);
 
 module.exports = function(Chart) {
 
@@ -50126,20 +50407,22 @@ module.exports = function(Chart) {
 			return this.getPixelForValue(this.ticksAsNumbers[index]);
 		}
 	});
-	Chart.scaleService.registerScaleType('linear', LinearScale, defaultConfig);
 
+	scaleService.registerScaleType('linear', LinearScale, defaultConfig);
 };
 
 
 /***/ }),
-/* 300 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var helpers = __webpack_require__(1);
-var Ticks = __webpack_require__(11);
+var Scale = __webpack_require__(12);
+var scaleService = __webpack_require__(9);
+var Ticks = __webpack_require__(13);
 
 /**
  * Generate a set of logarithmic ticks
@@ -50204,7 +50487,7 @@ module.exports = function(Chart) {
 		}
 	};
 
-	var LogarithmicScale = Chart.Scale.extend({
+	var LogarithmicScale = Scale.extend({
 		determineDataLimits: function() {
 			var me = this;
 			var opts = me.options;
@@ -50379,7 +50662,7 @@ module.exports = function(Chart) {
 		convertTicksToLabels: function() {
 			this.tickValues = this.ticks.slice();
 
-			Chart.Scale.prototype.convertTicksToLabels.call(this);
+			Scale.prototype.convertTicksToLabels.call(this);
 		},
 		// Get the correct tooltip label
 		getLabelForIndex: function(index, datasetIndex) {
@@ -50480,13 +50763,13 @@ module.exports = function(Chart) {
 			return value;
 		}
 	});
-	Chart.scaleService.registerScaleType('logarithmic', LogarithmicScale, defaultConfig);
 
+	scaleService.registerScaleType('logarithmic', LogarithmicScale, defaultConfig);
 };
 
 
 /***/ }),
-/* 301 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -50494,7 +50777,8 @@ module.exports = function(Chart) {
 
 var defaults = __webpack_require__(2);
 var helpers = __webpack_require__(1);
-var Ticks = __webpack_require__(11);
+var scaleService = __webpack_require__(9);
+var Ticks = __webpack_require__(13);
 
 module.exports = function(Chart) {
 
@@ -51016,13 +51300,13 @@ module.exports = function(Chart) {
 			}
 		}
 	});
-	Chart.scaleService.registerScaleType('radialLinear', LinearRadialScale, defaultConfig);
 
+	scaleService.registerScaleType('radialLinear', LinearRadialScale, defaultConfig);
 };
 
 
 /***/ }),
-/* 302 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51034,6 +51318,8 @@ moment = typeof moment === 'function' ? moment : window.moment;
 
 var defaults = __webpack_require__(2);
 var helpers = __webpack_require__(1);
+var Scale = __webpack_require__(12);
+var scaleService = __webpack_require__(9);
 
 // Integer constants are from the ES6 spec.
 var MIN_INTEGER = Number.MIN_SAFE_INTEGER || -9007199254740991;
@@ -51048,12 +51334,12 @@ var INTERVALS = {
 	second: {
 		common: true,
 		size: 1000,
-		steps: [1, 2, 5, 10, 30]
+		steps: [1, 2, 5, 10, 15, 30]
 	},
 	minute: {
 		common: true,
 		size: 60000,
-		steps: [1, 2, 5, 10, 30]
+		steps: [1, 2, 5, 10, 15, 30]
 	},
 	hour: {
 		common: true,
@@ -51452,7 +51738,7 @@ function determineLabelFormat(data, timeOpts) {
 	return 'MMM D, YYYY';
 }
 
-module.exports = function(Chart) {
+module.exports = function() {
 
 	var defaultConfig = {
 		position: 'bottom',
@@ -51516,7 +51802,7 @@ module.exports = function(Chart) {
 		}
 	};
 
-	var TimeScale = Chart.Scale.extend({
+	var TimeScale = Scale.extend({
 		initialize: function() {
 			if (!moment) {
 				throw new Error('Chart.js - Moment.js could not be found! You must include it before Chart.js to use the time scale. Download at https://momentjs.com');
@@ -51524,7 +51810,7 @@ module.exports = function(Chart) {
 
 			this.mergeTicksOptions();
 
-			Chart.Scale.prototype.initialize.call(this);
+			Scale.prototype.initialize.call(this);
 		},
 
 		update: function() {
@@ -51536,7 +51822,7 @@ module.exports = function(Chart) {
 				console.warn('options.time.format is deprecated and replaced by options.time.parser.');
 			}
 
-			return Chart.Scale.prototype.update.apply(me, arguments);
+			return Scale.prototype.update.apply(me, arguments);
 		},
 
 		/**
@@ -51546,7 +51832,7 @@ module.exports = function(Chart) {
 			if (rawValue && rawValue.t !== undefined) {
 				rawValue = rawValue.t;
 			}
-			return Chart.Scale.prototype.getRightValue.call(this, rawValue);
+			return Scale.prototype.getRightValue.call(this, rawValue);
 		},
 
 		determineDataLimits: function() {
@@ -51807,12 +52093,12 @@ module.exports = function(Chart) {
 		}
 	});
 
-	Chart.scaleService.registerScaleType('time', TimeScale, defaultConfig);
+	scaleService.registerScaleType('time', TimeScale, defaultConfig);
 };
 
 
 /***/ }),
-/* 303 */
+/* 305 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -51840,256 +52126,256 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 304 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./af": 30,
-	"./af.js": 30,
-	"./ar": 31,
-	"./ar-dz": 32,
-	"./ar-dz.js": 32,
-	"./ar-kw": 33,
-	"./ar-kw.js": 33,
-	"./ar-ly": 34,
-	"./ar-ly.js": 34,
-	"./ar-ma": 35,
-	"./ar-ma.js": 35,
-	"./ar-sa": 36,
-	"./ar-sa.js": 36,
-	"./ar-tn": 37,
-	"./ar-tn.js": 37,
-	"./ar.js": 31,
-	"./az": 38,
-	"./az.js": 38,
-	"./be": 39,
-	"./be.js": 39,
-	"./bg": 40,
-	"./bg.js": 40,
-	"./bm": 41,
-	"./bm.js": 41,
-	"./bn": 42,
-	"./bn.js": 42,
-	"./bo": 43,
-	"./bo.js": 43,
-	"./br": 44,
-	"./br.js": 44,
-	"./bs": 45,
-	"./bs.js": 45,
-	"./ca": 46,
-	"./ca.js": 46,
-	"./cs": 47,
-	"./cs.js": 47,
-	"./cv": 48,
-	"./cv.js": 48,
-	"./cy": 49,
-	"./cy.js": 49,
-	"./da": 50,
-	"./da.js": 50,
-	"./de": 51,
-	"./de-at": 52,
-	"./de-at.js": 52,
-	"./de-ch": 53,
-	"./de-ch.js": 53,
-	"./de.js": 51,
-	"./dv": 54,
-	"./dv.js": 54,
-	"./el": 55,
-	"./el.js": 55,
-	"./en-au": 56,
-	"./en-au.js": 56,
-	"./en-ca": 57,
-	"./en-ca.js": 57,
-	"./en-gb": 58,
-	"./en-gb.js": 58,
-	"./en-ie": 59,
-	"./en-ie.js": 59,
-	"./en-il": 60,
-	"./en-il.js": 60,
-	"./en-nz": 61,
-	"./en-nz.js": 61,
-	"./eo": 62,
-	"./eo.js": 62,
-	"./es": 63,
-	"./es-do": 64,
-	"./es-do.js": 64,
-	"./es-us": 65,
-	"./es-us.js": 65,
-	"./es.js": 63,
-	"./et": 66,
-	"./et.js": 66,
-	"./eu": 67,
-	"./eu.js": 67,
-	"./fa": 68,
-	"./fa.js": 68,
-	"./fi": 69,
-	"./fi.js": 69,
-	"./fo": 70,
-	"./fo.js": 70,
-	"./fr": 71,
-	"./fr-ca": 72,
-	"./fr-ca.js": 72,
-	"./fr-ch": 73,
-	"./fr-ch.js": 73,
-	"./fr.js": 71,
-	"./fy": 74,
-	"./fy.js": 74,
-	"./gd": 75,
-	"./gd.js": 75,
-	"./gl": 76,
-	"./gl.js": 76,
-	"./gom-latn": 77,
-	"./gom-latn.js": 77,
-	"./gu": 78,
-	"./gu.js": 78,
-	"./he": 79,
-	"./he.js": 79,
-	"./hi": 80,
-	"./hi.js": 80,
-	"./hr": 81,
-	"./hr.js": 81,
-	"./hu": 82,
-	"./hu.js": 82,
-	"./hy-am": 83,
-	"./hy-am.js": 83,
-	"./id": 84,
-	"./id.js": 84,
-	"./is": 85,
-	"./is.js": 85,
-	"./it": 86,
-	"./it.js": 86,
-	"./ja": 87,
-	"./ja.js": 87,
-	"./jv": 88,
-	"./jv.js": 88,
-	"./ka": 89,
-	"./ka.js": 89,
-	"./kk": 90,
-	"./kk.js": 90,
-	"./km": 91,
-	"./km.js": 91,
-	"./kn": 92,
-	"./kn.js": 92,
-	"./ko": 93,
-	"./ko.js": 93,
-	"./ky": 94,
-	"./ky.js": 94,
-	"./lb": 95,
-	"./lb.js": 95,
-	"./lo": 96,
-	"./lo.js": 96,
-	"./lt": 97,
-	"./lt.js": 97,
-	"./lv": 98,
-	"./lv.js": 98,
-	"./me": 99,
-	"./me.js": 99,
-	"./mi": 100,
-	"./mi.js": 100,
-	"./mk": 101,
-	"./mk.js": 101,
-	"./ml": 102,
-	"./ml.js": 102,
-	"./mn": 103,
-	"./mn.js": 103,
-	"./mr": 104,
-	"./mr.js": 104,
-	"./ms": 105,
-	"./ms-my": 106,
-	"./ms-my.js": 106,
-	"./ms.js": 105,
-	"./mt": 107,
-	"./mt.js": 107,
-	"./my": 108,
-	"./my.js": 108,
-	"./nb": 109,
-	"./nb.js": 109,
-	"./ne": 110,
-	"./ne.js": 110,
-	"./nl": 111,
-	"./nl-be": 112,
-	"./nl-be.js": 112,
-	"./nl.js": 111,
-	"./nn": 113,
-	"./nn.js": 113,
-	"./pa-in": 114,
-	"./pa-in.js": 114,
-	"./pl": 115,
-	"./pl.js": 115,
-	"./pt": 116,
-	"./pt-br": 117,
-	"./pt-br.js": 117,
-	"./pt.js": 116,
-	"./ro": 118,
-	"./ro.js": 118,
-	"./ru": 119,
-	"./ru.js": 119,
-	"./sd": 120,
-	"./sd.js": 120,
-	"./se": 121,
-	"./se.js": 121,
-	"./si": 122,
-	"./si.js": 122,
-	"./sk": 123,
-	"./sk.js": 123,
-	"./sl": 124,
-	"./sl.js": 124,
-	"./sq": 125,
-	"./sq.js": 125,
-	"./sr": 126,
-	"./sr-cyrl": 127,
-	"./sr-cyrl.js": 127,
-	"./sr.js": 126,
-	"./ss": 128,
-	"./ss.js": 128,
-	"./sv": 129,
-	"./sv.js": 129,
-	"./sw": 130,
-	"./sw.js": 130,
-	"./ta": 131,
-	"./ta.js": 131,
-	"./te": 132,
-	"./te.js": 132,
-	"./tet": 133,
-	"./tet.js": 133,
-	"./tg": 134,
-	"./tg.js": 134,
-	"./th": 135,
-	"./th.js": 135,
-	"./tl-ph": 136,
-	"./tl-ph.js": 136,
-	"./tlh": 137,
-	"./tlh.js": 137,
-	"./tr": 138,
-	"./tr.js": 138,
-	"./tzl": 139,
-	"./tzl.js": 139,
-	"./tzm": 140,
-	"./tzm-latn": 141,
-	"./tzm-latn.js": 141,
-	"./tzm.js": 140,
-	"./ug-cn": 142,
-	"./ug-cn.js": 142,
-	"./uk": 143,
-	"./uk.js": 143,
-	"./ur": 144,
-	"./ur.js": 144,
-	"./uz": 145,
-	"./uz-latn": 146,
-	"./uz-latn.js": 146,
-	"./uz.js": 145,
-	"./vi": 147,
-	"./vi.js": 147,
-	"./x-pseudo": 148,
-	"./x-pseudo.js": 148,
-	"./yo": 149,
-	"./yo.js": 149,
-	"./zh-cn": 150,
-	"./zh-cn.js": 150,
-	"./zh-hk": 151,
-	"./zh-hk.js": 151,
-	"./zh-tw": 152,
-	"./zh-tw.js": 152
+	"./af": 35,
+	"./af.js": 35,
+	"./ar": 36,
+	"./ar-dz": 37,
+	"./ar-dz.js": 37,
+	"./ar-kw": 38,
+	"./ar-kw.js": 38,
+	"./ar-ly": 39,
+	"./ar-ly.js": 39,
+	"./ar-ma": 40,
+	"./ar-ma.js": 40,
+	"./ar-sa": 41,
+	"./ar-sa.js": 41,
+	"./ar-tn": 42,
+	"./ar-tn.js": 42,
+	"./ar.js": 36,
+	"./az": 43,
+	"./az.js": 43,
+	"./be": 44,
+	"./be.js": 44,
+	"./bg": 45,
+	"./bg.js": 45,
+	"./bm": 46,
+	"./bm.js": 46,
+	"./bn": 47,
+	"./bn.js": 47,
+	"./bo": 48,
+	"./bo.js": 48,
+	"./br": 49,
+	"./br.js": 49,
+	"./bs": 50,
+	"./bs.js": 50,
+	"./ca": 51,
+	"./ca.js": 51,
+	"./cs": 52,
+	"./cs.js": 52,
+	"./cv": 53,
+	"./cv.js": 53,
+	"./cy": 54,
+	"./cy.js": 54,
+	"./da": 55,
+	"./da.js": 55,
+	"./de": 56,
+	"./de-at": 57,
+	"./de-at.js": 57,
+	"./de-ch": 58,
+	"./de-ch.js": 58,
+	"./de.js": 56,
+	"./dv": 59,
+	"./dv.js": 59,
+	"./el": 60,
+	"./el.js": 60,
+	"./en-au": 61,
+	"./en-au.js": 61,
+	"./en-ca": 62,
+	"./en-ca.js": 62,
+	"./en-gb": 63,
+	"./en-gb.js": 63,
+	"./en-ie": 64,
+	"./en-ie.js": 64,
+	"./en-il": 65,
+	"./en-il.js": 65,
+	"./en-nz": 66,
+	"./en-nz.js": 66,
+	"./eo": 67,
+	"./eo.js": 67,
+	"./es": 68,
+	"./es-do": 69,
+	"./es-do.js": 69,
+	"./es-us": 70,
+	"./es-us.js": 70,
+	"./es.js": 68,
+	"./et": 71,
+	"./et.js": 71,
+	"./eu": 72,
+	"./eu.js": 72,
+	"./fa": 73,
+	"./fa.js": 73,
+	"./fi": 74,
+	"./fi.js": 74,
+	"./fo": 75,
+	"./fo.js": 75,
+	"./fr": 76,
+	"./fr-ca": 77,
+	"./fr-ca.js": 77,
+	"./fr-ch": 78,
+	"./fr-ch.js": 78,
+	"./fr.js": 76,
+	"./fy": 79,
+	"./fy.js": 79,
+	"./gd": 80,
+	"./gd.js": 80,
+	"./gl": 81,
+	"./gl.js": 81,
+	"./gom-latn": 82,
+	"./gom-latn.js": 82,
+	"./gu": 83,
+	"./gu.js": 83,
+	"./he": 84,
+	"./he.js": 84,
+	"./hi": 85,
+	"./hi.js": 85,
+	"./hr": 86,
+	"./hr.js": 86,
+	"./hu": 87,
+	"./hu.js": 87,
+	"./hy-am": 88,
+	"./hy-am.js": 88,
+	"./id": 89,
+	"./id.js": 89,
+	"./is": 90,
+	"./is.js": 90,
+	"./it": 91,
+	"./it.js": 91,
+	"./ja": 92,
+	"./ja.js": 92,
+	"./jv": 93,
+	"./jv.js": 93,
+	"./ka": 94,
+	"./ka.js": 94,
+	"./kk": 95,
+	"./kk.js": 95,
+	"./km": 96,
+	"./km.js": 96,
+	"./kn": 97,
+	"./kn.js": 97,
+	"./ko": 98,
+	"./ko.js": 98,
+	"./ky": 99,
+	"./ky.js": 99,
+	"./lb": 100,
+	"./lb.js": 100,
+	"./lo": 101,
+	"./lo.js": 101,
+	"./lt": 102,
+	"./lt.js": 102,
+	"./lv": 103,
+	"./lv.js": 103,
+	"./me": 104,
+	"./me.js": 104,
+	"./mi": 105,
+	"./mi.js": 105,
+	"./mk": 106,
+	"./mk.js": 106,
+	"./ml": 107,
+	"./ml.js": 107,
+	"./mn": 108,
+	"./mn.js": 108,
+	"./mr": 109,
+	"./mr.js": 109,
+	"./ms": 110,
+	"./ms-my": 111,
+	"./ms-my.js": 111,
+	"./ms.js": 110,
+	"./mt": 112,
+	"./mt.js": 112,
+	"./my": 113,
+	"./my.js": 113,
+	"./nb": 114,
+	"./nb.js": 114,
+	"./ne": 115,
+	"./ne.js": 115,
+	"./nl": 116,
+	"./nl-be": 117,
+	"./nl-be.js": 117,
+	"./nl.js": 116,
+	"./nn": 118,
+	"./nn.js": 118,
+	"./pa-in": 119,
+	"./pa-in.js": 119,
+	"./pl": 120,
+	"./pl.js": 120,
+	"./pt": 121,
+	"./pt-br": 122,
+	"./pt-br.js": 122,
+	"./pt.js": 121,
+	"./ro": 123,
+	"./ro.js": 123,
+	"./ru": 124,
+	"./ru.js": 124,
+	"./sd": 125,
+	"./sd.js": 125,
+	"./se": 126,
+	"./se.js": 126,
+	"./si": 127,
+	"./si.js": 127,
+	"./sk": 128,
+	"./sk.js": 128,
+	"./sl": 129,
+	"./sl.js": 129,
+	"./sq": 130,
+	"./sq.js": 130,
+	"./sr": 131,
+	"./sr-cyrl": 132,
+	"./sr-cyrl.js": 132,
+	"./sr.js": 131,
+	"./ss": 133,
+	"./ss.js": 133,
+	"./sv": 134,
+	"./sv.js": 134,
+	"./sw": 135,
+	"./sw.js": 135,
+	"./ta": 136,
+	"./ta.js": 136,
+	"./te": 137,
+	"./te.js": 137,
+	"./tet": 138,
+	"./tet.js": 138,
+	"./tg": 139,
+	"./tg.js": 139,
+	"./th": 140,
+	"./th.js": 140,
+	"./tl-ph": 141,
+	"./tl-ph.js": 141,
+	"./tlh": 142,
+	"./tlh.js": 142,
+	"./tr": 143,
+	"./tr.js": 143,
+	"./tzl": 144,
+	"./tzl.js": 144,
+	"./tzm": 145,
+	"./tzm-latn": 146,
+	"./tzm-latn.js": 146,
+	"./tzm.js": 145,
+	"./ug-cn": 147,
+	"./ug-cn.js": 147,
+	"./uk": 148,
+	"./uk.js": 148,
+	"./ur": 149,
+	"./ur.js": 149,
+	"./uz": 150,
+	"./uz-latn": 151,
+	"./uz-latn.js": 151,
+	"./uz.js": 150,
+	"./vi": 152,
+	"./vi.js": 152,
+	"./x-pseudo": 153,
+	"./x-pseudo.js": 153,
+	"./yo": 154,
+	"./yo.js": 154,
+	"./zh-cn": 155,
+	"./zh-cn.js": 155,
+	"./zh-hk": 156,
+	"./zh-hk.js": 156,
+	"./zh-tw": 157,
+	"./zh-tw.js": 157
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -52105,17 +52391,17 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 304;
+webpackContext.id = 306;
 
 /***/ }),
-/* 305 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(2);
-var elements = __webpack_require__(8);
+var elements = __webpack_require__(10);
 var helpers = __webpack_require__(1);
 
 defaults._set('bar', {
@@ -52596,14 +52882,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 306 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(2);
-var elements = __webpack_require__(8);
+var elements = __webpack_require__(10);
 var helpers = __webpack_require__(1);
 
 defaults._set('bubble', {
@@ -52776,14 +53062,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 307 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(2);
-var elements = __webpack_require__(8);
+var elements = __webpack_require__(10);
 var helpers = __webpack_require__(1);
 
 defaults._set('doughnut', {
@@ -53084,14 +53370,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 308 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(2);
-var elements = __webpack_require__(8);
+var elements = __webpack_require__(10);
 var helpers = __webpack_require__(1);
 
 defaults._set('line', {
@@ -53435,14 +53721,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 309 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(2);
-var elements = __webpack_require__(8);
+var elements = __webpack_require__(10);
 var helpers = __webpack_require__(1);
 
 defaults._set('polarArea', {
@@ -53697,14 +53983,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 310 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(2);
-var elements = __webpack_require__(8);
+var elements = __webpack_require__(10);
 var helpers = __webpack_require__(1);
 
 defaults._set('radar', {
@@ -53867,7 +54153,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 311 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53916,7 +54202,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 312 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53934,7 +54220,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 313 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53951,7 +54237,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 314 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53969,7 +54255,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 315 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53987,7 +54273,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 316 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54005,7 +54291,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 317 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54023,7 +54309,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 318 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54038,20 +54324,20 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 319 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {};
-module.exports.filler = __webpack_require__(320);
-module.exports.legend = __webpack_require__(321);
-module.exports.title = __webpack_require__(322);
+module.exports.filler = __webpack_require__(322);
+module.exports.legend = __webpack_require__(323);
+module.exports.title = __webpack_require__(324);
 
 
 /***/ }),
-/* 320 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54064,7 +54350,7 @@ module.exports.title = __webpack_require__(322);
 
 
 var defaults = __webpack_require__(2);
-var elements = __webpack_require__(8);
+var elements = __webpack_require__(10);
 var helpers = __webpack_require__(1);
 
 defaults._set('global', {
@@ -54376,7 +54662,7 @@ module.exports = {
 
 
 /***/ }),
-/* 321 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54385,7 +54671,7 @@ module.exports = {
 var defaults = __webpack_require__(2);
 var Element = __webpack_require__(7);
 var helpers = __webpack_require__(1);
-var layouts = __webpack_require__(10);
+var layouts = __webpack_require__(11);
 
 var noop = helpers.noop;
 
@@ -54959,7 +55245,7 @@ module.exports = {
 
 
 /***/ }),
-/* 322 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54968,7 +55254,7 @@ module.exports = {
 var defaults = __webpack_require__(2);
 var Element = __webpack_require__(7);
 var helpers = __webpack_require__(1);
-var layouts = __webpack_require__(10);
+var layouts = __webpack_require__(11);
 
 var noop = helpers.noop;
 
@@ -55218,23 +55504,23 @@ module.exports = {
 
 
 /***/ }),
-/* 323 */
+/* 325 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"graph\">\n    <div class=\"uk-container\">\n        <br/>\n        <ul class=\"uk-breadcrumb\">\n            <li><a href=\"../../..#/\">Home</a></li>\n            <!-- Current Page -->\n            <li><span>Graph Summary</span></li>\n        </ul>\n\n        <vk-grid>\n                <div class=\"uk-width-auto@s uk-visible@m\" id=\"wrap\">\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Start Date</label>\n                            <div class=\"uk-form-controls \">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin\">\n                            <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">End Date</label>\n                            <div class=\"uk-form-controls \">\n                                <input class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\" type=\"date\" placeholder=\"\">\n                            </div>\n                    </div>\n                    <div class=\"uk-margin uk-text-center\">\n                            <button class=\"uk-button uk-button-primary\">SHOW</button>\n                    </div>\n                </div>\n                <div class=\"uk-width-expand@m\">\n                    <div class=\"Chart uk-text-center\">\n                        <h2><b>The graph showing the number of consulations group.</b></h2>\n                        <h5>Grouping by Non Communicable Disease</h5>\n                        <line-chart></line-chart>\n                    </div>\n                    <br/>\n                    <!--<vk-grid gutter=\"small\" class=\"uk-child-width-expand@s uk-text-center card\">-->\n                        <!--<div>-->\n                            <!--&lt;!&ndash; total number of consult wait for reply&ndash;&gt;-->\n                            <!--<div class=\"uk-background-muted uk-padding\">-->\n                                <!--<span class=\"span-font-style\">Pending Consult</span>-->\n                                <!--<h1><b>103</b></h1>-->\n                            <!--</div>-->\n                        <!--</div>-->\n                        <!--<div>-->\n                            <!--<div class=\"uk-background-primary uk-padding uk-light\">-->\n                                <!--<span class=\"span-font-style\">Case Closed</span>-->\n                                <!--<h1><b>10</b></h1>-->\n                            <!--</div>-->\n                        <!--</div>-->\n                        <!--<div>-->\n                            <!--<div class=\"uk-background-secondary uk-padding uk-light\">-->\n                                <!--<span class=\"span-font-style\">Total consult</span>-->\n                                <!--<h1><b>113</b></h1>-->\n                            <!--</div>-->\n                        <!--</div>-->\n                    <!--</vk-grid>-->\n                </div>        \n        </vk-grid>\n    </div>\n</div>";
+module.exports = "<div id=\"graph\">\r\n    <div class=\"uk-container\">\r\n        <br/>\r\n        <ul class=\"uk-breadcrumb\">\r\n            <li><a href=\"../../..#/\">Home</a></li>\r\n            <!-- Current Page -->\r\n            <li><span>Graph Summary</span></li>\r\n        </ul>\r\n\r\n        <vk-grid>\r\n            <div class=\"uk-width-auto@s uk-visible@m\" id=\"wrap\">\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Start Date</label>\r\n                    <div class=\"uk-form-controls \">\r\n                        <input v-model=\"start_date\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\"\r\n                               type=\"date\" placeholder=\"\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">End Date</label>\r\n                    <div class=\"uk-form-controls \">\r\n                        <input v-model=\"end_date\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\"\r\n                               type=\"date\" placeholder=\"\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"uk-margin uk-text-center\">\r\n                    <button v-on:click=\"getSummary\" class=\"uk-button uk-button-primary\">SHOW</button>\r\n                </div>\r\n                <div class=\"uk-margin uk-text-center\">\r\n                    <button v-on:click=\"getAllSummary\" class=\"uk-button uk-button-secondary\">ALL</button>\r\n                </div>\r\n            </div>\r\n            <div class=\"uk-width-expand@m\">\r\n                <div class=\"Chart uk-text-center\">\r\n                    <h2><b>The graph showing the number of consulations group.</b></h2>\r\n                    <h5>Grouping by Non Communicable Disease</h5>\r\n                    <line-chart :chart-data=\"datacollection\"></line-chart>\r\n                </div>\r\n                <br/>\r\n                <!--<vk-grid gutter=\"small\" class=\"uk-child-width-expand@s uk-text-center card\">-->\r\n                <!--<div>-->\r\n                <!--&lt;!&ndash; total number of consult wait for reply&ndash;&gt;-->\r\n                <!--<div class=\"uk-background-muted uk-padding\">-->\r\n                <!--<span class=\"span-font-style\">Pending Consult</span>-->\r\n                <!--<h1><b>103</b></h1>-->\r\n                <!--</div>-->\r\n                <!--</div>-->\r\n                <!--<div>-->\r\n                <!--<div class=\"uk-background-primary uk-padding uk-light\">-->\r\n                <!--<span class=\"span-font-style\">Case Closed</span>-->\r\n                <!--<h1><b>10</b></h1>-->\r\n                <!--</div>-->\r\n                <!--</div>-->\r\n                <!--<div>-->\r\n                <!--<div class=\"uk-background-secondary uk-padding uk-light\">-->\r\n                <!--<span class=\"span-font-style\">Total consult</span>-->\r\n                <!--<h1><b>113</b></h1>-->\r\n                <!--</div>-->\r\n                <!--</div>-->\r\n                <!--</vk-grid>-->\r\n            </div>\r\n        </vk-grid>\r\n    </div>\r\n</div>";
 
 /***/ }),
-/* 324 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(325)
+  __webpack_require__(327)
 }
 var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(327)
+var __vue_script__ = __webpack_require__(329)
 /* template */
 var __vue_template__ = null
 /* template functional */
@@ -55242,7 +55528,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-036c6580"
+var __vue_scopeId__ = "data-v-faf516b4"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -55253,7 +55539,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/components/consult/print/consult-print.vue"
+Component.options.__file = "resources\\assets\\js\\components\\consult\\print\\consult-print.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -55262,9 +55548,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-036c6580", Component.options)
+    hotAPI.createRecord("data-v-faf516b4", Component.options)
   } else {
-    hotAPI.reload("data-v-036c6580", Component.options)
+    hotAPI.reload("data-v-faf516b4", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -55275,23 +55561,23 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 325 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(326);
+var content = __webpack_require__(328);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(5)("417e37ac", content, false, {});
+var update = __webpack_require__(5)("75b1c1d6", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-036c6580\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-print.vue", function() {
-     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-036c6580\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-print.vue");
+   module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-faf516b4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-print.vue", function() {
+     var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-faf516b4\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./consult-print.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -55301,7 +55587,7 @@ if(false) {
 }
 
 /***/ }),
-/* 326 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -55309,30 +55595,30 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\np[data-v-036c6580],td[data-v-036c6580] {\n    color: #000;\n}\n.top-title[data-v-036c6580] {\n    margin-top: -25px\n}\nh3[data-v-036c6580] {\n    margin-top: 5px\n}\n", ""]);
+exports.push([module.i, "\np[data-v-faf516b4],td[data-v-faf516b4] {\r\n    color: #000;\n}\n.top-title[data-v-faf516b4] {\r\n    margin-top: -25px\n}\nh3[data-v-faf516b4] {\r\n    margin-top: 5px\n}\r\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 327 */
+/* 329 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    template: __webpack_require__(328)
+    template: __webpack_require__(330)
 });
 
 /***/ }),
-/* 328 */
+/* 330 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"consult-print\">\n    <div class=\"uk-container\">\n        <div class=\"uk-width-1-5@m\">\n            <br/>\n                <div class=\"uk-text-center\" id=\"head-title\">\n                    <vk-icon icon=\"home\" class=\"uk-margin-right\" ratio=\"2\"></vk-icon>\n                    <h3>Doctor's Order Sheet, Kokha Hospital</h3>\n                </div>           \n        </div>\n        <div class=\"uk-width-12\">\n            <!-- (ใส่วันที่เวลาปริ้นตรงนี้ให้หน่อยนะ) -->\n            <div class=\"uk-text-right\">\n                TimeStamp\n            </div>\n        <br/>\n        <div id=\"personalinfo\">\n                <div class=\"uk-text-center\"  id=\"top-title\">\n                    <h4 class=\"uk-heading-line\"><span>Patient's Information</span></h4>\n                </div>\n                <table class=\"uk-table uk-table-middle\">\n                    <tbody>\n                        <tr>\n                            <td>Patient's name</td>\n                            <td>Sammy Read</td>\n                        </tr>\n                        <tr>\n                            <td>Date of Birth</td>\n                            <td>13/12/1995</td>\n                        </tr>\n                        <tr>\n                            <td>Gender</td>\n                            <td>Male</td>\n                        </tr>\n                        <tr>\n                            <td>Address</td>\n                            <td>123/6 moo3 Banndu Mueang Lampang 57100</td>\n                        </tr>\n                        <tr>\n                            <td>Primary Doctor</td>\n                            <td>Mr. John Ruper</td>\n                        </tr>\n                    </tbody>\n                </table>\n        </div>\n            <!-- Medical Information -->\n            <br/>\n            <div id=\"medicalinfo\">\n                <div class=\"uk-text-center\">\n                    <h4 class=\"uk-heading-line\"><span>Physical examination</span></h4>\n                </div>\n                <vk-grid>\n                    <div id=\"left-column\">\n                        <p><label class=\"uk-text-uppercase\">Health Condition:</label></p>\n                        <p><label class=\"uk-text-uppercase\">Dx:</label></p>\n                        <p><label class=\"uk-text-uppercase\">BW:</label></p>\n                        <p><label class=\"uk-text-uppercase\">BMI:</label></p>\n                        <p><label class=\"uk-text-uppercase\">T:</label></p>\n                        <p><label class=\"uk-text-uppercase\">FBS:</label></p>\n                        <p><label class=\"uk-text-uppercase\">Cr:</label></p>\n                        <p><label class=\"uk-text-uppercase\">Clearance:</label></p>\n                        <p><label class=\"uk-text-uppercase\">Stage:</label></p>\n                    </div>\n                    <div id=\"right-column\">\n                        <p>High Blood Pressure</p>\n                        <p>DM</p>\n                        <p>65 kg</p>\n                        <p>26.6</p>\n                        <p>37 °C</p>\n                        <p>100 mg%</p>\n                        <p>0.43 Cr</p>\n                        <p>122.1</p>\n                        <p>1</p>\n                    </div>\n                </vk-grid>\n            </div>\n            <br/>\n            <!-- Record -->\n            <div id=\"recordinfo\">\n                <div class=\"uk-text-center\">\n                    <h4 class=\"uk-heading-line\"><span>Record</span></h4>\n                </div>\n                <vk-grid>\n                    <div id=\"left-column\">\n                        <p><label class=\"uk-text-uppercase\">Hx : OLD RECORD 1</label></p>\n                        <p><label class=\"uk-text-uppercase\">Date of Diagnosis:</label></p>\n                        <p><label class=\"uk-text-uppercase\">FBS:</label></p>\n                        <p><label class=\"uk-text-uppercase\">BP1:</label></p>\n                        <p><label class=\"uk-text-uppercase\">BP2:</label></p>\n                        <p><label class=\"uk-text-uppercase\">P:</label></p>\n                    </div>\n                    <div id=\"right-column\">\n                        <p>&nbsp;</p>\n                        <p>14/04/2018</p>\n                        <p>100 mg%</p>\n                        <p>200/90 mmHg</p>\n                        <p>110/90 mmHg</p>\n                        <p>120 /min</p>\n                    </div>\n                </vk-grid>\n                <vk-grid>\n                    <div id=\"left-column\">\n                        <p><label class=\"uk-text-uppercase\">Hx : OLD RECORD 2</label></p>\n                        <p><label class=\"uk-text-uppercase\">Date of Diagnosis:</label></p>\n                        <p><label class=\"uk-text-uppercase\">FBS:</label></p>\n                        <p><label class=\"uk-text-uppercase\">BP1:</label></p>\n                        <p><label class=\"uk-text-uppercase\">BP2:</label></p>\n                        <p><label class=\"uk-text-uppercase\">P:</label></p>\n                    </div>\n                    <div id=\"right-column\">\n                        <p>&nbsp;</p>\n                        <p>12/06/2018</p>\n                        <p>100 mg%</p>\n                        <p>115/89 mmHg</p>\n                        <p>110/90 mmHg</p>\n                        <p>80 /min</p>\n                    </div>\n                </vk-grid>\n            </div>\n                \n\n            <!-- Consult Request -->\n            <br/>\n            <div id=\"consultinfo\">\n                <div class=\"uk-text-center\">\n                    <h4 class=\"uk-heading-line\"><span>Consult Request</span></h4>\n                </div>\n                <table class=\"uk-table uk-table-middle\">\n                    <tbody>\n                        <tr>\n                            <td>Chief Complain</td>\n                            <td>FBS >= 130 mg% 2 visit</td>    \n                        </tr>\n                        <tr>\n                            <td>Assessment and plan</td>\n                            <td>MFM 1x2 0pc, Slmvas 1209 ½ x ns</td>\n                        </tr>\n                        <tr>\n                            <td>Progress notes</td>\n                            <td>-</td>\n                        </tr>\n                        <tr>\n                            <td>Consult Order</td>\n                            <td>Ena (5) 1x20 pc</td>\n                        </tr>\n                        \n                    </tbody>\n                </table>\n            </div>\n            </div>\n   \n        </div>\n        <div class=\"uk-width-1-5@m\">\n            \n        </div>\n    <br/><br/>\n    </div>\n</div>";
+module.exports = "<div id=\"consult-print\">\r\n    <div class=\"uk-container\">\r\n        <div class=\"uk-width-1-5@m\">\r\n            <br/>\r\n                <div class=\"uk-text-center\" id=\"head-title\">\r\n                    <vk-icon icon=\"home\" class=\"uk-margin-right\" ratio=\"2\"></vk-icon>\r\n                    <h3>Doctor's Order Sheet, Kokha Hospital</h3>\r\n                </div>           \r\n        </div>\r\n        <div class=\"uk-width-12\">\r\n            <!-- (ใส่วันที่เวลาปริ้นตรงนี้ให้หน่อยนะ) -->\r\n            <div class=\"uk-text-right\">\r\n                TimeStamp\r\n            </div>\r\n        <br/>\r\n        <div id=\"personalinfo\">\r\n                <div class=\"uk-text-center\"  id=\"top-title\">\r\n                    <h4 class=\"uk-heading-line\"><span>Patient's Information</span></h4>\r\n                </div>\r\n                <table class=\"uk-table uk-table-middle\">\r\n                    <tbody>\r\n                        <tr>\r\n                            <td>Patient's name</td>\r\n                            <td>Sammy Read</td>\r\n                        </tr>\r\n                        <tr>\r\n                            <td>Date of Birth</td>\r\n                            <td>13/12/1995</td>\r\n                        </tr>\r\n                        <tr>\r\n                            <td>Gender</td>\r\n                            <td>Male</td>\r\n                        </tr>\r\n                        <tr>\r\n                            <td>Address</td>\r\n                            <td>123/6 moo3 Banndu Mueang Lampang 57100</td>\r\n                        </tr>\r\n                        <tr>\r\n                            <td>Primary Doctor</td>\r\n                            <td>Mr. John Ruper</td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n        </div>\r\n            <!-- Medical Information -->\r\n            <br/>\r\n            <div id=\"medicalinfo\">\r\n                <div class=\"uk-text-center\">\r\n                    <h4 class=\"uk-heading-line\"><span>Physical examination</span></h4>\r\n                </div>\r\n                <vk-grid>\r\n                    <div id=\"left-column\">\r\n                        <p><label class=\"uk-text-uppercase\">Health Condition:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">Dx:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">BW:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">BMI:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">T:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">FBS:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">Cr:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">Clearance:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">Stage:</label></p>\r\n                    </div>\r\n                    <div id=\"right-column\">\r\n                        <p>High Blood Pressure</p>\r\n                        <p>DM</p>\r\n                        <p>65 kg</p>\r\n                        <p>26.6</p>\r\n                        <p>37 °C</p>\r\n                        <p>100 mg%</p>\r\n                        <p>0.43 Cr</p>\r\n                        <p>122.1</p>\r\n                        <p>1</p>\r\n                    </div>\r\n                </vk-grid>\r\n            </div>\r\n            <br/>\r\n            <!-- Record -->\r\n            <div id=\"recordinfo\">\r\n                <div class=\"uk-text-center\">\r\n                    <h4 class=\"uk-heading-line\"><span>Record</span></h4>\r\n                </div>\r\n                <vk-grid>\r\n                    <div id=\"left-column\">\r\n                        <p><label class=\"uk-text-uppercase\">Hx : OLD RECORD 1</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">Date of Diagnosis:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">FBS:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">BP1:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">BP2:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">P:</label></p>\r\n                    </div>\r\n                    <div id=\"right-column\">\r\n                        <p>&nbsp;</p>\r\n                        <p>14/04/2018</p>\r\n                        <p>100 mg%</p>\r\n                        <p>200/90 mmHg</p>\r\n                        <p>110/90 mmHg</p>\r\n                        <p>120 /min</p>\r\n                    </div>\r\n                </vk-grid>\r\n                <vk-grid>\r\n                    <div id=\"left-column\">\r\n                        <p><label class=\"uk-text-uppercase\">Hx : OLD RECORD 2</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">Date of Diagnosis:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">FBS:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">BP1:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">BP2:</label></p>\r\n                        <p><label class=\"uk-text-uppercase\">P:</label></p>\r\n                    </div>\r\n                    <div id=\"right-column\">\r\n                        <p>&nbsp;</p>\r\n                        <p>12/06/2018</p>\r\n                        <p>100 mg%</p>\r\n                        <p>115/89 mmHg</p>\r\n                        <p>110/90 mmHg</p>\r\n                        <p>80 /min</p>\r\n                    </div>\r\n                </vk-grid>\r\n            </div>\r\n                \r\n\r\n            <!-- Consult Request -->\r\n            <br/>\r\n            <div id=\"consultinfo\">\r\n                <div class=\"uk-text-center\">\r\n                    <h4 class=\"uk-heading-line\"><span>Consult Request</span></h4>\r\n                </div>\r\n                <table class=\"uk-table uk-table-middle\">\r\n                    <tbody>\r\n                        <tr>\r\n                            <td>Chief Complain</td>\r\n                            <td>FBS >= 130 mg% 2 visit</td>    \r\n                        </tr>\r\n                        <tr>\r\n                            <td>Assessment and plan</td>\r\n                            <td>MFM 1x2 0pc, Slmvas 1209 ½ x ns</td>\r\n                        </tr>\r\n                        <tr>\r\n                            <td>Progress notes</td>\r\n                            <td>-</td>\r\n                        </tr>\r\n                        <tr>\r\n                            <td>Consult Order</td>\r\n                            <td>Ena (5) 1x20 pc</td>\r\n                        </tr>\r\n                        \r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n            </div>\r\n   \r\n        </div>\r\n        <div class=\"uk-width-1-5@m\">\r\n            \r\n        </div>\r\n    <br/><br/>\r\n    </div>\r\n</div>";
 
 /***/ }),
-/* 329 */
+/* 331 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -62885,10 +63171,10 @@ var Vuikit = {
 /* harmony default export */ __webpack_exports__["a"] = (Vuikit);
 
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(19).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(21).setImmediate))
 
 /***/ }),
-/* 330 */
+/* 332 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66118,11 +66404,11 @@ function each (obj, cb) {
 
 
 /***/ }),
-/* 331 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(332);
+var content = __webpack_require__(334);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -66136,7 +66422,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(333)(content, options);
+var update = __webpack_require__(335)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -66168,7 +66454,7 @@ if(false) {
 }
 
 /***/ }),
-/* 332 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)(false);
@@ -66182,7 +66468,7 @@ exports.push([module.i, "/**\n * Vuikit - @vuikit/theme 0.8.0\n * (c) 2018 Milja
 
 
 /***/ }),
-/* 333 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -66248,7 +66534,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(334);
+var	fixUrls = __webpack_require__(336);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -66568,7 +66854,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 334 */
+/* 336 */
 /***/ (function(module, exports) {
 
 
@@ -66663,7 +66949,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 335 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -67263,10 +67549,10 @@ module.exports = function (css) {
 }));
 
 /***/ }),
-/* 336 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Auth = __webpack_require__(337)();
+var Auth = __webpack_require__(339)();
 
 module.exports = (function () {
 
@@ -67307,12 +67593,12 @@ module.exports = (function () {
 })();
 
 /***/ }),
-/* 337 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __utils  = __webpack_require__(338),
-    __token  = __webpack_require__(339),
-    __cookie = __webpack_require__(153)
+var __utils  = __webpack_require__(340),
+    __token  = __webpack_require__(341),
+    __cookie = __webpack_require__(158)
 
 module.exports = function () {
 
@@ -68021,7 +68307,7 @@ module.exports = function () {
 
 
 /***/ }),
-/* 338 */
+/* 340 */
 /***/ (function(module, exports) {
 
 module.exports = (function (){
@@ -68103,10 +68389,10 @@ module.exports = (function (){
 
 
 /***/ }),
-/* 339 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __cookie = __webpack_require__(153);
+var __cookie = __webpack_require__(158);
 
 module.exports = (function () {
 
@@ -68183,7 +68469,7 @@ module.exports = (function () {
 })();
 
 /***/ }),
-/* 340 */
+/* 342 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -68205,7 +68491,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 341 */
+/* 343 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -68271,7 +68557,7 @@ module.exports = {
 
 
 /***/ }),
-/* 342 */
+/* 344 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -68339,179 +68625,10 @@ module.exports = {
 };
 
 /***/ }),
-/* 343 */
+/* 345 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 344 */,
-/* 345 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* global window: false */
-
-
-var defaults = __webpack_require__(2);
-var helpers = __webpack_require__(1);
-
-defaults._set('global', {
-	animation: {
-		duration: 1000,
-		easing: 'easeOutQuart',
-		onProgress: helpers.noop,
-		onComplete: helpers.noop
-	}
-});
-
-module.exports = {
-	frameDuration: 17,
-	animations: [],
-	dropFrames: 0,
-	request: null,
-
-	/**
-	 * @param {Chart} chart - The chart to animate.
-	 * @param {Chart.Animation} animation - The animation that we will animate.
-	 * @param {Number} duration - The animation duration in ms.
-	 * @param {Boolean} lazy - if true, the chart is not marked as animating to enable more responsive interactions
-	 */
-	addAnimation: function(chart, animation, duration, lazy) {
-		var animations = this.animations;
-		var i, ilen;
-
-		animation.chart = chart;
-
-		if (!lazy) {
-			chart.animating = true;
-		}
-
-		for (i = 0, ilen = animations.length; i < ilen; ++i) {
-			if (animations[i].chart === chart) {
-				animations[i] = animation;
-				return;
-			}
-		}
-
-		animations.push(animation);
-
-		// If there are no animations queued, manually kickstart a digest, for lack of a better word
-		if (animations.length === 1) {
-			this.requestAnimationFrame();
-		}
-	},
-
-	cancelAnimation: function(chart) {
-		var index = helpers.findIndex(this.animations, function(animation) {
-			return animation.chart === chart;
-		});
-
-		if (index !== -1) {
-			this.animations.splice(index, 1);
-			chart.animating = false;
-		}
-	},
-
-	requestAnimationFrame: function() {
-		var me = this;
-		if (me.request === null) {
-			// Skip animation frame requests until the active one is executed.
-			// This can happen when processing mouse events, e.g. 'mousemove'
-			// and 'mouseout' events will trigger multiple renders.
-			me.request = helpers.requestAnimFrame.call(window, function() {
-				me.request = null;
-				me.startDigest();
-			});
-		}
-	},
-
-	/**
-	 * @private
-	 */
-	startDigest: function() {
-		var me = this;
-		var startTime = Date.now();
-		var framesToDrop = 0;
-
-		if (me.dropFrames > 1) {
-			framesToDrop = Math.floor(me.dropFrames);
-			me.dropFrames = me.dropFrames % 1;
-		}
-
-		me.advance(1 + framesToDrop);
-
-		var endTime = Date.now();
-
-		me.dropFrames += (endTime - startTime) / me.frameDuration;
-
-		// Do we have more stuff to animate?
-		if (me.animations.length > 0) {
-			me.requestAnimationFrame();
-		}
-	},
-
-	/**
-	 * @private
-	 */
-	advance: function(count) {
-		var animations = this.animations;
-		var animation, chart;
-		var i = 0;
-
-		while (i < animations.length) {
-			animation = animations[i];
-			chart = animation.chart;
-
-			animation.currentStep = (animation.currentStep || 0) + count;
-			animation.currentStep = Math.min(animation.currentStep, animation.numSteps);
-
-			helpers.callback(animation.render, [chart, animation], chart);
-			helpers.callback(animation.onAnimationProgress, [animation], chart);
-
-			if (animation.currentStep >= animation.numSteps) {
-				helpers.callback(animation.onAnimationComplete, [animation], chart);
-				chart.animating = false;
-				animations.splice(i, 1);
-			} else {
-				++i;
-			}
-		}
-	}
-};
-
-
-/***/ }),
-/* 346 */,
-/* 347 */
-/***/ (function(module, exports, __webpack_require__) {
-
-!function(e,t){ true?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports["vue-simple-lightbox"]=t():e["vue-simple-lightbox"]=t()}(this,function(){return function(e){function t(r){if(n[r])return n[r].exports;var i=n[r]={exports:{},id:r,loaded:!1};return e[r].call(i.exports,i,i.exports,t),i.loaded=!0,i.exports}var n={};return t.m=e,t.c=n,t.p="",t(0)}([function(e,t,n){var r,i,o={};n(9),r=n(2),i=n(7),e.exports=r||{},e.exports.__esModule&&(e.exports=e.exports.default);var a="function"==typeof e.exports?e.exports.options||(e.exports.options={}):e.exports;i&&(a.template=i),a.computed||(a.computed={}),Object.keys(o).forEach(function(e){var t=o[e];a.computed[e]=function(){return t}})},function(e,t){e.exports=function(){var e=[];return e.toString=function(){for(var e=[],t=0;t<this.length;t++){var n=this[t];n[2]?e.push("@media "+n[2]+"{"+n[1]+"}"):e.push(n[1])}return e.join("")},e.i=function(t,n){"string"==typeof t&&(t=[[null,t,""]]);for(var r={},i=0;i<this.length;i++){var o=this[i][0];"number"==typeof o&&(r[o]=!0)}for(i=0;i<t.length;i++){var a=t[i];"number"==typeof a[0]&&r[a[0]]||(n&&!a[2]?a[2]=n:n&&(a[2]="("+a[2]+") and ("+n+")"),e.push(a))}},e}},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default={props:{id:{type:String,required:!0},images:{type:Array,required:!0},image_class:{type:String},album_class:{type:String},options:{type:Object,required:!1}},mounted:function(){try{window.$=window.jQuery=n(5);n(6);if(void 0!=this.options){$(".my-gallery a").simpleLightbox(this.options)}else{$(".my-gallery a").simpleLightbox()}}catch(e){}}}},function(e,t,n){t=e.exports=n(1)(),t.push([e.id,"body.hidden-scroll{overflow:hidden}.sl-overlay{position:fixed;left:0;right:0;top:0;bottom:0;background:#fff;opacity:.7;display:none;z-index:1050}.sl-wrapper{z-index:1040}.sl-wrapper button{border:0 none;background:transparent;font-size:28px;padding:0;cursor:pointer}.sl-wrapper button:hover{opacity:.7}.sl-wrapper .sl-close{display:none;position:fixed;right:30px;top:30px;z-index:1060;margin-top:-14px;margin-right:-14px;height:44px;width:44px;line-height:44px;font-family:Arial,Baskerville,monospace;color:#000;font-size:3rem}.sl-wrapper .sl-close:focus{outline:none}.sl-wrapper .sl-counter{display:none;position:fixed;top:30px;left:30px;z-index:1060;color:#000;font-size:1rem}.sl-wrapper .sl-navigation{width:100%;display:none}.sl-wrapper .sl-navigation button{position:fixed;top:50%;margin-top:-22px;height:44px;width:22px;line-height:44px;text-align:center;display:block;z-index:1060;font-family:Arial,Baskerville,monospace;color:#000}.sl-wrapper .sl-navigation button.sl-next{right:5px;font-size:2rem}.sl-wrapper .sl-navigation button.sl-prev{left:5px;font-size:2rem}.sl-wrapper .sl-navigation button:focus{outline:none}@media (min-width:35.5em){.sl-wrapper .sl-navigation button{width:44px}.sl-wrapper .sl-navigation button.sl-next{right:10px;font-size:3rem}.sl-wrapper .sl-navigation button.sl-prev{left:10px;font-size:3rem}}@media (min-width:50em){.sl-wrapper .sl-navigation button{width:44px}.sl-wrapper .sl-navigation button.sl-next{right:20px;font-size:3rem}.sl-wrapper .sl-navigation button.sl-prev{left:20px;font-size:3rem}}.sl-wrapper .sl-image{position:fixed;-ms-touch-action:none;touch-action:none;z-index:10000}.sl-wrapper .sl-image img{margin:0;padding:0;display:block;border:0 none}@media (min-width:35.5em){.sl-wrapper .sl-image img{border:0 none}}@media (min-width:50em){.sl-wrapper .sl-image img{border:0 none}}.sl-wrapper .sl-image iframe{background:#000;border:0 none}@media (min-width:35.5em){.sl-wrapper .sl-image iframe{border:0 none}}@media (min-width:50em){.sl-wrapper .sl-image iframe{border:0 none}}.sl-wrapper .sl-image .sl-caption{display:none;padding:10px;color:#fff;background:rgba(0,0,0,.8);position:absolute;bottom:0;left:0;right:0}.sl-wrapper .sl-image .sl-caption.pos-top{bottom:auto;top:0}.sl-wrapper .sl-image .sl-caption.pos-outside{bottom:auto}.sl-wrapper .sl-image .sl-download{display:none;position:absolute;bottom:5px;right:5px;color:#000;z-index:1060}.sl-spinner{display:none;border:5px solid #333;border-radius:40px;height:40px;left:50%;margin:-20px 0 0 -20px;opacity:0;position:fixed;top:50%;width:40px;z-index:1007;-webkit-animation:pulsate 1s ease-out infinite;animation:pulsate 1s ease-out infinite}.sl-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}@-webkit-keyframes pulsate{0%{transform:scale(.1);opacity:0}50%{opacity:1}to{transform:scale(1.2);opacity:0}}@keyframes pulsate{0%{transform:scale(.1);opacity:0}50%{opacity:1}to{transform:scale(1.2);opacity:0}}",""])},function(e,t,n){t=e.exports=n(1)(),t.push([e.id,"@import url(https://fonts.googleapis.com/css?family=Ruda);",""]),t.i(n(3),""),t.push([e.id,".my-gallery a img{float:left;width:20%;height:auto;border:2px solid #fff;transition:-webkit-transform .15s ease;transition:transform .15s ease;transition:transform .15s ease,-webkit-transform .15s ease;position:relative}.my-gallery a:hover img{-webkit-transform:scale(1.05);transform:scale(1.05);z-index:5}.my-gallery a.big img{width:40%}.align-center{text-align:center}",""])},function(e,t,n){var r,i;/*!
-	 * jQuery JavaScript Library v3.2.1
-	 * https://jquery.com/
-	 *
-	 * Includes Sizzle.js
-	 * https://sizzlejs.com/
-	 *
-	 * Copyright JS Foundation and other contributors
-	 * Released under the MIT license
-	 * https://jquery.org/license
-	 *
-	 * Date: 2017-03-20T18:59Z
-	 */
-!function(t,n){"use strict";"object"==typeof e&&"object"==typeof e.exports?e.exports=t.document?n(t,!0):function(e){if(!e.document)throw new Error("jQuery requires a window with a document");return n(e)}:n(t)}("undefined"!=typeof window?window:this,function(n,o){"use strict";function a(e,t){t=t||ae;var n=t.createElement("script");n.text=e,t.head.appendChild(n).parentNode.removeChild(n)}function s(e){var t=!!e&&"length"in e&&e.length,n=xe.type(e);return"function"!==n&&!xe.isWindow(e)&&("array"===n||0===t||"number"==typeof t&&t>0&&t-1 in e)}function l(e,t){return e.nodeName&&e.nodeName.toLowerCase()===t.toLowerCase()}function u(e,t,n){return xe.isFunction(t)?xe.grep(e,function(e,r){return!!t.call(e,r,e)!==n}):t.nodeType?xe.grep(e,function(e){return e===t!==n}):"string"!=typeof t?xe.grep(e,function(e){return fe.call(t,e)>-1!==n}):De.test(t)?xe.filter(t,e,n):(t=xe.filter(t,e),xe.grep(e,function(e){return fe.call(t,e)>-1!==n&&1===e.nodeType}))}function c(e,t){for(;(e=e[t])&&1!==e.nodeType;);return e}function f(e){var t={};return xe.each(e.match(Fe)||[],function(e,n){t[n]=!0}),t}function p(e){return e}function d(e){throw e}function h(e,t,n,r){var i;try{e&&xe.isFunction(i=e.promise)?i.call(e).done(t).fail(n):e&&xe.isFunction(i=e.then)?i.call(e,t,n):t.apply(void 0,[e].slice(r))}catch(e){n.apply(void 0,[e])}}function g(){ae.removeEventListener("DOMContentLoaded",g),n.removeEventListener("load",g),xe.ready()}function m(){this.expando=xe.expando+m.uid++}function v(e){return"true"===e||"false"!==e&&("null"===e?null:e===+e+""?+e:Be.test(e)?JSON.parse(e):e)}function y(e,t,n){var r;if(void 0===n&&1===e.nodeType)if(r="data-"+t.replace(ze,"-$&").toLowerCase(),n=e.getAttribute(r),"string"==typeof n){try{n=v(n)}catch(e){}$e.set(e,t,n)}else n=void 0;return n}function x(e,t,n,r){var i,o=1,a=20,s=r?function(){return r.cur()}:function(){return xe.css(e,t,"")},l=s(),u=n&&n[3]||(xe.cssNumber[t]?"":"px"),c=(xe.cssNumber[t]||"px"!==u&&+l)&&Xe.exec(xe.css(e,t));if(c&&c[3]!==u){u=u||c[3],n=n||[],c=+l||1;do o=o||".5",c/=o,xe.style(e,t,c+u);while(o!==(o=s()/l)&&1!==o&&--a)}return n&&(c=+c||+l||0,i=n[1]?c+(n[1]+1)*n[2]:+n[2],r&&(r.unit=u,r.start=c,r.end=i)),i}function b(e){var t,n=e.ownerDocument,r=e.nodeName,i=Ge[r];return i?i:(t=n.body.appendChild(n.createElement(r)),i=xe.css(t,"display"),t.parentNode.removeChild(t),"none"===i&&(i="block"),Ge[r]=i,i)}function w(e,t){for(var n,r,i=[],o=0,a=e.length;o<a;o++)r=e[o],r.style&&(n=r.style.display,t?("none"===n&&(i[o]=We.get(r,"display")||null,i[o]||(r.style.display="")),""===r.style.display&&Ve(r)&&(i[o]=b(r))):"none"!==n&&(i[o]="none",We.set(r,"display",n)));for(o=0;o<a;o++)null!=i[o]&&(e[o].style.display=i[o]);return e}function T(e,t){var n;return n="undefined"!=typeof e.getElementsByTagName?e.getElementsByTagName(t||"*"):"undefined"!=typeof e.querySelectorAll?e.querySelectorAll(t||"*"):[],void 0===t||t&&l(e,t)?xe.merge([e],n):n}function C(e,t){for(var n=0,r=e.length;n<r;n++)We.set(e[n],"globalEval",!t||We.get(t[n],"globalEval"))}function E(e,t,n,r,i){for(var o,a,s,l,u,c,f=t.createDocumentFragment(),p=[],d=0,h=e.length;d<h;d++)if(o=e[d],o||0===o)if("object"===xe.type(o))xe.merge(p,o.nodeType?[o]:o);else if(et.test(o)){for(a=a||f.appendChild(t.createElement("div")),s=(Je.exec(o)||["",""])[1].toLowerCase(),l=Ze[s]||Ze._default,a.innerHTML=l[1]+xe.htmlPrefilter(o)+l[2],c=l[0];c--;)a=a.lastChild;xe.merge(p,a.childNodes),a=f.firstChild,a.textContent=""}else p.push(t.createTextNode(o));for(f.textContent="",d=0;o=p[d++];)if(r&&xe.inArray(o,r)>-1)i&&i.push(o);else if(u=xe.contains(o.ownerDocument,o),a=T(f.appendChild(o),"script"),u&&C(a),n)for(c=0;o=a[c++];)Ke.test(o.type||"")&&n.push(o);return f}function k(){return!0}function S(){return!1}function A(){try{return ae.activeElement}catch(e){}}function N(e,t,n,r,i,o){var a,s;if("object"==typeof t){"string"!=typeof n&&(r=r||n,n=void 0);for(s in t)N(e,s,n,r,t[s],o);return e}if(null==r&&null==i?(i=n,r=n=void 0):null==i&&("string"==typeof n?(i=r,r=void 0):(i=r,r=n,n=void 0)),i===!1)i=S;else if(!i)return e;return 1===o&&(a=i,i=function(e){return xe().off(e),a.apply(this,arguments)},i.guid=a.guid||(a.guid=xe.guid++)),e.each(function(){xe.event.add(this,t,i,r,n)})}function D(e,t){return l(e,"table")&&l(11!==t.nodeType?t:t.firstChild,"tr")?xe(">tbody",e)[0]||e:e}function j(e){return e.type=(null!==e.getAttribute("type"))+"/"+e.type,e}function q(e){var t=lt.exec(e.type);return t?e.type=t[1]:e.removeAttribute("type"),e}function L(e,t){var n,r,i,o,a,s,l,u;if(1===t.nodeType){if(We.hasData(e)&&(o=We.access(e),a=We.set(t,o),u=o.events)){delete a.handle,a.events={};for(i in u)for(n=0,r=u[i].length;n<r;n++)xe.event.add(t,i,u[i][n])}$e.hasData(e)&&(s=$e.access(e),l=xe.extend({},s),$e.set(t,l))}}function H(e,t){var n=t.nodeName.toLowerCase();"input"===n&&Qe.test(e.type)?t.checked=e.checked:"input"!==n&&"textarea"!==n||(t.defaultValue=e.defaultValue)}function O(e,t,n,r){t=ue.apply([],t);var i,o,s,l,u,c,f=0,p=e.length,d=p-1,h=t[0],g=xe.isFunction(h);if(g||p>1&&"string"==typeof h&&!ve.checkClone&&st.test(h))return e.each(function(i){var o=e.eq(i);g&&(t[0]=h.call(this,i,o.html())),O(o,t,n,r)});if(p&&(i=E(t,e[0].ownerDocument,!1,e,r),o=i.firstChild,1===i.childNodes.length&&(i=o),o||r)){for(s=xe.map(T(i,"script"),j),l=s.length;f<p;f++)u=i,f!==d&&(u=xe.clone(u,!0,!0),l&&xe.merge(s,T(u,"script"))),n.call(e[f],u,f);if(l)for(c=s[s.length-1].ownerDocument,xe.map(s,q),f=0;f<l;f++)u=s[f],Ke.test(u.type||"")&&!We.access(u,"globalEval")&&xe.contains(c,u)&&(u.src?xe._evalUrl&&xe._evalUrl(u.src):a(u.textContent.replace(ut,""),c))}return e}function F(e,t,n){for(var r,i=t?xe.filter(t,e):e,o=0;null!=(r=i[o]);o++)n||1!==r.nodeType||xe.cleanData(T(r)),r.parentNode&&(n&&xe.contains(r.ownerDocument,r)&&C(T(r,"script")),r.parentNode.removeChild(r));return e}function M(e,t,n){var r,i,o,a,s=e.style;return n=n||pt(e),n&&(a=n.getPropertyValue(t)||n[t],""!==a||xe.contains(e.ownerDocument,e)||(a=xe.style(e,t)),!ve.pixelMarginRight()&&ft.test(a)&&ct.test(t)&&(r=s.width,i=s.minWidth,o=s.maxWidth,s.minWidth=s.maxWidth=s.width=a,a=n.width,s.width=r,s.minWidth=i,s.maxWidth=o)),void 0!==a?a+"":a}function R(e,t){return{get:function(){return e()?void delete this.get:(this.get=t).apply(this,arguments)}}}function P(e){if(e in yt)return e;for(var t=e[0].toUpperCase()+e.slice(1),n=vt.length;n--;)if(e=vt[n]+t,e in yt)return e}function I(e){var t=xe.cssProps[e];return t||(t=xe.cssProps[e]=P(e)||e),t}function W(e,t,n){var r=Xe.exec(t);return r?Math.max(0,r[2]-(n||0))+(r[3]||"px"):t}function $(e,t,n,r,i){var o,a=0;for(o=n===(r?"border":"content")?4:"width"===t?1:0;o<4;o+=2)"margin"===n&&(a+=xe.css(e,n+Ue[o],!0,i)),r?("content"===n&&(a-=xe.css(e,"padding"+Ue[o],!0,i)),"margin"!==n&&(a-=xe.css(e,"border"+Ue[o]+"Width",!0,i))):(a+=xe.css(e,"padding"+Ue[o],!0,i),"padding"!==n&&(a+=xe.css(e,"border"+Ue[o]+"Width",!0,i)));return a}function B(e,t,n){var r,i=pt(e),o=M(e,t,i),a="border-box"===xe.css(e,"boxSizing",!1,i);return ft.test(o)?o:(r=a&&(ve.boxSizingReliable()||o===e.style[t]),"auto"===o&&(o=e["offset"+t[0].toUpperCase()+t.slice(1)]),o=parseFloat(o)||0,o+$(e,t,n||(a?"border":"content"),r,i)+"px")}function z(e,t,n,r,i){return new z.prototype.init(e,t,n,r,i)}function _(){bt&&(ae.hidden===!1&&n.requestAnimationFrame?n.requestAnimationFrame(_):n.setTimeout(_,xe.fx.interval),xe.fx.tick())}function X(){return n.setTimeout(function(){xt=void 0}),xt=xe.now()}function U(e,t){var n,r=0,i={height:e};for(t=t?1:0;r<4;r+=2-t)n=Ue[r],i["margin"+n]=i["padding"+n]=e;return t&&(i.opacity=i.width=e),i}function V(e,t,n){for(var r,i=(Q.tweeners[t]||[]).concat(Q.tweeners["*"]),o=0,a=i.length;o<a;o++)if(r=i[o].call(n,t,e))return r}function Y(e,t,n){var r,i,o,a,s,l,u,c,f="width"in t||"height"in t,p=this,d={},h=e.style,g=e.nodeType&&Ve(e),m=We.get(e,"fxshow");n.queue||(a=xe._queueHooks(e,"fx"),null==a.unqueued&&(a.unqueued=0,s=a.empty.fire,a.empty.fire=function(){a.unqueued||s()}),a.unqueued++,p.always(function(){p.always(function(){a.unqueued--,xe.queue(e,"fx").length||a.empty.fire()})}));for(r in t)if(i=t[r],wt.test(i)){if(delete t[r],o=o||"toggle"===i,i===(g?"hide":"show")){if("show"!==i||!m||void 0===m[r])continue;g=!0}d[r]=m&&m[r]||xe.style(e,r)}if(l=!xe.isEmptyObject(t),l||!xe.isEmptyObject(d)){f&&1===e.nodeType&&(n.overflow=[h.overflow,h.overflowX,h.overflowY],u=m&&m.display,null==u&&(u=We.get(e,"display")),c=xe.css(e,"display"),"none"===c&&(u?c=u:(w([e],!0),u=e.style.display||u,c=xe.css(e,"display"),w([e]))),("inline"===c||"inline-block"===c&&null!=u)&&"none"===xe.css(e,"float")&&(l||(p.done(function(){h.display=u}),null==u&&(c=h.display,u="none"===c?"":c)),h.display="inline-block")),n.overflow&&(h.overflow="hidden",p.always(function(){h.overflow=n.overflow[0],h.overflowX=n.overflow[1],h.overflowY=n.overflow[2]})),l=!1;for(r in d)l||(m?"hidden"in m&&(g=m.hidden):m=We.access(e,"fxshow",{display:u}),o&&(m.hidden=!g),g&&w([e],!0),p.done(function(){g||w([e]),We.remove(e,"fxshow");for(r in d)xe.style(e,r,d[r])})),l=V(g?m[r]:0,r,p),r in m||(m[r]=l.start,g&&(l.end=l.start,l.start=0))}}function G(e,t){var n,r,i,o,a;for(n in e)if(r=xe.camelCase(n),i=t[r],o=e[n],Array.isArray(o)&&(i=o[1],o=e[n]=o[0]),n!==r&&(e[r]=o,delete e[n]),a=xe.cssHooks[r],a&&"expand"in a){o=a.expand(o),delete e[r];for(n in o)n in e||(e[n]=o[n],t[n]=i)}else t[r]=i}function Q(e,t,n){var r,i,o=0,a=Q.prefilters.length,s=xe.Deferred().always(function(){delete l.elem}),l=function(){if(i)return!1;for(var t=xt||X(),n=Math.max(0,u.startTime+u.duration-t),r=n/u.duration||0,o=1-r,a=0,l=u.tweens.length;a<l;a++)u.tweens[a].run(o);return s.notifyWith(e,[u,o,n]),o<1&&l?n:(l||s.notifyWith(e,[u,1,0]),s.resolveWith(e,[u]),!1)},u=s.promise({elem:e,props:xe.extend({},t),opts:xe.extend(!0,{specialEasing:{},easing:xe.easing._default},n),originalProperties:t,originalOptions:n,startTime:xt||X(),duration:n.duration,tweens:[],createTween:function(t,n){var r=xe.Tween(e,u.opts,t,n,u.opts.specialEasing[t]||u.opts.easing);return u.tweens.push(r),r},stop:function(t){var n=0,r=t?u.tweens.length:0;if(i)return this;for(i=!0;n<r;n++)u.tweens[n].run(1);return t?(s.notifyWith(e,[u,1,0]),s.resolveWith(e,[u,t])):s.rejectWith(e,[u,t]),this}}),c=u.props;for(G(c,u.opts.specialEasing);o<a;o++)if(r=Q.prefilters[o].call(u,e,c,u.opts))return xe.isFunction(r.stop)&&(xe._queueHooks(u.elem,u.opts.queue).stop=xe.proxy(r.stop,r)),r;return xe.map(c,V,u),xe.isFunction(u.opts.start)&&u.opts.start.call(e,u),u.progress(u.opts.progress).done(u.opts.done,u.opts.complete).fail(u.opts.fail).always(u.opts.always),xe.fx.timer(xe.extend(l,{elem:e,anim:u,queue:u.opts.queue})),u}function J(e){var t=e.match(Fe)||[];return t.join(" ")}function K(e){return e.getAttribute&&e.getAttribute("class")||""}function Z(e,t,n,r){var i;if(Array.isArray(t))xe.each(t,function(t,i){n||Lt.test(e)?r(e,i):Z(e+"["+("object"==typeof i&&null!=i?t:"")+"]",i,n,r)});else if(n||"object"!==xe.type(t))r(e,t);else for(i in t)Z(e+"["+i+"]",t[i],n,r)}function ee(e){return function(t,n){"string"!=typeof t&&(n=t,t="*");var r,i=0,o=t.toLowerCase().match(Fe)||[];if(xe.isFunction(n))for(;r=o[i++];)"+"===r[0]?(r=r.slice(1)||"*",(e[r]=e[r]||[]).unshift(n)):(e[r]=e[r]||[]).push(n)}}function te(e,t,n,r){function i(s){var l;return o[s]=!0,xe.each(e[s]||[],function(e,s){var u=s(t,n,r);return"string"!=typeof u||a||o[u]?a?!(l=u):void 0:(t.dataTypes.unshift(u),i(u),!1)}),l}var o={},a=e===_t;return i(t.dataTypes[0])||!o["*"]&&i("*")}function ne(e,t){var n,r,i=xe.ajaxSettings.flatOptions||{};for(n in t)void 0!==t[n]&&((i[n]?e:r||(r={}))[n]=t[n]);return r&&xe.extend(!0,e,r),e}function re(e,t,n){for(var r,i,o,a,s=e.contents,l=e.dataTypes;"*"===l[0];)l.shift(),void 0===r&&(r=e.mimeType||t.getResponseHeader("Content-Type"));if(r)for(i in s)if(s[i]&&s[i].test(r)){l.unshift(i);break}if(l[0]in n)o=l[0];else{for(i in n){if(!l[0]||e.converters[i+" "+l[0]]){o=i;break}a||(a=i)}o=o||a}if(o)return o!==l[0]&&l.unshift(o),n[o]}function ie(e,t,n,r){var i,o,a,s,l,u={},c=e.dataTypes.slice();if(c[1])for(a in e.converters)u[a.toLowerCase()]=e.converters[a];for(o=c.shift();o;)if(e.responseFields[o]&&(n[e.responseFields[o]]=t),!l&&r&&e.dataFilter&&(t=e.dataFilter(t,e.dataType)),l=o,o=c.shift())if("*"===o)o=l;else if("*"!==l&&l!==o){if(a=u[l+" "+o]||u["* "+o],!a)for(i in u)if(s=i.split(" "),s[1]===o&&(a=u[l+" "+s[0]]||u["* "+s[0]])){a===!0?a=u[i]:u[i]!==!0&&(o=s[0],c.unshift(s[1]));break}if(a!==!0)if(a&&e.throws)t=a(t);else try{t=a(t)}catch(e){return{state:"parsererror",error:a?e:"No conversion from "+l+" to "+o}}}return{state:"success",data:t}}var oe=[],ae=n.document,se=Object.getPrototypeOf,le=oe.slice,ue=oe.concat,ce=oe.push,fe=oe.indexOf,pe={},de=pe.toString,he=pe.hasOwnProperty,ge=he.toString,me=ge.call(Object),ve={},ye="3.2.1",xe=function(e,t){return new xe.fn.init(e,t)},be=/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,we=/^-ms-/,Te=/-([a-z])/g,Ce=function(e,t){return t.toUpperCase()};xe.fn=xe.prototype={jquery:ye,constructor:xe,length:0,toArray:function(){return le.call(this)},get:function(e){return null==e?le.call(this):e<0?this[e+this.length]:this[e]},pushStack:function(e){var t=xe.merge(this.constructor(),e);return t.prevObject=this,t},each:function(e){return xe.each(this,e)},map:function(e){return this.pushStack(xe.map(this,function(t,n){return e.call(t,n,t)}))},slice:function(){return this.pushStack(le.apply(this,arguments))},first:function(){return this.eq(0)},last:function(){return this.eq(-1)},eq:function(e){var t=this.length,n=+e+(e<0?t:0);return this.pushStack(n>=0&&n<t?[this[n]]:[])},end:function(){return this.prevObject||this.constructor()},push:ce,sort:oe.sort,splice:oe.splice},xe.extend=xe.fn.extend=function(){var e,t,n,r,i,o,a=arguments[0]||{},s=1,l=arguments.length,u=!1;for("boolean"==typeof a&&(u=a,a=arguments[s]||{},s++),"object"==typeof a||xe.isFunction(a)||(a={}),s===l&&(a=this,s--);s<l;s++)if(null!=(e=arguments[s]))for(t in e)n=a[t],r=e[t],a!==r&&(u&&r&&(xe.isPlainObject(r)||(i=Array.isArray(r)))?(i?(i=!1,o=n&&Array.isArray(n)?n:[]):o=n&&xe.isPlainObject(n)?n:{},a[t]=xe.extend(u,o,r)):void 0!==r&&(a[t]=r));return a},xe.extend({expando:"jQuery"+(ye+Math.random()).replace(/\D/g,""),isReady:!0,error:function(e){throw new Error(e)},noop:function(){},isFunction:function(e){return"function"===xe.type(e)},isWindow:function(e){return null!=e&&e===e.window},isNumeric:function(e){var t=xe.type(e);return("number"===t||"string"===t)&&!isNaN(e-parseFloat(e))},isPlainObject:function(e){var t,n;return!(!e||"[object Object]"!==de.call(e))&&(!(t=se(e))||(n=he.call(t,"constructor")&&t.constructor,"function"==typeof n&&ge.call(n)===me))},isEmptyObject:function(e){var t;for(t in e)return!1;return!0},type:function(e){return null==e?e+"":"object"==typeof e||"function"==typeof e?pe[de.call(e)]||"object":typeof e},globalEval:function(e){a(e)},camelCase:function(e){return e.replace(we,"ms-").replace(Te,Ce)},each:function(e,t){var n,r=0;if(s(e))for(n=e.length;r<n&&t.call(e[r],r,e[r])!==!1;r++);else for(r in e)if(t.call(e[r],r,e[r])===!1)break;return e},trim:function(e){return null==e?"":(e+"").replace(be,"")},makeArray:function(e,t){var n=t||[];return null!=e&&(s(Object(e))?xe.merge(n,"string"==typeof e?[e]:e):ce.call(n,e)),n},inArray:function(e,t,n){return null==t?-1:fe.call(t,e,n)},merge:function(e,t){for(var n=+t.length,r=0,i=e.length;r<n;r++)e[i++]=t[r];return e.length=i,e},grep:function(e,t,n){for(var r,i=[],o=0,a=e.length,s=!n;o<a;o++)r=!t(e[o],o),r!==s&&i.push(e[o]);return i},map:function(e,t,n){var r,i,o=0,a=[];if(s(e))for(r=e.length;o<r;o++)i=t(e[o],o,n),null!=i&&a.push(i);else for(o in e)i=t(e[o],o,n),null!=i&&a.push(i);return ue.apply([],a)},guid:1,proxy:function(e,t){var n,r,i;if("string"==typeof t&&(n=e[t],t=e,e=n),xe.isFunction(e))return r=le.call(arguments,2),i=function(){return e.apply(t||this,r.concat(le.call(arguments)))},i.guid=e.guid=e.guid||xe.guid++,i},now:Date.now,support:ve}),"function"==typeof Symbol&&(xe.fn[Symbol.iterator]=oe[Symbol.iterator]),xe.each("Boolean Number String Function Array Date RegExp Object Error Symbol".split(" "),function(e,t){pe["[object "+t+"]"]=t.toLowerCase()});var Ee=/*!
-	 * Sizzle CSS Selector Engine v2.3.3
-	 * https://sizzlejs.com/
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license
-	 * http://jquery.org/license
-	 *
-	 * Date: 2016-08-08
-	 */
-function(e){function t(e,t,n,r){var i,o,a,s,l,u,c,p=t&&t.ownerDocument,h=t?t.nodeType:9;if(n=n||[],"string"!=typeof e||!e||1!==h&&9!==h&&11!==h)return n;if(!r&&((t?t.ownerDocument||t:$)!==H&&L(t),t=t||H,F)){if(11!==h&&(l=ve.exec(e)))if(i=l[1]){if(9===h){if(!(a=t.getElementById(i)))return n;if(a.id===i)return n.push(a),n}else if(p&&(a=p.getElementById(i))&&I(t,a)&&a.id===i)return n.push(a),n}else{if(l[2])return K.apply(n,t.getElementsByTagName(e)),n;if((i=l[3])&&T.getElementsByClassName&&t.getElementsByClassName)return K.apply(n,t.getElementsByClassName(i)),n}if(T.qsa&&!U[e+" "]&&(!M||!M.test(e))){if(1!==h)p=t,c=e;else if("object"!==t.nodeName.toLowerCase()){for((s=t.getAttribute("id"))?s=s.replace(we,Te):t.setAttribute("id",s=W),u=S(e),o=u.length;o--;)u[o]="#"+s+" "+d(u[o]);c=u.join(","),p=ye.test(e)&&f(t.parentNode)||t}if(c)try{return K.apply(n,p.querySelectorAll(c)),n}catch(e){}finally{s===W&&t.removeAttribute("id")}}}return N(e.replace(se,"$1"),t,n,r)}function n(){function e(n,r){return t.push(n+" ")>C.cacheLength&&delete e[t.shift()],e[n+" "]=r}var t=[];return e}function r(e){return e[W]=!0,e}function i(e){var t=H.createElement("fieldset");try{return!!e(t)}catch(e){return!1}finally{t.parentNode&&t.parentNode.removeChild(t),t=null}}function o(e,t){for(var n=e.split("|"),r=n.length;r--;)C.attrHandle[n[r]]=t}function a(e,t){var n=t&&e,r=n&&1===e.nodeType&&1===t.nodeType&&e.sourceIndex-t.sourceIndex;if(r)return r;if(n)for(;n=n.nextSibling;)if(n===t)return-1;return e?1:-1}function s(e){return function(t){var n=t.nodeName.toLowerCase();return"input"===n&&t.type===e}}function l(e){return function(t){var n=t.nodeName.toLowerCase();return("input"===n||"button"===n)&&t.type===e}}function u(e){return function(t){return"form"in t?t.parentNode&&t.disabled===!1?"label"in t?"label"in t.parentNode?t.parentNode.disabled===e:t.disabled===e:t.isDisabled===e||t.isDisabled!==!e&&Ee(t)===e:t.disabled===e:"label"in t&&t.disabled===e}}function c(e){return r(function(t){return t=+t,r(function(n,r){for(var i,o=e([],n.length,t),a=o.length;a--;)n[i=o[a]]&&(n[i]=!(r[i]=n[i]))})})}function f(e){return e&&"undefined"!=typeof e.getElementsByTagName&&e}function p(){}function d(e){for(var t=0,n=e.length,r="";t<n;t++)r+=e[t].value;return r}function h(e,t,n){var r=t.dir,i=t.next,o=i||r,a=n&&"parentNode"===o,s=z++;return t.first?function(t,n,i){for(;t=t[r];)if(1===t.nodeType||a)return e(t,n,i);return!1}:function(t,n,l){var u,c,f,p=[B,s];if(l){for(;t=t[r];)if((1===t.nodeType||a)&&e(t,n,l))return!0}else for(;t=t[r];)if(1===t.nodeType||a)if(f=t[W]||(t[W]={}),c=f[t.uniqueID]||(f[t.uniqueID]={}),i&&i===t.nodeName.toLowerCase())t=t[r]||t;else{if((u=c[o])&&u[0]===B&&u[1]===s)return p[2]=u[2];if(c[o]=p,p[2]=e(t,n,l))return!0}return!1}}function g(e){return e.length>1?function(t,n,r){for(var i=e.length;i--;)if(!e[i](t,n,r))return!1;return!0}:e[0]}function m(e,n,r){for(var i=0,o=n.length;i<o;i++)t(e,n[i],r);return r}function v(e,t,n,r,i){for(var o,a=[],s=0,l=e.length,u=null!=t;s<l;s++)(o=e[s])&&(n&&!n(o,r,i)||(a.push(o),u&&t.push(s)));return a}function y(e,t,n,i,o,a){return i&&!i[W]&&(i=y(i)),o&&!o[W]&&(o=y(o,a)),r(function(r,a,s,l){var u,c,f,p=[],d=[],h=a.length,g=r||m(t||"*",s.nodeType?[s]:s,[]),y=!e||!r&&t?g:v(g,p,e,s,l),x=n?o||(r?e:h||i)?[]:a:y;if(n&&n(y,x,s,l),i)for(u=v(x,d),i(u,[],s,l),c=u.length;c--;)(f=u[c])&&(x[d[c]]=!(y[d[c]]=f));if(r){if(o||e){if(o){for(u=[],c=x.length;c--;)(f=x[c])&&u.push(y[c]=f);o(null,x=[],u,l)}for(c=x.length;c--;)(f=x[c])&&(u=o?ee(r,f):p[c])>-1&&(r[u]=!(a[u]=f))}}else x=v(x===a?x.splice(h,x.length):x),o?o(null,a,x,l):K.apply(a,x)})}function x(e){for(var t,n,r,i=e.length,o=C.relative[e[0].type],a=o||C.relative[" "],s=o?1:0,l=h(function(e){return e===t},a,!0),u=h(function(e){return ee(t,e)>-1},a,!0),c=[function(e,n,r){var i=!o&&(r||n!==D)||((t=n).nodeType?l(e,n,r):u(e,n,r));return t=null,i}];s<i;s++)if(n=C.relative[e[s].type])c=[h(g(c),n)];else{if(n=C.filter[e[s].type].apply(null,e[s].matches),n[W]){for(r=++s;r<i&&!C.relative[e[r].type];r++);return y(s>1&&g(c),s>1&&d(e.slice(0,s-1).concat({value:" "===e[s-2].type?"*":""})).replace(se,"$1"),n,s<r&&x(e.slice(s,r)),r<i&&x(e=e.slice(r)),r<i&&d(e))}c.push(n)}return g(c)}function b(e,n){var i=n.length>0,o=e.length>0,a=function(r,a,s,l,u){var c,f,p,d=0,h="0",g=r&&[],m=[],y=D,x=r||o&&C.find.TAG("*",u),b=B+=null==y?1:Math.random()||.1,w=x.length;for(u&&(D=a===H||a||u);h!==w&&null!=(c=x[h]);h++){if(o&&c){for(f=0,a||c.ownerDocument===H||(L(c),s=!F);p=e[f++];)if(p(c,a||H,s)){l.push(c);break}u&&(B=b)}i&&((c=!p&&c)&&d--,r&&g.push(c))}if(d+=h,i&&h!==d){for(f=0;p=n[f++];)p(g,m,a,s);if(r){if(d>0)for(;h--;)g[h]||m[h]||(m[h]=Q.call(l));m=v(m)}K.apply(l,m),u&&!r&&m.length>0&&d+n.length>1&&t.uniqueSort(l)}return u&&(B=b,D=y),g};return i?r(a):a}var w,T,C,E,k,S,A,N,D,j,q,L,H,O,F,M,R,P,I,W="sizzle"+1*new Date,$=e.document,B=0,z=0,_=n(),X=n(),U=n(),V=function(e,t){return e===t&&(q=!0),0},Y={}.hasOwnProperty,G=[],Q=G.pop,J=G.push,K=G.push,Z=G.slice,ee=function(e,t){for(var n=0,r=e.length;n<r;n++)if(e[n]===t)return n;return-1},te="checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",ne="[\\x20\\t\\r\\n\\f]",re="(?:\\\\.|[\\w-]|[^\0-\\xa0])+",ie="\\["+ne+"*("+re+")(?:"+ne+"*([*^$|!~]?=)"+ne+"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|("+re+"))|)"+ne+"*\\]",oe=":("+re+")(?:\\((('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|((?:\\\\.|[^\\\\()[\\]]|"+ie+")*)|.*)\\)|)",ae=new RegExp(ne+"+","g"),se=new RegExp("^"+ne+"+|((?:^|[^\\\\])(?:\\\\.)*)"+ne+"+$","g"),le=new RegExp("^"+ne+"*,"+ne+"*"),ue=new RegExp("^"+ne+"*([>+~]|"+ne+")"+ne+"*"),ce=new RegExp("="+ne+"*([^\\]'\"]*?)"+ne+"*\\]","g"),fe=new RegExp(oe),pe=new RegExp("^"+re+"$"),de={ID:new RegExp("^#("+re+")"),CLASS:new RegExp("^\\.("+re+")"),TAG:new RegExp("^("+re+"|[*])"),ATTR:new RegExp("^"+ie),PSEUDO:new RegExp("^"+oe),CHILD:new RegExp("^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\("+ne+"*(even|odd|(([+-]|)(\\d*)n|)"+ne+"*(?:([+-]|)"+ne+"*(\\d+)|))"+ne+"*\\)|)","i"),bool:new RegExp("^(?:"+te+")$","i"),needsContext:new RegExp("^"+ne+"*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\("+ne+"*((?:-\\d)?\\d*)"+ne+"*\\)|)(?=[^-]|$)","i")},he=/^(?:input|select|textarea|button)$/i,ge=/^h\d$/i,me=/^[^{]+\{\s*\[native \w/,ve=/^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,ye=/[+~]/,xe=new RegExp("\\\\([\\da-f]{1,6}"+ne+"?|("+ne+")|.)","ig"),be=function(e,t,n){var r="0x"+t-65536;return r!==r||n?t:r<0?String.fromCharCode(r+65536):String.fromCharCode(r>>10|55296,1023&r|56320)},we=/([\0-\x1f\x7f]|^-?\d)|^-$|[^\0-\x1f\x7f-\uFFFF\w-]/g,Te=function(e,t){return t?"\0"===e?"�":e.slice(0,-1)+"\\"+e.charCodeAt(e.length-1).toString(16)+" ":"\\"+e},Ce=function(){L()},Ee=h(function(e){return e.disabled===!0&&("form"in e||"label"in e)},{dir:"parentNode",next:"legend"});try{K.apply(G=Z.call($.childNodes),$.childNodes),G[$.childNodes.length].nodeType}catch(e){K={apply:G.length?function(e,t){J.apply(e,Z.call(t))}:function(e,t){for(var n=e.length,r=0;e[n++]=t[r++];);e.length=n-1}}}T=t.support={},k=t.isXML=function(e){var t=e&&(e.ownerDocument||e).documentElement;return!!t&&"HTML"!==t.nodeName},L=t.setDocument=function(e){var t,n,r=e?e.ownerDocument||e:$;return r!==H&&9===r.nodeType&&r.documentElement?(H=r,O=H.documentElement,F=!k(H),$!==H&&(n=H.defaultView)&&n.top!==n&&(n.addEventListener?n.addEventListener("unload",Ce,!1):n.attachEvent&&n.attachEvent("onunload",Ce)),T.attributes=i(function(e){return e.className="i",!e.getAttribute("className")}),T.getElementsByTagName=i(function(e){return e.appendChild(H.createComment("")),!e.getElementsByTagName("*").length}),T.getElementsByClassName=me.test(H.getElementsByClassName),T.getById=i(function(e){return O.appendChild(e).id=W,!H.getElementsByName||!H.getElementsByName(W).length}),T.getById?(C.filter.ID=function(e){var t=e.replace(xe,be);return function(e){return e.getAttribute("id")===t}},C.find.ID=function(e,t){if("undefined"!=typeof t.getElementById&&F){var n=t.getElementById(e);return n?[n]:[]}}):(C.filter.ID=function(e){var t=e.replace(xe,be);return function(e){var n="undefined"!=typeof e.getAttributeNode&&e.getAttributeNode("id");return n&&n.value===t}},C.find.ID=function(e,t){if("undefined"!=typeof t.getElementById&&F){var n,r,i,o=t.getElementById(e);if(o){if(n=o.getAttributeNode("id"),n&&n.value===e)return[o];for(i=t.getElementsByName(e),r=0;o=i[r++];)if(n=o.getAttributeNode("id"),n&&n.value===e)return[o]}return[]}}),C.find.TAG=T.getElementsByTagName?function(e,t){return"undefined"!=typeof t.getElementsByTagName?t.getElementsByTagName(e):T.qsa?t.querySelectorAll(e):void 0}:function(e,t){var n,r=[],i=0,o=t.getElementsByTagName(e);if("*"===e){for(;n=o[i++];)1===n.nodeType&&r.push(n);return r}return o},C.find.CLASS=T.getElementsByClassName&&function(e,t){if("undefined"!=typeof t.getElementsByClassName&&F)return t.getElementsByClassName(e)},R=[],M=[],(T.qsa=me.test(H.querySelectorAll))&&(i(function(e){O.appendChild(e).innerHTML="<a id='"+W+"'></a><select id='"+W+"-\r\\' msallowcapture=''><option selected=''></option></select>",e.querySelectorAll("[msallowcapture^='']").length&&M.push("[*^$]="+ne+"*(?:''|\"\")"),e.querySelectorAll("[selected]").length||M.push("\\["+ne+"*(?:value|"+te+")"),e.querySelectorAll("[id~="+W+"-]").length||M.push("~="),e.querySelectorAll(":checked").length||M.push(":checked"),e.querySelectorAll("a#"+W+"+*").length||M.push(".#.+[+~]")}),i(function(e){e.innerHTML="<a href='' disabled='disabled'></a><select disabled='disabled'><option/></select>";var t=H.createElement("input");t.setAttribute("type","hidden"),e.appendChild(t).setAttribute("name","D"),e.querySelectorAll("[name=d]").length&&M.push("name"+ne+"*[*^$|!~]?="),2!==e.querySelectorAll(":enabled").length&&M.push(":enabled",":disabled"),O.appendChild(e).disabled=!0,2!==e.querySelectorAll(":disabled").length&&M.push(":enabled",":disabled"),e.querySelectorAll("*,:x"),M.push(",.*:")})),(T.matchesSelector=me.test(P=O.matches||O.webkitMatchesSelector||O.mozMatchesSelector||O.oMatchesSelector||O.msMatchesSelector))&&i(function(e){T.disconnectedMatch=P.call(e,"*"),P.call(e,"[s!='']:x"),R.push("!=",oe)}),M=M.length&&new RegExp(M.join("|")),R=R.length&&new RegExp(R.join("|")),t=me.test(O.compareDocumentPosition),I=t||me.test(O.contains)?function(e,t){var n=9===e.nodeType?e.documentElement:e,r=t&&t.parentNode;return e===r||!(!r||1!==r.nodeType||!(n.contains?n.contains(r):e.compareDocumentPosition&&16&e.compareDocumentPosition(r)))}:function(e,t){if(t)for(;t=t.parentNode;)if(t===e)return!0;return!1},V=t?function(e,t){if(e===t)return q=!0,0;var n=!e.compareDocumentPosition-!t.compareDocumentPosition;return n?n:(n=(e.ownerDocument||e)===(t.ownerDocument||t)?e.compareDocumentPosition(t):1,1&n||!T.sortDetached&&t.compareDocumentPosition(e)===n?e===H||e.ownerDocument===$&&I($,e)?-1:t===H||t.ownerDocument===$&&I($,t)?1:j?ee(j,e)-ee(j,t):0:4&n?-1:1)}:function(e,t){if(e===t)return q=!0,0;var n,r=0,i=e.parentNode,o=t.parentNode,s=[e],l=[t];if(!i||!o)return e===H?-1:t===H?1:i?-1:o?1:j?ee(j,e)-ee(j,t):0;if(i===o)return a(e,t);for(n=e;n=n.parentNode;)s.unshift(n);for(n=t;n=n.parentNode;)l.unshift(n);for(;s[r]===l[r];)r++;return r?a(s[r],l[r]):s[r]===$?-1:l[r]===$?1:0},H):H},t.matches=function(e,n){return t(e,null,null,n)},t.matchesSelector=function(e,n){if((e.ownerDocument||e)!==H&&L(e),n=n.replace(ce,"='$1']"),T.matchesSelector&&F&&!U[n+" "]&&(!R||!R.test(n))&&(!M||!M.test(n)))try{var r=P.call(e,n);if(r||T.disconnectedMatch||e.document&&11!==e.document.nodeType)return r}catch(e){}return t(n,H,null,[e]).length>0},t.contains=function(e,t){return(e.ownerDocument||e)!==H&&L(e),I(e,t)},t.attr=function(e,t){(e.ownerDocument||e)!==H&&L(e);var n=C.attrHandle[t.toLowerCase()],r=n&&Y.call(C.attrHandle,t.toLowerCase())?n(e,t,!F):void 0;return void 0!==r?r:T.attributes||!F?e.getAttribute(t):(r=e.getAttributeNode(t))&&r.specified?r.value:null},t.escape=function(e){return(e+"").replace(we,Te)},t.error=function(e){throw new Error("Syntax error, unrecognized expression: "+e)},t.uniqueSort=function(e){var t,n=[],r=0,i=0;if(q=!T.detectDuplicates,j=!T.sortStable&&e.slice(0),e.sort(V),q){for(;t=e[i++];)t===e[i]&&(r=n.push(i));for(;r--;)e.splice(n[r],1)}return j=null,e},E=t.getText=function(e){var t,n="",r=0,i=e.nodeType;if(i){if(1===i||9===i||11===i){if("string"==typeof e.textContent)return e.textContent;for(e=e.firstChild;e;e=e.nextSibling)n+=E(e)}else if(3===i||4===i)return e.nodeValue}else for(;t=e[r++];)n+=E(t);return n},C=t.selectors={cacheLength:50,createPseudo:r,match:de,attrHandle:{},find:{},relative:{">":{dir:"parentNode",first:!0}," ":{dir:"parentNode"},"+":{dir:"previousSibling",first:!0},"~":{dir:"previousSibling"}},preFilter:{ATTR:function(e){return e[1]=e[1].replace(xe,be),e[3]=(e[3]||e[4]||e[5]||"").replace(xe,be),"~="===e[2]&&(e[3]=" "+e[3]+" "),e.slice(0,4)},CHILD:function(e){return e[1]=e[1].toLowerCase(),"nth"===e[1].slice(0,3)?(e[3]||t.error(e[0]),e[4]=+(e[4]?e[5]+(e[6]||1):2*("even"===e[3]||"odd"===e[3])),e[5]=+(e[7]+e[8]||"odd"===e[3])):e[3]&&t.error(e[0]),e},PSEUDO:function(e){var t,n=!e[6]&&e[2];return de.CHILD.test(e[0])?null:(e[3]?e[2]=e[4]||e[5]||"":n&&fe.test(n)&&(t=S(n,!0))&&(t=n.indexOf(")",n.length-t)-n.length)&&(e[0]=e[0].slice(0,t),e[2]=n.slice(0,t)),e.slice(0,3))}},filter:{TAG:function(e){var t=e.replace(xe,be).toLowerCase();return"*"===e?function(){return!0}:function(e){return e.nodeName&&e.nodeName.toLowerCase()===t}},CLASS:function(e){var t=_[e+" "];return t||(t=new RegExp("(^|"+ne+")"+e+"("+ne+"|$)"))&&_(e,function(e){return t.test("string"==typeof e.className&&e.className||"undefined"!=typeof e.getAttribute&&e.getAttribute("class")||"")})},ATTR:function(e,n,r){return function(i){var o=t.attr(i,e);return null==o?"!="===n:!n||(o+="","="===n?o===r:"!="===n?o!==r:"^="===n?r&&0===o.indexOf(r):"*="===n?r&&o.indexOf(r)>-1:"$="===n?r&&o.slice(-r.length)===r:"~="===n?(" "+o.replace(ae," ")+" ").indexOf(r)>-1:"|="===n&&(o===r||o.slice(0,r.length+1)===r+"-"))}},CHILD:function(e,t,n,r,i){var o="nth"!==e.slice(0,3),a="last"!==e.slice(-4),s="of-type"===t;return 1===r&&0===i?function(e){return!!e.parentNode}:function(t,n,l){var u,c,f,p,d,h,g=o!==a?"nextSibling":"previousSibling",m=t.parentNode,v=s&&t.nodeName.toLowerCase(),y=!l&&!s,x=!1;if(m){if(o){for(;g;){for(p=t;p=p[g];)if(s?p.nodeName.toLowerCase()===v:1===p.nodeType)return!1;h=g="only"===e&&!h&&"nextSibling"}return!0}if(h=[a?m.firstChild:m.lastChild],a&&y){for(p=m,f=p[W]||(p[W]={}),c=f[p.uniqueID]||(f[p.uniqueID]={}),u=c[e]||[],d=u[0]===B&&u[1],x=d&&u[2],p=d&&m.childNodes[d];p=++d&&p&&p[g]||(x=d=0)||h.pop();)if(1===p.nodeType&&++x&&p===t){c[e]=[B,d,x];break}}else if(y&&(p=t,f=p[W]||(p[W]={}),c=f[p.uniqueID]||(f[p.uniqueID]={}),u=c[e]||[],d=u[0]===B&&u[1],x=d),x===!1)for(;(p=++d&&p&&p[g]||(x=d=0)||h.pop())&&((s?p.nodeName.toLowerCase()!==v:1!==p.nodeType)||!++x||(y&&(f=p[W]||(p[W]={}),c=f[p.uniqueID]||(f[p.uniqueID]={}),c[e]=[B,x]),p!==t)););return x-=i,x===r||x%r===0&&x/r>=0}}},PSEUDO:function(e,n){var i,o=C.pseudos[e]||C.setFilters[e.toLowerCase()]||t.error("unsupported pseudo: "+e);return o[W]?o(n):o.length>1?(i=[e,e,"",n],C.setFilters.hasOwnProperty(e.toLowerCase())?r(function(e,t){for(var r,i=o(e,n),a=i.length;a--;)r=ee(e,i[a]),e[r]=!(t[r]=i[a])}):function(e){return o(e,0,i)}):o}},pseudos:{not:r(function(e){var t=[],n=[],i=A(e.replace(se,"$1"));return i[W]?r(function(e,t,n,r){for(var o,a=i(e,null,r,[]),s=e.length;s--;)(o=a[s])&&(e[s]=!(t[s]=o))}):function(e,r,o){return t[0]=e,i(t,null,o,n),t[0]=null,!n.pop()}}),has:r(function(e){return function(n){return t(e,n).length>0}}),contains:r(function(e){return e=e.replace(xe,be),function(t){return(t.textContent||t.innerText||E(t)).indexOf(e)>-1}}),lang:r(function(e){return pe.test(e||"")||t.error("unsupported lang: "+e),e=e.replace(xe,be).toLowerCase(),function(t){var n;do if(n=F?t.lang:t.getAttribute("xml:lang")||t.getAttribute("lang"))return n=n.toLowerCase(),n===e||0===n.indexOf(e+"-");while((t=t.parentNode)&&1===t.nodeType);return!1}}),target:function(t){var n=e.location&&e.location.hash;return n&&n.slice(1)===t.id},root:function(e){return e===O},focus:function(e){return e===H.activeElement&&(!H.hasFocus||H.hasFocus())&&!!(e.type||e.href||~e.tabIndex)},enabled:u(!1),disabled:u(!0),checked:function(e){var t=e.nodeName.toLowerCase();return"input"===t&&!!e.checked||"option"===t&&!!e.selected},selected:function(e){return e.parentNode&&e.parentNode.selectedIndex,e.selected===!0},empty:function(e){for(e=e.firstChild;e;e=e.nextSibling)if(e.nodeType<6)return!1;return!0},parent:function(e){return!C.pseudos.empty(e)},header:function(e){return ge.test(e.nodeName)},input:function(e){return he.test(e.nodeName)},button:function(e){var t=e.nodeName.toLowerCase();return"input"===t&&"button"===e.type||"button"===t},text:function(e){var t;return"input"===e.nodeName.toLowerCase()&&"text"===e.type&&(null==(t=e.getAttribute("type"))||"text"===t.toLowerCase())},first:c(function(){return[0]}),last:c(function(e,t){return[t-1]}),eq:c(function(e,t,n){return[n<0?n+t:n]}),even:c(function(e,t){for(var n=0;n<t;n+=2)e.push(n);return e}),odd:c(function(e,t){for(var n=1;n<t;n+=2)e.push(n);return e}),lt:c(function(e,t,n){for(var r=n<0?n+t:n;--r>=0;)e.push(r);return e}),gt:c(function(e,t,n){for(var r=n<0?n+t:n;++r<t;)e.push(r);return e})}},C.pseudos.nth=C.pseudos.eq;for(w in{radio:!0,checkbox:!0,file:!0,password:!0,image:!0})C.pseudos[w]=s(w);for(w in{submit:!0,reset:!0})C.pseudos[w]=l(w);return p.prototype=C.filters=C.pseudos,C.setFilters=new p,S=t.tokenize=function(e,n){var r,i,o,a,s,l,u,c=X[e+" "];if(c)return n?0:c.slice(0);for(s=e,l=[],u=C.preFilter;s;){r&&!(i=le.exec(s))||(i&&(s=s.slice(i[0].length)||s),l.push(o=[])),r=!1,(i=ue.exec(s))&&(r=i.shift(),o.push({value:r,type:i[0].replace(se," ")}),s=s.slice(r.length));for(a in C.filter)!(i=de[a].exec(s))||u[a]&&!(i=u[a](i))||(r=i.shift(),o.push({value:r,type:a,matches:i}),s=s.slice(r.length));if(!r)break}return n?s.length:s?t.error(e):X(e,l).slice(0)},A=t.compile=function(e,t){var n,r=[],i=[],o=U[e+" "];if(!o){for(t||(t=S(e)),n=t.length;n--;)o=x(t[n]),o[W]?r.push(o):i.push(o);o=U(e,b(i,r)),o.selector=e}return o},N=t.select=function(e,t,n,r){var i,o,a,s,l,u="function"==typeof e&&e,c=!r&&S(e=u.selector||e);if(n=n||[],1===c.length){if(o=c[0]=c[0].slice(0),o.length>2&&"ID"===(a=o[0]).type&&9===t.nodeType&&F&&C.relative[o[1].type]){if(t=(C.find.ID(a.matches[0].replace(xe,be),t)||[])[0],!t)return n;u&&(t=t.parentNode),e=e.slice(o.shift().value.length)}for(i=de.needsContext.test(e)?0:o.length;i--&&(a=o[i],!C.relative[s=a.type]);)if((l=C.find[s])&&(r=l(a.matches[0].replace(xe,be),ye.test(o[0].type)&&f(t.parentNode)||t))){if(o.splice(i,1),e=r.length&&d(o),!e)return K.apply(n,r),n;break}}return(u||A(e,c))(r,t,!F,n,!t||ye.test(e)&&f(t.parentNode)||t),n},T.sortStable=W.split("").sort(V).join("")===W,T.detectDuplicates=!!q,L(),T.sortDetached=i(function(e){return 1&e.compareDocumentPosition(H.createElement("fieldset"))}),i(function(e){return e.innerHTML="<a href='#'></a>","#"===e.firstChild.getAttribute("href")})||o("type|href|height|width",function(e,t,n){if(!n)return e.getAttribute(t,"type"===t.toLowerCase()?1:2)}),T.attributes&&i(function(e){return e.innerHTML="<input/>",e.firstChild.setAttribute("value",""),""===e.firstChild.getAttribute("value")})||o("value",function(e,t,n){if(!n&&"input"===e.nodeName.toLowerCase())return e.defaultValue}),i(function(e){return null==e.getAttribute("disabled")})||o(te,function(e,t,n){var r;if(!n)return e[t]===!0?t.toLowerCase():(r=e.getAttributeNode(t))&&r.specified?r.value:null}),t}(n);xe.find=Ee,xe.expr=Ee.selectors,xe.expr[":"]=xe.expr.pseudos,xe.uniqueSort=xe.unique=Ee.uniqueSort,xe.text=Ee.getText,xe.isXMLDoc=Ee.isXML,xe.contains=Ee.contains,xe.escapeSelector=Ee.escape;var ke=function(e,t,n){for(var r=[],i=void 0!==n;(e=e[t])&&9!==e.nodeType;)if(1===e.nodeType){if(i&&xe(e).is(n))break;r.push(e)}return r},Se=function(e,t){for(var n=[];e;e=e.nextSibling)1===e.nodeType&&e!==t&&n.push(e);return n},Ae=xe.expr.match.needsContext,Ne=/^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i,De=/^.[^:#\[\.,]*$/;xe.filter=function(e,t,n){var r=t[0];return n&&(e=":not("+e+")"),1===t.length&&1===r.nodeType?xe.find.matchesSelector(r,e)?[r]:[]:xe.find.matches(e,xe.grep(t,function(e){return 1===e.nodeType}))},xe.fn.extend({find:function(e){var t,n,r=this.length,i=this;if("string"!=typeof e)return this.pushStack(xe(e).filter(function(){for(t=0;t<r;t++)if(xe.contains(i[t],this))return!0}));for(n=this.pushStack([]),t=0;t<r;t++)xe.find(e,i[t],n);return r>1?xe.uniqueSort(n):n},filter:function(e){return this.pushStack(u(this,e||[],!1))},not:function(e){return this.pushStack(u(this,e||[],!0))},is:function(e){return!!u(this,"string"==typeof e&&Ae.test(e)?xe(e):e||[],!1).length}});var je,qe=/^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/,Le=xe.fn.init=function(e,t,n){var r,i;if(!e)return this;if(n=n||je,"string"==typeof e){if(r="<"===e[0]&&">"===e[e.length-1]&&e.length>=3?[null,e,null]:qe.exec(e),!r||!r[1]&&t)return!t||t.jquery?(t||n).find(e):this.constructor(t).find(e);if(r[1]){if(t=t instanceof xe?t[0]:t,xe.merge(this,xe.parseHTML(r[1],t&&t.nodeType?t.ownerDocument||t:ae,!0)),Ne.test(r[1])&&xe.isPlainObject(t))for(r in t)xe.isFunction(this[r])?this[r](t[r]):this.attr(r,t[r]);return this}return i=ae.getElementById(r[2]),i&&(this[0]=i,this.length=1),this}return e.nodeType?(this[0]=e,this.length=1,this):xe.isFunction(e)?void 0!==n.ready?n.ready(e):e(xe):xe.makeArray(e,this)};Le.prototype=xe.fn,je=xe(ae);var He=/^(?:parents|prev(?:Until|All))/,Oe={children:!0,contents:!0,next:!0,prev:!0};xe.fn.extend({has:function(e){var t=xe(e,this),n=t.length;return this.filter(function(){for(var e=0;e<n;e++)if(xe.contains(this,t[e]))return!0})},closest:function(e,t){var n,r=0,i=this.length,o=[],a="string"!=typeof e&&xe(e);if(!Ae.test(e))for(;r<i;r++)for(n=this[r];n&&n!==t;n=n.parentNode)if(n.nodeType<11&&(a?a.index(n)>-1:1===n.nodeType&&xe.find.matchesSelector(n,e))){o.push(n);break}return this.pushStack(o.length>1?xe.uniqueSort(o):o)},index:function(e){return e?"string"==typeof e?fe.call(xe(e),this[0]):fe.call(this,e.jquery?e[0]:e):this[0]&&this[0].parentNode?this.first().prevAll().length:-1},add:function(e,t){return this.pushStack(xe.uniqueSort(xe.merge(this.get(),xe(e,t))))},addBack:function(e){return this.add(null==e?this.prevObject:this.prevObject.filter(e))}}),xe.each({parent:function(e){var t=e.parentNode;return t&&11!==t.nodeType?t:null},parents:function(e){return ke(e,"parentNode")},parentsUntil:function(e,t,n){return ke(e,"parentNode",n)},next:function(e){return c(e,"nextSibling")},prev:function(e){return c(e,"previousSibling")},nextAll:function(e){return ke(e,"nextSibling")},prevAll:function(e){return ke(e,"previousSibling")},nextUntil:function(e,t,n){return ke(e,"nextSibling",n)},prevUntil:function(e,t,n){return ke(e,"previousSibling",n)},siblings:function(e){return Se((e.parentNode||{}).firstChild,e)},children:function(e){return Se(e.firstChild)},contents:function(e){return l(e,"iframe")?e.contentDocument:(l(e,"template")&&(e=e.content||e),xe.merge([],e.childNodes))}},function(e,t){xe.fn[e]=function(n,r){var i=xe.map(this,t,n);return"Until"!==e.slice(-5)&&(r=n),r&&"string"==typeof r&&(i=xe.filter(r,i)),this.length>1&&(Oe[e]||xe.uniqueSort(i),He.test(e)&&i.reverse()),this.pushStack(i)}});var Fe=/[^\x20\t\r\n\f]+/g;xe.Callbacks=function(e){e="string"==typeof e?f(e):xe.extend({},e);var t,n,r,i,o=[],a=[],s=-1,l=function(){for(i=i||e.once,r=t=!0;a.length;s=-1)for(n=a.shift();++s<o.length;)o[s].apply(n[0],n[1])===!1&&e.stopOnFalse&&(s=o.length,n=!1);e.memory||(n=!1),t=!1,i&&(o=n?[]:"")},u={add:function(){return o&&(n&&!t&&(s=o.length-1,a.push(n)),function t(n){xe.each(n,function(n,r){xe.isFunction(r)?e.unique&&u.has(r)||o.push(r):r&&r.length&&"string"!==xe.type(r)&&t(r)})}(arguments),n&&!t&&l()),this},remove:function(){return xe.each(arguments,function(e,t){for(var n;(n=xe.inArray(t,o,n))>-1;)o.splice(n,1),n<=s&&s--}),this},has:function(e){return e?xe.inArray(e,o)>-1:o.length>0},empty:function(){return o&&(o=[]),this},disable:function(){return i=a=[],o=n="",this},disabled:function(){return!o},lock:function(){return i=a=[],n||t||(o=n=""),this},locked:function(){return!!i},fireWith:function(e,n){return i||(n=n||[],n=[e,n.slice?n.slice():n],a.push(n),t||l()),this},fire:function(){return u.fireWith(this,arguments),this},fired:function(){return!!r}};return u},xe.extend({Deferred:function(e){var t=[["notify","progress",xe.Callbacks("memory"),xe.Callbacks("memory"),2],["resolve","done",xe.Callbacks("once memory"),xe.Callbacks("once memory"),0,"resolved"],["reject","fail",xe.Callbacks("once memory"),xe.Callbacks("once memory"),1,"rejected"]],r="pending",i={state:function(){return r},always:function(){return o.done(arguments).fail(arguments),this},catch:function(e){return i.then(null,e)},pipe:function(){var e=arguments;return xe.Deferred(function(n){xe.each(t,function(t,r){var i=xe.isFunction(e[r[4]])&&e[r[4]];o[r[1]](function(){var e=i&&i.apply(this,arguments);e&&xe.isFunction(e.promise)?e.promise().progress(n.notify).done(n.resolve).fail(n.reject):n[r[0]+"With"](this,i?[e]:arguments)})}),e=null}).promise()},then:function(e,r,i){function o(e,t,r,i){return function(){var s=this,l=arguments,u=function(){var n,u;if(!(e<a)){if(n=r.apply(s,l),n===t.promise())throw new TypeError("Thenable self-resolution");u=n&&("object"==typeof n||"function"==typeof n)&&n.then,xe.isFunction(u)?i?u.call(n,o(a,t,p,i),o(a,t,d,i)):(a++,u.call(n,o(a,t,p,i),o(a,t,d,i),o(a,t,p,t.notifyWith))):(r!==p&&(s=void 0,l=[n]),(i||t.resolveWith)(s,l))}},c=i?u:function(){try{u()}catch(n){xe.Deferred.exceptionHook&&xe.Deferred.exceptionHook(n,c.stackTrace),e+1>=a&&(r!==d&&(s=void 0,l=[n]),t.rejectWith(s,l))}};e?c():(xe.Deferred.getStackHook&&(c.stackTrace=xe.Deferred.getStackHook()),n.setTimeout(c))}}var a=0;return xe.Deferred(function(n){t[0][3].add(o(0,n,xe.isFunction(i)?i:p,n.notifyWith)),t[1][3].add(o(0,n,xe.isFunction(e)?e:p)),t[2][3].add(o(0,n,xe.isFunction(r)?r:d))}).promise()},promise:function(e){return null!=e?xe.extend(e,i):i}},o={};return xe.each(t,function(e,n){var a=n[2],s=n[5];i[n[1]]=a.add,s&&a.add(function(){r=s},t[3-e][2].disable,t[0][2].lock),a.add(n[3].fire),o[n[0]]=function(){return o[n[0]+"With"](this===o?void 0:this,arguments),this},o[n[0]+"With"]=a.fireWith}),i.promise(o),e&&e.call(o,o),o},when:function(e){var t=arguments.length,n=t,r=Array(n),i=le.call(arguments),o=xe.Deferred(),a=function(e){return function(n){r[e]=this,i[e]=arguments.length>1?le.call(arguments):n,--t||o.resolveWith(r,i)}};if(t<=1&&(h(e,o.done(a(n)).resolve,o.reject,!t),"pending"===o.state()||xe.isFunction(i[n]&&i[n].then)))return o.then();for(;n--;)h(i[n],a(n),o.reject);return o.promise()}});var Me=/^(Eval|Internal|Range|Reference|Syntax|Type|URI)Error$/;xe.Deferred.exceptionHook=function(e,t){n.console&&n.console.warn&&e&&Me.test(e.name)&&n.console.warn("jQuery.Deferred exception: "+e.message,e.stack,t)},xe.readyException=function(e){n.setTimeout(function(){throw e})};var Re=xe.Deferred();xe.fn.ready=function(e){return Re.then(e).catch(function(e){xe.readyException(e)}),this},xe.extend({isReady:!1,readyWait:1,ready:function(e){(e===!0?--xe.readyWait:xe.isReady)||(xe.isReady=!0,e!==!0&&--xe.readyWait>0||Re.resolveWith(ae,[xe]))}}),xe.ready.then=Re.then,"complete"===ae.readyState||"loading"!==ae.readyState&&!ae.documentElement.doScroll?n.setTimeout(xe.ready):(ae.addEventListener("DOMContentLoaded",g),n.addEventListener("load",g));var Pe=function(e,t,n,r,i,o,a){var s=0,l=e.length,u=null==n;if("object"===xe.type(n)){i=!0;for(s in n)Pe(e,t,s,n[s],!0,o,a)}else if(void 0!==r&&(i=!0,xe.isFunction(r)||(a=!0),u&&(a?(t.call(e,r),t=null):(u=t,t=function(e,t,n){return u.call(xe(e),n)})),t))for(;s<l;s++)t(e[s],n,a?r:r.call(e[s],s,t(e[s],n)));return i?e:u?t.call(e):l?t(e[0],n):o},Ie=function(e){return 1===e.nodeType||9===e.nodeType||!+e.nodeType};m.uid=1,m.prototype={cache:function(e){var t=e[this.expando];return t||(t={},Ie(e)&&(e.nodeType?e[this.expando]=t:Object.defineProperty(e,this.expando,{value:t,configurable:!0}))),t},set:function(e,t,n){var r,i=this.cache(e);if("string"==typeof t)i[xe.camelCase(t)]=n;else for(r in t)i[xe.camelCase(r)]=t[r];return i},get:function(e,t){return void 0===t?this.cache(e):e[this.expando]&&e[this.expando][xe.camelCase(t)]},access:function(e,t,n){return void 0===t||t&&"string"==typeof t&&void 0===n?this.get(e,t):(this.set(e,t,n),void 0!==n?n:t)},remove:function(e,t){var n,r=e[this.expando];if(void 0!==r){if(void 0!==t){Array.isArray(t)?t=t.map(xe.camelCase):(t=xe.camelCase(t),t=t in r?[t]:t.match(Fe)||[]),n=t.length;for(;n--;)delete r[t[n]]}(void 0===t||xe.isEmptyObject(r))&&(e.nodeType?e[this.expando]=void 0:delete e[this.expando])}},hasData:function(e){var t=e[this.expando];return void 0!==t&&!xe.isEmptyObject(t)}};var We=new m,$e=new m,Be=/^(?:\{[\w\W]*\}|\[[\w\W]*\])$/,ze=/[A-Z]/g;xe.extend({hasData:function(e){return $e.hasData(e)||We.hasData(e)},data:function(e,t,n){return $e.access(e,t,n)},removeData:function(e,t){$e.remove(e,t)},_data:function(e,t,n){return We.access(e,t,n)},_removeData:function(e,t){We.remove(e,t)}}),xe.fn.extend({data:function(e,t){var n,r,i,o=this[0],a=o&&o.attributes;if(void 0===e){if(this.length&&(i=$e.get(o),1===o.nodeType&&!We.get(o,"hasDataAttrs"))){for(n=a.length;n--;)a[n]&&(r=a[n].name,0===r.indexOf("data-")&&(r=xe.camelCase(r.slice(5)),y(o,r,i[r])));We.set(o,"hasDataAttrs",!0)}return i}return"object"==typeof e?this.each(function(){$e.set(this,e)}):Pe(this,function(t){var n;if(o&&void 0===t){if(n=$e.get(o,e),void 0!==n)return n;if(n=y(o,e),void 0!==n)return n}else this.each(function(){$e.set(this,e,t)})},null,t,arguments.length>1,null,!0)},removeData:function(e){return this.each(function(){$e.remove(this,e)})}}),xe.extend({queue:function(e,t,n){var r;if(e)return t=(t||"fx")+"queue",r=We.get(e,t),n&&(!r||Array.isArray(n)?r=We.access(e,t,xe.makeArray(n)):r.push(n)),r||[]},dequeue:function(e,t){t=t||"fx";var n=xe.queue(e,t),r=n.length,i=n.shift(),o=xe._queueHooks(e,t),a=function(){xe.dequeue(e,t)};"inprogress"===i&&(i=n.shift(),r--),i&&("fx"===t&&n.unshift("inprogress"),delete o.stop,i.call(e,a,o)),!r&&o&&o.empty.fire()},_queueHooks:function(e,t){var n=t+"queueHooks";return We.get(e,n)||We.access(e,n,{empty:xe.Callbacks("once memory").add(function(){We.remove(e,[t+"queue",n])})})}}),xe.fn.extend({queue:function(e,t){var n=2;return"string"!=typeof e&&(t=e,e="fx",n--),arguments.length<n?xe.queue(this[0],e):void 0===t?this:this.each(function(){var n=xe.queue(this,e,t);xe._queueHooks(this,e),"fx"===e&&"inprogress"!==n[0]&&xe.dequeue(this,e)})},dequeue:function(e){return this.each(function(){xe.dequeue(this,e)})},clearQueue:function(e){return this.queue(e||"fx",[])},promise:function(e,t){var n,r=1,i=xe.Deferred(),o=this,a=this.length,s=function(){--r||i.resolveWith(o,[o])};for("string"!=typeof e&&(t=e,e=void 0),e=e||"fx";a--;)n=We.get(o[a],e+"queueHooks"),n&&n.empty&&(r++,n.empty.add(s));return s(),i.promise(t)}});var _e=/[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/.source,Xe=new RegExp("^(?:([+-])=|)("+_e+")([a-z%]*)$","i"),Ue=["Top","Right","Bottom","Left"],Ve=function(e,t){return e=t||e,"none"===e.style.display||""===e.style.display&&xe.contains(e.ownerDocument,e)&&"none"===xe.css(e,"display")},Ye=function(e,t,n,r){var i,o,a={};for(o in t)a[o]=e.style[o],e.style[o]=t[o];i=n.apply(e,r||[]);for(o in t)e.style[o]=a[o];return i},Ge={};xe.fn.extend({show:function(){return w(this,!0)},hide:function(){return w(this)},toggle:function(e){return"boolean"==typeof e?e?this.show():this.hide():this.each(function(){Ve(this)?xe(this).show():xe(this).hide()})}});var Qe=/^(?:checkbox|radio)$/i,Je=/<([a-z][^\/\0>\x20\t\r\n\f]+)/i,Ke=/^$|\/(?:java|ecma)script/i,Ze={option:[1,"<select multiple='multiple'>","</select>"],thead:[1,"<table>","</table>"],col:[2,"<table><colgroup>","</colgroup></table>"],tr:[2,"<table><tbody>","</tbody></table>"],td:[3,"<table><tbody><tr>","</tr></tbody></table>"],_default:[0,"",""]};Ze.optgroup=Ze.option,Ze.tbody=Ze.tfoot=Ze.colgroup=Ze.caption=Ze.thead,
-Ze.th=Ze.td;var et=/<|&#?\w+;/;!function(){var e=ae.createDocumentFragment(),t=e.appendChild(ae.createElement("div")),n=ae.createElement("input");n.setAttribute("type","radio"),n.setAttribute("checked","checked"),n.setAttribute("name","t"),t.appendChild(n),ve.checkClone=t.cloneNode(!0).cloneNode(!0).lastChild.checked,t.innerHTML="<textarea>x</textarea>",ve.noCloneChecked=!!t.cloneNode(!0).lastChild.defaultValue}();var tt=ae.documentElement,nt=/^key/,rt=/^(?:mouse|pointer|contextmenu|drag|drop)|click/,it=/^([^.]*)(?:\.(.+)|)/;xe.event={global:{},add:function(e,t,n,r,i){var o,a,s,l,u,c,f,p,d,h,g,m=We.get(e);if(m)for(n.handler&&(o=n,n=o.handler,i=o.selector),i&&xe.find.matchesSelector(tt,i),n.guid||(n.guid=xe.guid++),(l=m.events)||(l=m.events={}),(a=m.handle)||(a=m.handle=function(t){return"undefined"!=typeof xe&&xe.event.triggered!==t.type?xe.event.dispatch.apply(e,arguments):void 0}),t=(t||"").match(Fe)||[""],u=t.length;u--;)s=it.exec(t[u])||[],d=g=s[1],h=(s[2]||"").split(".").sort(),d&&(f=xe.event.special[d]||{},d=(i?f.delegateType:f.bindType)||d,f=xe.event.special[d]||{},c=xe.extend({type:d,origType:g,data:r,handler:n,guid:n.guid,selector:i,needsContext:i&&xe.expr.match.needsContext.test(i),namespace:h.join(".")},o),(p=l[d])||(p=l[d]=[],p.delegateCount=0,f.setup&&f.setup.call(e,r,h,a)!==!1||e.addEventListener&&e.addEventListener(d,a)),f.add&&(f.add.call(e,c),c.handler.guid||(c.handler.guid=n.guid)),i?p.splice(p.delegateCount++,0,c):p.push(c),xe.event.global[d]=!0)},remove:function(e,t,n,r,i){var o,a,s,l,u,c,f,p,d,h,g,m=We.hasData(e)&&We.get(e);if(m&&(l=m.events)){for(t=(t||"").match(Fe)||[""],u=t.length;u--;)if(s=it.exec(t[u])||[],d=g=s[1],h=(s[2]||"").split(".").sort(),d){for(f=xe.event.special[d]||{},d=(r?f.delegateType:f.bindType)||d,p=l[d]||[],s=s[2]&&new RegExp("(^|\\.)"+h.join("\\.(?:.*\\.|)")+"(\\.|$)"),a=o=p.length;o--;)c=p[o],!i&&g!==c.origType||n&&n.guid!==c.guid||s&&!s.test(c.namespace)||r&&r!==c.selector&&("**"!==r||!c.selector)||(p.splice(o,1),c.selector&&p.delegateCount--,f.remove&&f.remove.call(e,c));a&&!p.length&&(f.teardown&&f.teardown.call(e,h,m.handle)!==!1||xe.removeEvent(e,d,m.handle),delete l[d])}else for(d in l)xe.event.remove(e,d+t[u],n,r,!0);xe.isEmptyObject(l)&&We.remove(e,"handle events")}},dispatch:function(e){var t,n,r,i,o,a,s=xe.event.fix(e),l=new Array(arguments.length),u=(We.get(this,"events")||{})[s.type]||[],c=xe.event.special[s.type]||{};for(l[0]=s,t=1;t<arguments.length;t++)l[t]=arguments[t];if(s.delegateTarget=this,!c.preDispatch||c.preDispatch.call(this,s)!==!1){for(a=xe.event.handlers.call(this,s,u),t=0;(i=a[t++])&&!s.isPropagationStopped();)for(s.currentTarget=i.elem,n=0;(o=i.handlers[n++])&&!s.isImmediatePropagationStopped();)s.rnamespace&&!s.rnamespace.test(o.namespace)||(s.handleObj=o,s.data=o.data,r=((xe.event.special[o.origType]||{}).handle||o.handler).apply(i.elem,l),void 0!==r&&(s.result=r)===!1&&(s.preventDefault(),s.stopPropagation()));return c.postDispatch&&c.postDispatch.call(this,s),s.result}},handlers:function(e,t){var n,r,i,o,a,s=[],l=t.delegateCount,u=e.target;if(l&&u.nodeType&&!("click"===e.type&&e.button>=1))for(;u!==this;u=u.parentNode||this)if(1===u.nodeType&&("click"!==e.type||u.disabled!==!0)){for(o=[],a={},n=0;n<l;n++)r=t[n],i=r.selector+" ",void 0===a[i]&&(a[i]=r.needsContext?xe(i,this).index(u)>-1:xe.find(i,this,null,[u]).length),a[i]&&o.push(r);o.length&&s.push({elem:u,handlers:o})}return u=this,l<t.length&&s.push({elem:u,handlers:t.slice(l)}),s},addProp:function(e,t){Object.defineProperty(xe.Event.prototype,e,{enumerable:!0,configurable:!0,get:xe.isFunction(t)?function(){if(this.originalEvent)return t(this.originalEvent)}:function(){if(this.originalEvent)return this.originalEvent[e]},set:function(t){Object.defineProperty(this,e,{enumerable:!0,configurable:!0,writable:!0,value:t})}})},fix:function(e){return e[xe.expando]?e:new xe.Event(e)},special:{load:{noBubble:!0},focus:{trigger:function(){if(this!==A()&&this.focus)return this.focus(),!1},delegateType:"focusin"},blur:{trigger:function(){if(this===A()&&this.blur)return this.blur(),!1},delegateType:"focusout"},click:{trigger:function(){if("checkbox"===this.type&&this.click&&l(this,"input"))return this.click(),!1},_default:function(e){return l(e.target,"a")}},beforeunload:{postDispatch:function(e){void 0!==e.result&&e.originalEvent&&(e.originalEvent.returnValue=e.result)}}}},xe.removeEvent=function(e,t,n){e.removeEventListener&&e.removeEventListener(t,n)},xe.Event=function(e,t){return this instanceof xe.Event?(e&&e.type?(this.originalEvent=e,this.type=e.type,this.isDefaultPrevented=e.defaultPrevented||void 0===e.defaultPrevented&&e.returnValue===!1?k:S,this.target=e.target&&3===e.target.nodeType?e.target.parentNode:e.target,this.currentTarget=e.currentTarget,this.relatedTarget=e.relatedTarget):this.type=e,t&&xe.extend(this,t),this.timeStamp=e&&e.timeStamp||xe.now(),void(this[xe.expando]=!0)):new xe.Event(e,t)},xe.Event.prototype={constructor:xe.Event,isDefaultPrevented:S,isPropagationStopped:S,isImmediatePropagationStopped:S,isSimulated:!1,preventDefault:function(){var e=this.originalEvent;this.isDefaultPrevented=k,e&&!this.isSimulated&&e.preventDefault()},stopPropagation:function(){var e=this.originalEvent;this.isPropagationStopped=k,e&&!this.isSimulated&&e.stopPropagation()},stopImmediatePropagation:function(){var e=this.originalEvent;this.isImmediatePropagationStopped=k,e&&!this.isSimulated&&e.stopImmediatePropagation(),this.stopPropagation()}},xe.each({altKey:!0,bubbles:!0,cancelable:!0,changedTouches:!0,ctrlKey:!0,detail:!0,eventPhase:!0,metaKey:!0,pageX:!0,pageY:!0,shiftKey:!0,view:!0,char:!0,charCode:!0,key:!0,keyCode:!0,button:!0,buttons:!0,clientX:!0,clientY:!0,offsetX:!0,offsetY:!0,pointerId:!0,pointerType:!0,screenX:!0,screenY:!0,targetTouches:!0,toElement:!0,touches:!0,which:function(e){var t=e.button;return null==e.which&&nt.test(e.type)?null!=e.charCode?e.charCode:e.keyCode:!e.which&&void 0!==t&&rt.test(e.type)?1&t?1:2&t?3:4&t?2:0:e.which}},xe.event.addProp),xe.each({mouseenter:"mouseover",mouseleave:"mouseout",pointerenter:"pointerover",pointerleave:"pointerout"},function(e,t){xe.event.special[e]={delegateType:t,bindType:t,handle:function(e){var n,r=this,i=e.relatedTarget,o=e.handleObj;return i&&(i===r||xe.contains(r,i))||(e.type=o.origType,n=o.handler.apply(this,arguments),e.type=t),n}}}),xe.fn.extend({on:function(e,t,n,r){return N(this,e,t,n,r)},one:function(e,t,n,r){return N(this,e,t,n,r,1)},off:function(e,t,n){var r,i;if(e&&e.preventDefault&&e.handleObj)return r=e.handleObj,xe(e.delegateTarget).off(r.namespace?r.origType+"."+r.namespace:r.origType,r.selector,r.handler),this;if("object"==typeof e){for(i in e)this.off(i,t,e[i]);return this}return t!==!1&&"function"!=typeof t||(n=t,t=void 0),n===!1&&(n=S),this.each(function(){xe.event.remove(this,e,n,t)})}});var ot=/<(?!area|br|col|embed|hr|img|input|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi,at=/<script|<style|<link/i,st=/checked\s*(?:[^=]|=\s*.checked.)/i,lt=/^true\/(.*)/,ut=/^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;xe.extend({htmlPrefilter:function(e){return e.replace(ot,"<$1></$2>")},clone:function(e,t,n){var r,i,o,a,s=e.cloneNode(!0),l=xe.contains(e.ownerDocument,e);if(!(ve.noCloneChecked||1!==e.nodeType&&11!==e.nodeType||xe.isXMLDoc(e)))for(a=T(s),o=T(e),r=0,i=o.length;r<i;r++)H(o[r],a[r]);if(t)if(n)for(o=o||T(e),a=a||T(s),r=0,i=o.length;r<i;r++)L(o[r],a[r]);else L(e,s);return a=T(s,"script"),a.length>0&&C(a,!l&&T(e,"script")),s},cleanData:function(e){for(var t,n,r,i=xe.event.special,o=0;void 0!==(n=e[o]);o++)if(Ie(n)){if(t=n[We.expando]){if(t.events)for(r in t.events)i[r]?xe.event.remove(n,r):xe.removeEvent(n,r,t.handle);n[We.expando]=void 0}n[$e.expando]&&(n[$e.expando]=void 0)}}}),xe.fn.extend({detach:function(e){return F(this,e,!0)},remove:function(e){return F(this,e)},text:function(e){return Pe(this,function(e){return void 0===e?xe.text(this):this.empty().each(function(){1!==this.nodeType&&11!==this.nodeType&&9!==this.nodeType||(this.textContent=e)})},null,e,arguments.length)},append:function(){return O(this,arguments,function(e){if(1===this.nodeType||11===this.nodeType||9===this.nodeType){var t=D(this,e);t.appendChild(e)}})},prepend:function(){return O(this,arguments,function(e){if(1===this.nodeType||11===this.nodeType||9===this.nodeType){var t=D(this,e);t.insertBefore(e,t.firstChild)}})},before:function(){return O(this,arguments,function(e){this.parentNode&&this.parentNode.insertBefore(e,this)})},after:function(){return O(this,arguments,function(e){this.parentNode&&this.parentNode.insertBefore(e,this.nextSibling)})},empty:function(){for(var e,t=0;null!=(e=this[t]);t++)1===e.nodeType&&(xe.cleanData(T(e,!1)),e.textContent="");return this},clone:function(e,t){return e=null!=e&&e,t=null==t?e:t,this.map(function(){return xe.clone(this,e,t)})},html:function(e){return Pe(this,function(e){var t=this[0]||{},n=0,r=this.length;if(void 0===e&&1===t.nodeType)return t.innerHTML;if("string"==typeof e&&!at.test(e)&&!Ze[(Je.exec(e)||["",""])[1].toLowerCase()]){e=xe.htmlPrefilter(e);try{for(;n<r;n++)t=this[n]||{},1===t.nodeType&&(xe.cleanData(T(t,!1)),t.innerHTML=e);t=0}catch(e){}}t&&this.empty().append(e)},null,e,arguments.length)},replaceWith:function(){var e=[];return O(this,arguments,function(t){var n=this.parentNode;xe.inArray(this,e)<0&&(xe.cleanData(T(this)),n&&n.replaceChild(t,this))},e)}}),xe.each({appendTo:"append",prependTo:"prepend",insertBefore:"before",insertAfter:"after",replaceAll:"replaceWith"},function(e,t){xe.fn[e]=function(e){for(var n,r=[],i=xe(e),o=i.length-1,a=0;a<=o;a++)n=a===o?this:this.clone(!0),xe(i[a])[t](n),ce.apply(r,n.get());return this.pushStack(r)}});var ct=/^margin/,ft=new RegExp("^("+_e+")(?!px)[a-z%]+$","i"),pt=function(e){var t=e.ownerDocument.defaultView;return t&&t.opener||(t=n),t.getComputedStyle(e)};!function(){function e(){if(s){s.style.cssText="box-sizing:border-box;position:relative;display:block;margin:auto;border:1px;padding:1px;top:1%;width:50%",s.innerHTML="",tt.appendChild(a);var e=n.getComputedStyle(s);t="1%"!==e.top,o="2px"===e.marginLeft,r="4px"===e.width,s.style.marginRight="50%",i="4px"===e.marginRight,tt.removeChild(a),s=null}}var t,r,i,o,a=ae.createElement("div"),s=ae.createElement("div");s.style&&(s.style.backgroundClip="content-box",s.cloneNode(!0).style.backgroundClip="",ve.clearCloneStyle="content-box"===s.style.backgroundClip,a.style.cssText="border:0;width:8px;height:0;top:0;left:-9999px;padding:0;margin-top:1px;position:absolute",a.appendChild(s),xe.extend(ve,{pixelPosition:function(){return e(),t},boxSizingReliable:function(){return e(),r},pixelMarginRight:function(){return e(),i},reliableMarginLeft:function(){return e(),o}}))}();var dt=/^(none|table(?!-c[ea]).+)/,ht=/^--/,gt={position:"absolute",visibility:"hidden",display:"block"},mt={letterSpacing:"0",fontWeight:"400"},vt=["Webkit","Moz","ms"],yt=ae.createElement("div").style;xe.extend({cssHooks:{opacity:{get:function(e,t){if(t){var n=M(e,"opacity");return""===n?"1":n}}}},cssNumber:{animationIterationCount:!0,columnCount:!0,fillOpacity:!0,flexGrow:!0,flexShrink:!0,fontWeight:!0,lineHeight:!0,opacity:!0,order:!0,orphans:!0,widows:!0,zIndex:!0,zoom:!0},cssProps:{float:"cssFloat"},style:function(e,t,n,r){if(e&&3!==e.nodeType&&8!==e.nodeType&&e.style){var i,o,a,s=xe.camelCase(t),l=ht.test(t),u=e.style;return l||(t=I(s)),a=xe.cssHooks[t]||xe.cssHooks[s],void 0===n?a&&"get"in a&&void 0!==(i=a.get(e,!1,r))?i:u[t]:(o=typeof n,"string"===o&&(i=Xe.exec(n))&&i[1]&&(n=x(e,t,i),o="number"),null!=n&&n===n&&("number"===o&&(n+=i&&i[3]||(xe.cssNumber[s]?"":"px")),ve.clearCloneStyle||""!==n||0!==t.indexOf("background")||(u[t]="inherit"),a&&"set"in a&&void 0===(n=a.set(e,n,r))||(l?u.setProperty(t,n):u[t]=n)),void 0)}},css:function(e,t,n,r){var i,o,a,s=xe.camelCase(t),l=ht.test(t);return l||(t=I(s)),a=xe.cssHooks[t]||xe.cssHooks[s],a&&"get"in a&&(i=a.get(e,!0,n)),void 0===i&&(i=M(e,t,r)),"normal"===i&&t in mt&&(i=mt[t]),""===n||n?(o=parseFloat(i),n===!0||isFinite(o)?o||0:i):i}}),xe.each(["height","width"],function(e,t){xe.cssHooks[t]={get:function(e,n,r){if(n)return!dt.test(xe.css(e,"display"))||e.getClientRects().length&&e.getBoundingClientRect().width?B(e,t,r):Ye(e,gt,function(){return B(e,t,r)})},set:function(e,n,r){var i,o=r&&pt(e),a=r&&$(e,t,r,"border-box"===xe.css(e,"boxSizing",!1,o),o);return a&&(i=Xe.exec(n))&&"px"!==(i[3]||"px")&&(e.style[t]=n,n=xe.css(e,t)),W(e,n,a)}}}),xe.cssHooks.marginLeft=R(ve.reliableMarginLeft,function(e,t){if(t)return(parseFloat(M(e,"marginLeft"))||e.getBoundingClientRect().left-Ye(e,{marginLeft:0},function(){return e.getBoundingClientRect().left}))+"px"}),xe.each({margin:"",padding:"",border:"Width"},function(e,t){xe.cssHooks[e+t]={expand:function(n){for(var r=0,i={},o="string"==typeof n?n.split(" "):[n];r<4;r++)i[e+Ue[r]+t]=o[r]||o[r-2]||o[0];return i}},ct.test(e)||(xe.cssHooks[e+t].set=W)}),xe.fn.extend({css:function(e,t){return Pe(this,function(e,t,n){var r,i,o={},a=0;if(Array.isArray(t)){for(r=pt(e),i=t.length;a<i;a++)o[t[a]]=xe.css(e,t[a],!1,r);return o}return void 0!==n?xe.style(e,t,n):xe.css(e,t)},e,t,arguments.length>1)}}),xe.Tween=z,z.prototype={constructor:z,init:function(e,t,n,r,i,o){this.elem=e,this.prop=n,this.easing=i||xe.easing._default,this.options=t,this.start=this.now=this.cur(),this.end=r,this.unit=o||(xe.cssNumber[n]?"":"px")},cur:function(){var e=z.propHooks[this.prop];return e&&e.get?e.get(this):z.propHooks._default.get(this)},run:function(e){var t,n=z.propHooks[this.prop];return this.options.duration?this.pos=t=xe.easing[this.easing](e,this.options.duration*e,0,1,this.options.duration):this.pos=t=e,this.now=(this.end-this.start)*t+this.start,this.options.step&&this.options.step.call(this.elem,this.now,this),n&&n.set?n.set(this):z.propHooks._default.set(this),this}},z.prototype.init.prototype=z.prototype,z.propHooks={_default:{get:function(e){var t;return 1!==e.elem.nodeType||null!=e.elem[e.prop]&&null==e.elem.style[e.prop]?e.elem[e.prop]:(t=xe.css(e.elem,e.prop,""),t&&"auto"!==t?t:0)},set:function(e){xe.fx.step[e.prop]?xe.fx.step[e.prop](e):1!==e.elem.nodeType||null==e.elem.style[xe.cssProps[e.prop]]&&!xe.cssHooks[e.prop]?e.elem[e.prop]=e.now:xe.style(e.elem,e.prop,e.now+e.unit)}}},z.propHooks.scrollTop=z.propHooks.scrollLeft={set:function(e){e.elem.nodeType&&e.elem.parentNode&&(e.elem[e.prop]=e.now)}},xe.easing={linear:function(e){return e},swing:function(e){return.5-Math.cos(e*Math.PI)/2},_default:"swing"},xe.fx=z.prototype.init,xe.fx.step={};var xt,bt,wt=/^(?:toggle|show|hide)$/,Tt=/queueHooks$/;xe.Animation=xe.extend(Q,{tweeners:{"*":[function(e,t){var n=this.createTween(e,t);return x(n.elem,e,Xe.exec(t),n),n}]},tweener:function(e,t){xe.isFunction(e)?(t=e,e=["*"]):e=e.match(Fe);for(var n,r=0,i=e.length;r<i;r++)n=e[r],Q.tweeners[n]=Q.tweeners[n]||[],Q.tweeners[n].unshift(t)},prefilters:[Y],prefilter:function(e,t){t?Q.prefilters.unshift(e):Q.prefilters.push(e)}}),xe.speed=function(e,t,n){var r=e&&"object"==typeof e?xe.extend({},e):{complete:n||!n&&t||xe.isFunction(e)&&e,duration:e,easing:n&&t||t&&!xe.isFunction(t)&&t};return xe.fx.off?r.duration=0:"number"!=typeof r.duration&&(r.duration in xe.fx.speeds?r.duration=xe.fx.speeds[r.duration]:r.duration=xe.fx.speeds._default),null!=r.queue&&r.queue!==!0||(r.queue="fx"),r.old=r.complete,r.complete=function(){xe.isFunction(r.old)&&r.old.call(this),r.queue&&xe.dequeue(this,r.queue)},r},xe.fn.extend({fadeTo:function(e,t,n,r){return this.filter(Ve).css("opacity",0).show().end().animate({opacity:t},e,n,r)},animate:function(e,t,n,r){var i=xe.isEmptyObject(e),o=xe.speed(t,n,r),a=function(){var t=Q(this,xe.extend({},e),o);(i||We.get(this,"finish"))&&t.stop(!0)};return a.finish=a,i||o.queue===!1?this.each(a):this.queue(o.queue,a)},stop:function(e,t,n){var r=function(e){var t=e.stop;delete e.stop,t(n)};return"string"!=typeof e&&(n=t,t=e,e=void 0),t&&e!==!1&&this.queue(e||"fx",[]),this.each(function(){var t=!0,i=null!=e&&e+"queueHooks",o=xe.timers,a=We.get(this);if(i)a[i]&&a[i].stop&&r(a[i]);else for(i in a)a[i]&&a[i].stop&&Tt.test(i)&&r(a[i]);for(i=o.length;i--;)o[i].elem!==this||null!=e&&o[i].queue!==e||(o[i].anim.stop(n),t=!1,o.splice(i,1));!t&&n||xe.dequeue(this,e)})},finish:function(e){return e!==!1&&(e=e||"fx"),this.each(function(){var t,n=We.get(this),r=n[e+"queue"],i=n[e+"queueHooks"],o=xe.timers,a=r?r.length:0;for(n.finish=!0,xe.queue(this,e,[]),i&&i.stop&&i.stop.call(this,!0),t=o.length;t--;)o[t].elem===this&&o[t].queue===e&&(o[t].anim.stop(!0),o.splice(t,1));for(t=0;t<a;t++)r[t]&&r[t].finish&&r[t].finish.call(this);delete n.finish})}}),xe.each(["toggle","show","hide"],function(e,t){var n=xe.fn[t];xe.fn[t]=function(e,r,i){return null==e||"boolean"==typeof e?n.apply(this,arguments):this.animate(U(t,!0),e,r,i)}}),xe.each({slideDown:U("show"),slideUp:U("hide"),slideToggle:U("toggle"),fadeIn:{opacity:"show"},fadeOut:{opacity:"hide"},fadeToggle:{opacity:"toggle"}},function(e,t){xe.fn[e]=function(e,n,r){return this.animate(t,e,n,r)}}),xe.timers=[],xe.fx.tick=function(){var e,t=0,n=xe.timers;for(xt=xe.now();t<n.length;t++)e=n[t],e()||n[t]!==e||n.splice(t--,1);n.length||xe.fx.stop(),xt=void 0},xe.fx.timer=function(e){xe.timers.push(e),xe.fx.start()},xe.fx.interval=13,xe.fx.start=function(){bt||(bt=!0,_())},xe.fx.stop=function(){bt=null},xe.fx.speeds={slow:600,fast:200,_default:400},xe.fn.delay=function(e,t){return e=xe.fx?xe.fx.speeds[e]||e:e,t=t||"fx",this.queue(t,function(t,r){var i=n.setTimeout(t,e);r.stop=function(){n.clearTimeout(i)}})},function(){var e=ae.createElement("input"),t=ae.createElement("select"),n=t.appendChild(ae.createElement("option"));e.type="checkbox",ve.checkOn=""!==e.value,ve.optSelected=n.selected,e=ae.createElement("input"),e.value="t",e.type="radio",ve.radioValue="t"===e.value}();var Ct,Et=xe.expr.attrHandle;xe.fn.extend({attr:function(e,t){return Pe(this,xe.attr,e,t,arguments.length>1)},removeAttr:function(e){return this.each(function(){xe.removeAttr(this,e)})}}),xe.extend({attr:function(e,t,n){var r,i,o=e.nodeType;if(3!==o&&8!==o&&2!==o)return"undefined"==typeof e.getAttribute?xe.prop(e,t,n):(1===o&&xe.isXMLDoc(e)||(i=xe.attrHooks[t.toLowerCase()]||(xe.expr.match.bool.test(t)?Ct:void 0)),void 0!==n?null===n?void xe.removeAttr(e,t):i&&"set"in i&&void 0!==(r=i.set(e,n,t))?r:(e.setAttribute(t,n+""),n):i&&"get"in i&&null!==(r=i.get(e,t))?r:(r=xe.find.attr(e,t),null==r?void 0:r))},attrHooks:{type:{set:function(e,t){if(!ve.radioValue&&"radio"===t&&l(e,"input")){var n=e.value;return e.setAttribute("type",t),n&&(e.value=n),t}}}},removeAttr:function(e,t){var n,r=0,i=t&&t.match(Fe);if(i&&1===e.nodeType)for(;n=i[r++];)e.removeAttribute(n)}}),Ct={set:function(e,t,n){return t===!1?xe.removeAttr(e,n):e.setAttribute(n,n),n}},xe.each(xe.expr.match.bool.source.match(/\w+/g),function(e,t){var n=Et[t]||xe.find.attr;Et[t]=function(e,t,r){var i,o,a=t.toLowerCase();return r||(o=Et[a],Et[a]=i,i=null!=n(e,t,r)?a:null,Et[a]=o),i}});var kt=/^(?:input|select|textarea|button)$/i,St=/^(?:a|area)$/i;xe.fn.extend({prop:function(e,t){return Pe(this,xe.prop,e,t,arguments.length>1)},removeProp:function(e){return this.each(function(){delete this[xe.propFix[e]||e]})}}),xe.extend({prop:function(e,t,n){var r,i,o=e.nodeType;if(3!==o&&8!==o&&2!==o)return 1===o&&xe.isXMLDoc(e)||(t=xe.propFix[t]||t,i=xe.propHooks[t]),void 0!==n?i&&"set"in i&&void 0!==(r=i.set(e,n,t))?r:e[t]=n:i&&"get"in i&&null!==(r=i.get(e,t))?r:e[t]},propHooks:{tabIndex:{get:function(e){var t=xe.find.attr(e,"tabindex");return t?parseInt(t,10):kt.test(e.nodeName)||St.test(e.nodeName)&&e.href?0:-1}}},propFix:{for:"htmlFor",class:"className"}}),ve.optSelected||(xe.propHooks.selected={get:function(e){var t=e.parentNode;return t&&t.parentNode&&t.parentNode.selectedIndex,null},set:function(e){var t=e.parentNode;t&&(t.selectedIndex,t.parentNode&&t.parentNode.selectedIndex)}}),xe.each(["tabIndex","readOnly","maxLength","cellSpacing","cellPadding","rowSpan","colSpan","useMap","frameBorder","contentEditable"],function(){xe.propFix[this.toLowerCase()]=this}),xe.fn.extend({addClass:function(e){var t,n,r,i,o,a,s,l=0;if(xe.isFunction(e))return this.each(function(t){xe(this).addClass(e.call(this,t,K(this)))});if("string"==typeof e&&e)for(t=e.match(Fe)||[];n=this[l++];)if(i=K(n),r=1===n.nodeType&&" "+J(i)+" "){for(a=0;o=t[a++];)r.indexOf(" "+o+" ")<0&&(r+=o+" ");s=J(r),i!==s&&n.setAttribute("class",s)}return this},removeClass:function(e){var t,n,r,i,o,a,s,l=0;if(xe.isFunction(e))return this.each(function(t){xe(this).removeClass(e.call(this,t,K(this)))});if(!arguments.length)return this.attr("class","");if("string"==typeof e&&e)for(t=e.match(Fe)||[];n=this[l++];)if(i=K(n),r=1===n.nodeType&&" "+J(i)+" "){for(a=0;o=t[a++];)for(;r.indexOf(" "+o+" ")>-1;)r=r.replace(" "+o+" "," ");s=J(r),i!==s&&n.setAttribute("class",s)}return this},toggleClass:function(e,t){var n=typeof e;return"boolean"==typeof t&&"string"===n?t?this.addClass(e):this.removeClass(e):xe.isFunction(e)?this.each(function(n){xe(this).toggleClass(e.call(this,n,K(this),t),t)}):this.each(function(){var t,r,i,o;if("string"===n)for(r=0,i=xe(this),o=e.match(Fe)||[];t=o[r++];)i.hasClass(t)?i.removeClass(t):i.addClass(t);else void 0!==e&&"boolean"!==n||(t=K(this),t&&We.set(this,"__className__",t),this.setAttribute&&this.setAttribute("class",t||e===!1?"":We.get(this,"__className__")||""))})},hasClass:function(e){var t,n,r=0;for(t=" "+e+" ";n=this[r++];)if(1===n.nodeType&&(" "+J(K(n))+" ").indexOf(t)>-1)return!0;return!1}});var At=/\r/g;xe.fn.extend({val:function(e){var t,n,r,i=this[0];{if(arguments.length)return r=xe.isFunction(e),this.each(function(n){var i;1===this.nodeType&&(i=r?e.call(this,n,xe(this).val()):e,null==i?i="":"number"==typeof i?i+="":Array.isArray(i)&&(i=xe.map(i,function(e){return null==e?"":e+""})),t=xe.valHooks[this.type]||xe.valHooks[this.nodeName.toLowerCase()],t&&"set"in t&&void 0!==t.set(this,i,"value")||(this.value=i))});if(i)return t=xe.valHooks[i.type]||xe.valHooks[i.nodeName.toLowerCase()],t&&"get"in t&&void 0!==(n=t.get(i,"value"))?n:(n=i.value,"string"==typeof n?n.replace(At,""):null==n?"":n)}}}),xe.extend({valHooks:{option:{get:function(e){var t=xe.find.attr(e,"value");return null!=t?t:J(xe.text(e))}},select:{get:function(e){var t,n,r,i=e.options,o=e.selectedIndex,a="select-one"===e.type,s=a?null:[],u=a?o+1:i.length;for(r=o<0?u:a?o:0;r<u;r++)if(n=i[r],(n.selected||r===o)&&!n.disabled&&(!n.parentNode.disabled||!l(n.parentNode,"optgroup"))){if(t=xe(n).val(),a)return t;s.push(t)}return s},set:function(e,t){for(var n,r,i=e.options,o=xe.makeArray(t),a=i.length;a--;)r=i[a],(r.selected=xe.inArray(xe.valHooks.option.get(r),o)>-1)&&(n=!0);return n||(e.selectedIndex=-1),o}}}}),xe.each(["radio","checkbox"],function(){xe.valHooks[this]={set:function(e,t){if(Array.isArray(t))return e.checked=xe.inArray(xe(e).val(),t)>-1}},ve.checkOn||(xe.valHooks[this].get=function(e){return null===e.getAttribute("value")?"on":e.value})});var Nt=/^(?:focusinfocus|focusoutblur)$/;xe.extend(xe.event,{trigger:function(e,t,r,i){var o,a,s,l,u,c,f,p=[r||ae],d=he.call(e,"type")?e.type:e,h=he.call(e,"namespace")?e.namespace.split("."):[];if(a=s=r=r||ae,3!==r.nodeType&&8!==r.nodeType&&!Nt.test(d+xe.event.triggered)&&(d.indexOf(".")>-1&&(h=d.split("."),d=h.shift(),h.sort()),u=d.indexOf(":")<0&&"on"+d,e=e[xe.expando]?e:new xe.Event(d,"object"==typeof e&&e),e.isTrigger=i?2:3,e.namespace=h.join("."),e.rnamespace=e.namespace?new RegExp("(^|\\.)"+h.join("\\.(?:.*\\.|)")+"(\\.|$)"):null,e.result=void 0,e.target||(e.target=r),t=null==t?[e]:xe.makeArray(t,[e]),f=xe.event.special[d]||{},i||!f.trigger||f.trigger.apply(r,t)!==!1)){if(!i&&!f.noBubble&&!xe.isWindow(r)){for(l=f.delegateType||d,Nt.test(l+d)||(a=a.parentNode);a;a=a.parentNode)p.push(a),s=a;s===(r.ownerDocument||ae)&&p.push(s.defaultView||s.parentWindow||n)}for(o=0;(a=p[o++])&&!e.isPropagationStopped();)e.type=o>1?l:f.bindType||d,c=(We.get(a,"events")||{})[e.type]&&We.get(a,"handle"),c&&c.apply(a,t),c=u&&a[u],c&&c.apply&&Ie(a)&&(e.result=c.apply(a,t),e.result===!1&&e.preventDefault());return e.type=d,i||e.isDefaultPrevented()||f._default&&f._default.apply(p.pop(),t)!==!1||!Ie(r)||u&&xe.isFunction(r[d])&&!xe.isWindow(r)&&(s=r[u],s&&(r[u]=null),xe.event.triggered=d,r[d](),xe.event.triggered=void 0,s&&(r[u]=s)),e.result}},simulate:function(e,t,n){var r=xe.extend(new xe.Event,n,{type:e,isSimulated:!0});xe.event.trigger(r,null,t)}}),xe.fn.extend({trigger:function(e,t){return this.each(function(){xe.event.trigger(e,t,this)})},triggerHandler:function(e,t){var n=this[0];if(n)return xe.event.trigger(e,t,n,!0)}}),xe.each("blur focus focusin focusout resize scroll click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup contextmenu".split(" "),function(e,t){xe.fn[t]=function(e,n){return arguments.length>0?this.on(t,null,e,n):this.trigger(t)}}),xe.fn.extend({hover:function(e,t){return this.mouseenter(e).mouseleave(t||e)}}),ve.focusin="onfocusin"in n,ve.focusin||xe.each({focus:"focusin",blur:"focusout"},function(e,t){var n=function(e){xe.event.simulate(t,e.target,xe.event.fix(e))};xe.event.special[t]={setup:function(){var r=this.ownerDocument||this,i=We.access(r,t);i||r.addEventListener(e,n,!0),We.access(r,t,(i||0)+1)},teardown:function(){var r=this.ownerDocument||this,i=We.access(r,t)-1;i?We.access(r,t,i):(r.removeEventListener(e,n,!0),We.remove(r,t))}}});var Dt=n.location,jt=xe.now(),qt=/\?/;xe.parseXML=function(e){var t;if(!e||"string"!=typeof e)return null;try{t=(new n.DOMParser).parseFromString(e,"text/xml")}catch(e){t=void 0}return t&&!t.getElementsByTagName("parsererror").length||xe.error("Invalid XML: "+e),t};var Lt=/\[\]$/,Ht=/\r?\n/g,Ot=/^(?:submit|button|image|reset|file)$/i,Ft=/^(?:input|select|textarea|keygen)/i;xe.param=function(e,t){var n,r=[],i=function(e,t){var n=xe.isFunction(t)?t():t;r[r.length]=encodeURIComponent(e)+"="+encodeURIComponent(null==n?"":n)};if(Array.isArray(e)||e.jquery&&!xe.isPlainObject(e))xe.each(e,function(){i(this.name,this.value)});else for(n in e)Z(n,e[n],t,i);return r.join("&")},xe.fn.extend({serialize:function(){return xe.param(this.serializeArray())},serializeArray:function(){return this.map(function(){var e=xe.prop(this,"elements");return e?xe.makeArray(e):this}).filter(function(){var e=this.type;return this.name&&!xe(this).is(":disabled")&&Ft.test(this.nodeName)&&!Ot.test(e)&&(this.checked||!Qe.test(e))}).map(function(e,t){var n=xe(this).val();return null==n?null:Array.isArray(n)?xe.map(n,function(e){return{name:t.name,value:e.replace(Ht,"\r\n")}}):{name:t.name,value:n.replace(Ht,"\r\n")}}).get()}});var Mt=/%20/g,Rt=/#.*$/,Pt=/([?&])_=[^&]*/,It=/^(.*?):[ \t]*([^\r\n]*)$/gm,Wt=/^(?:about|app|app-storage|.+-extension|file|res|widget):$/,$t=/^(?:GET|HEAD)$/,Bt=/^\/\//,zt={},_t={},Xt="*/".concat("*"),Ut=ae.createElement("a");Ut.href=Dt.href,xe.extend({active:0,lastModified:{},etag:{},ajaxSettings:{url:Dt.href,type:"GET",isLocal:Wt.test(Dt.protocol),global:!0,processData:!0,async:!0,contentType:"application/x-www-form-urlencoded; charset=UTF-8",accepts:{"*":Xt,text:"text/plain",html:"text/html",xml:"application/xml, text/xml",json:"application/json, text/javascript"},contents:{xml:/\bxml\b/,html:/\bhtml/,json:/\bjson\b/},responseFields:{xml:"responseXML",text:"responseText",json:"responseJSON"},converters:{"* text":String,"text html":!0,"text json":JSON.parse,"text xml":xe.parseXML},flatOptions:{url:!0,context:!0}},ajaxSetup:function(e,t){return t?ne(ne(e,xe.ajaxSettings),t):ne(xe.ajaxSettings,e)},ajaxPrefilter:ee(zt),ajaxTransport:ee(_t),ajax:function(e,t){function r(e,t,r,s){var u,p,d,b,w,T=t;c||(c=!0,l&&n.clearTimeout(l),i=void 0,a=s||"",C.readyState=e>0?4:0,u=e>=200&&e<300||304===e,r&&(b=re(h,C,r)),b=ie(h,b,C,u),u?(h.ifModified&&(w=C.getResponseHeader("Last-Modified"),w&&(xe.lastModified[o]=w),w=C.getResponseHeader("etag"),w&&(xe.etag[o]=w)),204===e||"HEAD"===h.type?T="nocontent":304===e?T="notmodified":(T=b.state,p=b.data,d=b.error,u=!d)):(d=T,!e&&T||(T="error",e<0&&(e=0))),C.status=e,C.statusText=(t||T)+"",u?v.resolveWith(g,[p,T,C]):v.rejectWith(g,[C,T,d]),C.statusCode(x),x=void 0,f&&m.trigger(u?"ajaxSuccess":"ajaxError",[C,h,u?p:d]),y.fireWith(g,[C,T]),f&&(m.trigger("ajaxComplete",[C,h]),--xe.active||xe.event.trigger("ajaxStop")))}"object"==typeof e&&(t=e,e=void 0),t=t||{};var i,o,a,s,l,u,c,f,p,d,h=xe.ajaxSetup({},t),g=h.context||h,m=h.context&&(g.nodeType||g.jquery)?xe(g):xe.event,v=xe.Deferred(),y=xe.Callbacks("once memory"),x=h.statusCode||{},b={},w={},T="canceled",C={readyState:0,getResponseHeader:function(e){var t;if(c){if(!s)for(s={};t=It.exec(a);)s[t[1].toLowerCase()]=t[2];t=s[e.toLowerCase()]}return null==t?null:t},getAllResponseHeaders:function(){return c?a:null},setRequestHeader:function(e,t){return null==c&&(e=w[e.toLowerCase()]=w[e.toLowerCase()]||e,b[e]=t),this},overrideMimeType:function(e){return null==c&&(h.mimeType=e),this},statusCode:function(e){var t;if(e)if(c)C.always(e[C.status]);else for(t in e)x[t]=[x[t],e[t]];return this},abort:function(e){var t=e||T;return i&&i.abort(t),r(0,t),this}};if(v.promise(C),h.url=((e||h.url||Dt.href)+"").replace(Bt,Dt.protocol+"//"),h.type=t.method||t.type||h.method||h.type,h.dataTypes=(h.dataType||"*").toLowerCase().match(Fe)||[""],null==h.crossDomain){u=ae.createElement("a");try{u.href=h.url,u.href=u.href,h.crossDomain=Ut.protocol+"//"+Ut.host!=u.protocol+"//"+u.host}catch(e){h.crossDomain=!0}}if(h.data&&h.processData&&"string"!=typeof h.data&&(h.data=xe.param(h.data,h.traditional)),te(zt,h,t,C),c)return C;f=xe.event&&h.global,f&&0===xe.active++&&xe.event.trigger("ajaxStart"),h.type=h.type.toUpperCase(),h.hasContent=!$t.test(h.type),o=h.url.replace(Rt,""),h.hasContent?h.data&&h.processData&&0===(h.contentType||"").indexOf("application/x-www-form-urlencoded")&&(h.data=h.data.replace(Mt,"+")):(d=h.url.slice(o.length),h.data&&(o+=(qt.test(o)?"&":"?")+h.data,delete h.data),h.cache===!1&&(o=o.replace(Pt,"$1"),d=(qt.test(o)?"&":"?")+"_="+jt++ +d),h.url=o+d),h.ifModified&&(xe.lastModified[o]&&C.setRequestHeader("If-Modified-Since",xe.lastModified[o]),xe.etag[o]&&C.setRequestHeader("If-None-Match",xe.etag[o])),(h.data&&h.hasContent&&h.contentType!==!1||t.contentType)&&C.setRequestHeader("Content-Type",h.contentType),C.setRequestHeader("Accept",h.dataTypes[0]&&h.accepts[h.dataTypes[0]]?h.accepts[h.dataTypes[0]]+("*"!==h.dataTypes[0]?", "+Xt+"; q=0.01":""):h.accepts["*"]);for(p in h.headers)C.setRequestHeader(p,h.headers[p]);if(h.beforeSend&&(h.beforeSend.call(g,C,h)===!1||c))return C.abort();if(T="abort",y.add(h.complete),C.done(h.success),C.fail(h.error),i=te(_t,h,t,C)){if(C.readyState=1,f&&m.trigger("ajaxSend",[C,h]),c)return C;h.async&&h.timeout>0&&(l=n.setTimeout(function(){C.abort("timeout")},h.timeout));try{c=!1,i.send(b,r)}catch(e){if(c)throw e;r(-1,e)}}else r(-1,"No Transport");return C},getJSON:function(e,t,n){return xe.get(e,t,n,"json")},getScript:function(e,t){return xe.get(e,void 0,t,"script")}}),xe.each(["get","post"],function(e,t){xe[t]=function(e,n,r,i){return xe.isFunction(n)&&(i=i||r,r=n,n=void 0),xe.ajax(xe.extend({url:e,type:t,dataType:i,data:n,success:r},xe.isPlainObject(e)&&e))}}),xe._evalUrl=function(e){return xe.ajax({url:e,type:"GET",dataType:"script",cache:!0,async:!1,global:!1,throws:!0})},xe.fn.extend({wrapAll:function(e){var t;return this[0]&&(xe.isFunction(e)&&(e=e.call(this[0])),t=xe(e,this[0].ownerDocument).eq(0).clone(!0),this[0].parentNode&&t.insertBefore(this[0]),t.map(function(){for(var e=this;e.firstElementChild;)e=e.firstElementChild;return e}).append(this)),this},wrapInner:function(e){return xe.isFunction(e)?this.each(function(t){xe(this).wrapInner(e.call(this,t))}):this.each(function(){var t=xe(this),n=t.contents();n.length?n.wrapAll(e):t.append(e)})},wrap:function(e){var t=xe.isFunction(e);return this.each(function(n){xe(this).wrapAll(t?e.call(this,n):e)})},unwrap:function(e){return this.parent(e).not("body").each(function(){xe(this).replaceWith(this.childNodes)}),this}}),xe.expr.pseudos.hidden=function(e){return!xe.expr.pseudos.visible(e)},xe.expr.pseudos.visible=function(e){return!!(e.offsetWidth||e.offsetHeight||e.getClientRects().length);
-},xe.ajaxSettings.xhr=function(){try{return new n.XMLHttpRequest}catch(e){}};var Vt={0:200,1223:204},Yt=xe.ajaxSettings.xhr();ve.cors=!!Yt&&"withCredentials"in Yt,ve.ajax=Yt=!!Yt,xe.ajaxTransport(function(e){var t,r;if(ve.cors||Yt&&!e.crossDomain)return{send:function(i,o){var a,s=e.xhr();if(s.open(e.type,e.url,e.async,e.username,e.password),e.xhrFields)for(a in e.xhrFields)s[a]=e.xhrFields[a];e.mimeType&&s.overrideMimeType&&s.overrideMimeType(e.mimeType),e.crossDomain||i["X-Requested-With"]||(i["X-Requested-With"]="XMLHttpRequest");for(a in i)s.setRequestHeader(a,i[a]);t=function(e){return function(){t&&(t=r=s.onload=s.onerror=s.onabort=s.onreadystatechange=null,"abort"===e?s.abort():"error"===e?"number"!=typeof s.status?o(0,"error"):o(s.status,s.statusText):o(Vt[s.status]||s.status,s.statusText,"text"!==(s.responseType||"text")||"string"!=typeof s.responseText?{binary:s.response}:{text:s.responseText},s.getAllResponseHeaders()))}},s.onload=t(),r=s.onerror=t("error"),void 0!==s.onabort?s.onabort=r:s.onreadystatechange=function(){4===s.readyState&&n.setTimeout(function(){t&&r()})},t=t("abort");try{s.send(e.hasContent&&e.data||null)}catch(e){if(t)throw e}},abort:function(){t&&t()}}}),xe.ajaxPrefilter(function(e){e.crossDomain&&(e.contents.script=!1)}),xe.ajaxSetup({accepts:{script:"text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"},contents:{script:/\b(?:java|ecma)script\b/},converters:{"text script":function(e){return xe.globalEval(e),e}}}),xe.ajaxPrefilter("script",function(e){void 0===e.cache&&(e.cache=!1),e.crossDomain&&(e.type="GET")}),xe.ajaxTransport("script",function(e){if(e.crossDomain){var t,n;return{send:function(r,i){t=xe("<script>").prop({charset:e.scriptCharset,src:e.url}).on("load error",n=function(e){t.remove(),n=null,e&&i("error"===e.type?404:200,e.type)}),ae.head.appendChild(t[0])},abort:function(){n&&n()}}}});var Gt=[],Qt=/(=)\?(?=&|$)|\?\?/;xe.ajaxSetup({jsonp:"callback",jsonpCallback:function(){var e=Gt.pop()||xe.expando+"_"+jt++;return this[e]=!0,e}}),xe.ajaxPrefilter("json jsonp",function(e,t,r){var i,o,a,s=e.jsonp!==!1&&(Qt.test(e.url)?"url":"string"==typeof e.data&&0===(e.contentType||"").indexOf("application/x-www-form-urlencoded")&&Qt.test(e.data)&&"data");if(s||"jsonp"===e.dataTypes[0])return i=e.jsonpCallback=xe.isFunction(e.jsonpCallback)?e.jsonpCallback():e.jsonpCallback,s?e[s]=e[s].replace(Qt,"$1"+i):e.jsonp!==!1&&(e.url+=(qt.test(e.url)?"&":"?")+e.jsonp+"="+i),e.converters["script json"]=function(){return a||xe.error(i+" was not called"),a[0]},e.dataTypes[0]="json",o=n[i],n[i]=function(){a=arguments},r.always(function(){void 0===o?xe(n).removeProp(i):n[i]=o,e[i]&&(e.jsonpCallback=t.jsonpCallback,Gt.push(i)),a&&xe.isFunction(o)&&o(a[0]),a=o=void 0}),"script"}),ve.createHTMLDocument=function(){var e=ae.implementation.createHTMLDocument("").body;return e.innerHTML="<form></form><form></form>",2===e.childNodes.length}(),xe.parseHTML=function(e,t,n){if("string"!=typeof e)return[];"boolean"==typeof t&&(n=t,t=!1);var r,i,o;return t||(ve.createHTMLDocument?(t=ae.implementation.createHTMLDocument(""),r=t.createElement("base"),r.href=ae.location.href,t.head.appendChild(r)):t=ae),i=Ne.exec(e),o=!n&&[],i?[t.createElement(i[1])]:(i=E([e],t,o),o&&o.length&&xe(o).remove(),xe.merge([],i.childNodes))},xe.fn.load=function(e,t,n){var r,i,o,a=this,s=e.indexOf(" ");return s>-1&&(r=J(e.slice(s)),e=e.slice(0,s)),xe.isFunction(t)?(n=t,t=void 0):t&&"object"==typeof t&&(i="POST"),a.length>0&&xe.ajax({url:e,type:i||"GET",dataType:"html",data:t}).done(function(e){o=arguments,a.html(r?xe("<div>").append(xe.parseHTML(e)).find(r):e)}).always(n&&function(e,t){a.each(function(){n.apply(this,o||[e.responseText,t,e])})}),this},xe.each(["ajaxStart","ajaxStop","ajaxComplete","ajaxError","ajaxSuccess","ajaxSend"],function(e,t){xe.fn[t]=function(e){return this.on(t,e)}}),xe.expr.pseudos.animated=function(e){return xe.grep(xe.timers,function(t){return e===t.elem}).length},xe.offset={setOffset:function(e,t,n){var r,i,o,a,s,l,u,c=xe.css(e,"position"),f=xe(e),p={};"static"===c&&(e.style.position="relative"),s=f.offset(),o=xe.css(e,"top"),l=xe.css(e,"left"),u=("absolute"===c||"fixed"===c)&&(o+l).indexOf("auto")>-1,u?(r=f.position(),a=r.top,i=r.left):(a=parseFloat(o)||0,i=parseFloat(l)||0),xe.isFunction(t)&&(t=t.call(e,n,xe.extend({},s))),null!=t.top&&(p.top=t.top-s.top+a),null!=t.left&&(p.left=t.left-s.left+i),"using"in t?t.using.call(e,p):f.css(p)}},xe.fn.extend({offset:function(e){if(arguments.length)return void 0===e?this:this.each(function(t){xe.offset.setOffset(this,e,t)});var t,n,r,i,o=this[0];if(o)return o.getClientRects().length?(r=o.getBoundingClientRect(),t=o.ownerDocument,n=t.documentElement,i=t.defaultView,{top:r.top+i.pageYOffset-n.clientTop,left:r.left+i.pageXOffset-n.clientLeft}):{top:0,left:0}},position:function(){if(this[0]){var e,t,n=this[0],r={top:0,left:0};return"fixed"===xe.css(n,"position")?t=n.getBoundingClientRect():(e=this.offsetParent(),t=this.offset(),l(e[0],"html")||(r=e.offset()),r={top:r.top+xe.css(e[0],"borderTopWidth",!0),left:r.left+xe.css(e[0],"borderLeftWidth",!0)}),{top:t.top-r.top-xe.css(n,"marginTop",!0),left:t.left-r.left-xe.css(n,"marginLeft",!0)}}},offsetParent:function(){return this.map(function(){for(var e=this.offsetParent;e&&"static"===xe.css(e,"position");)e=e.offsetParent;return e||tt})}}),xe.each({scrollLeft:"pageXOffset",scrollTop:"pageYOffset"},function(e,t){var n="pageYOffset"===t;xe.fn[e]=function(r){return Pe(this,function(e,r,i){var o;return xe.isWindow(e)?o=e:9===e.nodeType&&(o=e.defaultView),void 0===i?o?o[t]:e[r]:void(o?o.scrollTo(n?o.pageXOffset:i,n?i:o.pageYOffset):e[r]=i)},e,r,arguments.length)}}),xe.each(["top","left"],function(e,t){xe.cssHooks[t]=R(ve.pixelPosition,function(e,n){if(n)return n=M(e,t),ft.test(n)?xe(e).position()[t]+"px":n})}),xe.each({Height:"height",Width:"width"},function(e,t){xe.each({padding:"inner"+e,content:t,"":"outer"+e},function(n,r){xe.fn[r]=function(i,o){var a=arguments.length&&(n||"boolean"!=typeof i),s=n||(i===!0||o===!0?"margin":"border");return Pe(this,function(t,n,i){var o;return xe.isWindow(t)?0===r.indexOf("outer")?t["inner"+e]:t.document.documentElement["client"+e]:9===t.nodeType?(o=t.documentElement,Math.max(t.body["scroll"+e],o["scroll"+e],t.body["offset"+e],o["offset"+e],o["client"+e])):void 0===i?xe.css(t,n,s):xe.style(t,n,i,s)},t,a?i:void 0,a)}})}),xe.fn.extend({bind:function(e,t,n){return this.on(e,null,t,n)},unbind:function(e,t){return this.off(e,null,t)},delegate:function(e,t,n,r){return this.on(t,e,n,r)},undelegate:function(e,t,n){return 1===arguments.length?this.off(e,"**"):this.off(t,e||"**",n)}}),xe.holdReady=function(e){e?xe.readyWait++:xe.ready(!0)},xe.isArray=Array.isArray,xe.parseJSON=JSON.parse,xe.nodeName=l,r=[],i=function(){return xe}.apply(t,r),!(void 0!==i&&(e.exports=i));var Jt=n.jQuery,Kt=n.$;return xe.noConflict=function(e){return n.$===xe&&(n.$=Kt),e&&n.jQuery===xe&&(n.jQuery=Jt),xe},o||(n.jQuery=n.$=xe),xe})},function(e,t){!function(e,t,n,r){"use strict";e.fn.simpleLightbox=function(r){var i,r=e.extend({sourceAttr:"href",overlay:!0,spinner:!0,nav:!0,navText:["&lsaquo;","&rsaquo;"],captions:!0,captionDelay:0,captionSelector:"img",captionType:"attr",captionsData:"title",captionPosition:"bottom",close:!0,closeText:"×",swipeClose:!0,showCounter:!0,fileExt:"png|jpg|jpeg|gif",animationSlide:!0,animationSpeed:250,preloading:!0,enableKeyboard:!0,loop:!0,rel:!1,docClose:!0,swipeTolerance:50,className:"simple-lightbox",widthRatio:.8,heightRatio:.9,disableRightClick:!1,disableScroll:!0,alertError:!0,alertErrorMessage:"Image not found, next image will be loaded",additionalHtml:!1,history:!0},r),o=(t.navigator.pointerEnabled||t.navigator.msPointerEnabled,0),a=0,s=e(),l=function(){var e=n.body||n.documentElement;return e=e.style,""===e.WebkitTransition?"-webkit-":""===e.MozTransition?"-moz-":""===e.OTransition?"-o-":""===e.transition&&""},u=!1,c=[],f=function(t,n){var r=e(n.selector).filter(function(){return e(this).attr("rel")===t});return r},p=r.rel&&r.rel!==!1?f(r.rel,this):this,l=l(),d=0,h=l!==!1,g="pushState"in history,m=!1,v=t.location,y=function(){return v.hash.substring(1)},x=y(),b=function(){var e=(y(),"pid="+(j+1)),t=v.href.split("#")[0]+"#"+e;g?history[m?"replaceState":"pushState"]("",n.title,t):m?v.replace(t):v.hash=e,m=!0},w=function(){g?history.pushState("",n.title,v.pathname+v.search):v.hash="",clearTimeout(i)},T=function(){m?i=setTimeout(b,800):b()},C="simplelb",E=e("<div>").addClass("sl-overlay"),k=e("<button>").addClass("sl-close").html(r.closeText),S=e("<div>").addClass("sl-spinner").html("<div></div>"),A=e("<div>").addClass("sl-navigation").html('<button class="sl-prev">'+r.navText[0]+'</button><button class="sl-next">'+r.navText[1]+"</button>"),N=e("<div>").addClass("sl-counter").html('<span class="sl-current"></span>/<span class="sl-total"></span>'),D=!1,j=0,q=e("<div>").addClass("sl-caption pos-"+r.captionPosition),L=e("<div>").addClass("sl-image"),H=e("<div>").addClass("sl-wrapper").addClass(r.className),O=function(t){if(!r.fileExt)return!0;var n=/\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$/gim,i=e(t).attr(r.sourceAttr).match(n);return i&&"a"==e(t).prop("tagName").toLowerCase()&&new RegExp(".("+r.fileExt+")$","i").test(i)},F=function(){r.close&&k.appendTo(H),r.showCounter&&p.length>1&&(N.appendTo(H),N.find(".sl-total").text(p.length)),r.nav&&A.appendTo(H),r.spinner&&S.appendTo(H)},M=function(t){t.trigger(e.Event("show.simplelightbox")),r.disableScroll&&(d=X("hide")),H.appendTo("body"),L.appendTo(H),r.overlay&&E.appendTo(e("body")),D=!0,j=p.index(t),s=e("<img/>").hide().attr("src",t.attr(r.sourceAttr)),c.indexOf(t.attr(r.sourceAttr))==-1&&c.push(t.attr(r.sourceAttr)),L.html("").attr("style",""),s.appendTo(L),W(),E.fadeIn("fast"),e(".sl-close").fadeIn("fast"),S.show(),A.fadeIn("fast"),e(".sl-wrapper .sl-counter .sl-current").text(j+1),N.fadeIn("fast"),R(),r.preloading&&B(),setTimeout(function(){t.trigger(e.Event("shown.simplelightbox"))},r.animationSpeed)},R=function(n){if(s.length){var i=new Image,o=e(t).width()*r.widthRatio,a=e(t).height()*r.heightRatio;i.src=s.attr("src"),e(i).bind("error",function(t){p.eq(j).trigger(e.Event("error.simplelightbox")),D=!1,u=!0,S.hide(),r.alertError&&alert(r.alertErrorMessage),z(1==n||n==-1?n:1)}),i.onload=function(){"undefined"!=typeof n&&p.eq(j).trigger(e.Event("changed.simplelightbox")).trigger(e.Event((1===n?"nextDone":"prevDone")+".simplelightbox")),r.history&&T(),c.indexOf(s.attr("src"))==-1&&c.push(s.attr("src"));var l=i.width,f=i.height;if(l>o||f>a){var g=l/f>o/a?l/o:f/a;l/=g,f/=g}e(".sl-image").css({top:(e(t).height()-f)/2+"px",left:(e(t).width()-l-d)/2+"px"}),S.hide(),s.css({width:l+"px",height:f+"px"}).fadeIn("fast"),u=!0;var m,v="self"==r.captionSelector?p.eq(j):p.eq(j).find(r.captionSelector);if(m="data"==r.captionType?v.data(r.captionsData):"text"==r.captionType?v.html():v.prop(r.captionsData),r.loop||(0===j&&e(".sl-prev").hide(),j>=p.length-1&&e(".sl-next").hide(),j>0&&e(".sl-prev").show(),j<p.length-1&&e(".sl-next").show()),1==p.length&&e(".sl-prev, .sl-next").hide(),1==n||n==-1){var y={opacity:1};r.animationSlide&&(h?(I(0,100*n+"px"),setTimeout(function(){I(r.animationSpeed/1e3,"0px")},50)):y.left=parseInt(e(".sl-image").css("left"))+100*n+"px"),e(".sl-image").animate(y,r.animationSpeed,function(){D=!1,P(m)})}else D=!1,P(m);r.additionalHtml&&0===e(".sl-additional-html").length&&e("<div>").html(r.additionalHtml).addClass("sl-additional-html").appendTo(e(".sl-image"))}}},P=function(t){""!==t&&"undefined"!=typeof t&&r.captions&&q.html(t).hide().appendTo(e(".sl-image")).delay(r.captionDelay).fadeIn("fast")},I=function(t,n){var r={};r[l+"transform"]="translateX("+n+")",r[l+"transition"]=l+"transform "+t+"s linear",e(".sl-image").css(r)},W=function(){e(t).on("resize."+C,R),e(n).on("click."+C+" touchstart."+C,".sl-close",function(e){e.preventDefault(),u&&_()}),r.history&&setTimeout(function(){e(t).on("hashchange."+C,function(){if(u&&y()===x)return void _()})},40),A.on("click."+C,"button",function(t){t.preventDefault(),o=0,z(e(this).hasClass("sl-next")?1:-1)});var i=0,s=0,l=0,c=0,f=!1,d=0;L.on("touchstart."+C+" mousedown."+C,function(e){return!!f||(h&&(d=parseInt(L.css("left"))),f=!0,i=e.originalEvent.pageX||e.originalEvent.touches[0].pageX,l=e.originalEvent.pageY||e.originalEvent.touches[0].pageY,!1)}).on("touchmove."+C+" mousemove."+C+" pointermove MSPointerMove",function(e){return!f||(e.preventDefault(),s=e.originalEvent.pageX||e.originalEvent.touches[0].pageX,c=e.originalEvent.pageY||e.originalEvent.touches[0].pageY,o=i-s,a=l-c,void(r.animationSlide&&(h?I(0,-o+"px"):L.css("left",d-o+"px"))))}).on("touchend."+C+" mouseup."+C+" touchcancel."+C+" mouseleave."+C+" pointerup pointercancel MSPointerUp MSPointerCancel",function(e){if(f){f=!1;var t=!0;r.loop||(0===j&&o<0&&(t=!1),j>=p.length-1&&o>0&&(t=!1)),Math.abs(o)>r.swipeTolerance&&t?z(o>0?1:-1):r.animationSlide&&(h?I(r.animationSpeed/1e3,"0px"):L.animate({left:d+"px"},r.animationSpeed/2)),r.swipeClose&&Math.abs(a)>50&&Math.abs(o)<r.swipeTolerance&&_()}})},$=function(){A.off("click","button"),e(n).off("click."+C,".sl-close"),e(t).off("resize."+C),e(t).off("hashchange."+C)},B=function(){var t=j+1<0?p.length-1:j+1>=p.length-1?0:j+1,n=j-1<0?p.length-1:j-1>=p.length-1?0:j-1;e("<img />").attr("src",p.eq(t).attr(r.sourceAttr)).on("load",function(){c.indexOf(e(this).attr("src"))==-1&&c.push(e(this).attr("src")),p.eq(j).trigger(e.Event("nextImageLoaded.simplelightbox"))}),e("<img />").attr("src",p.eq(n).attr(r.sourceAttr)).on("load",function(){c.indexOf(e(this).attr("src"))==-1&&c.push(e(this).attr("src")),p.eq(j).trigger(e.Event("prevImageLoaded.simplelightbox"))})},z=function(t){p.eq(j).trigger(e.Event("change.simplelightbox")).trigger(e.Event((1===t?"next":"prev")+".simplelightbox"));var n=j+t;if(!(D||(n<0||n>=p.length)&&r.loop===!1)){j=n<0?p.length-1:n>p.length-1?0:n,e(".sl-wrapper .sl-counter .sl-current").text(j+1);var i={opacity:0};r.animationSlide&&(h?I(r.animationSpeed/1e3,-100*t-o+"px"):i.left=parseInt(e(".sl-image").css("left"))+-100*t+"px"),e(".sl-image").animate(i,r.animationSpeed,function(){setTimeout(function(){var n=p.eq(j);s.attr("src",n.attr(r.sourceAttr)),c.indexOf(n.attr(r.sourceAttr))==-1&&S.show(),e(".sl-caption").remove(),R(t),r.preloading&&B()},100)})}},_=function(){if(!D){var t=p.eq(j),n=!1;t.trigger(e.Event("close.simplelightbox")),r.history&&w(),e(".sl-image img, .sl-overlay, .sl-close, .sl-navigation, .sl-image .sl-caption, .sl-counter").fadeOut("fast",function(){r.disableScroll&&X("show"),e(".sl-wrapper, .sl-overlay").remove(),$(),n||t.trigger(e.Event("closed.simplelightbox")),n=!0}),s=e(),u=!1,D=!1}},X=function(r){var i=0;if("hide"==r){var o=t.innerWidth;if(!o){var a=n.documentElement.getBoundingClientRect();o=a.right-Math.abs(a.left)}if(n.body.clientWidth<o){var s=n.createElement("div"),l=parseInt(e("body").css("padding-right"),10);s.className="sl-scrollbar-measure",e("body").append(s),i=s.offsetWidth-s.clientWidth,e(n.body)[0].removeChild(s),e("body").data("padding",l),i>0&&e("body").addClass("hidden-scroll").css({"padding-right":l+i})}}else e("body").removeClass("hidden-scroll").css({"padding-right":e("body").data("padding")});return i};return F(),p.on("click."+C,function(t){if(O(this)){if(t.preventDefault(),D)return!1;M(e(this))}}),e(n).on("click."+C+" touchstart."+C,function(t){u&&r.docClose&&0===e(t.target).closest(".sl-image").length&&0===e(t.target).closest(".sl-navigation").length&&_()}),r.disableRightClick&&e(n).on("contextmenu",".sl-image img",function(e){return!1}),r.enableKeyboard&&e(n).on("keyup."+C,function(e){if(o=0,u){e.preventDefault();var t=e.keyCode;27==t&&_(),37!=t&&39!=e.keyCode||z(39==e.keyCode?1:-1)}}),this.open=function(t){t=t||e(this[0]),M(t)},this.next=function(){z(1)},this.prev=function(){z(-1)},this.close=function(){_()},this.destroy=function(){e(n).unbind("click."+C).unbind("keyup."+C),_(),e(".sl-overlay, .sl-wrapper").remove(),this.off("click")},this.refresh=function(){this.destroy(),e(this.selector).simpleLightbox(r)},this}}(jQuery,window,document)},function(e,t){e.exports=' <div> <div class=my-gallery :class=album_class> <a :href=image.src v-for="image,key in images"> <img :src=image.src alt="" :title=image.title :class=image_class /> </a> </div> </div> '},function(e,t,n){function r(e,t){for(var n=0;n<e.length;n++){var r=e[n],i=f[r.id];if(i){i.refs++;for(var o=0;o<i.parts.length;o++)i.parts[o](r.parts[o]);for(;o<r.parts.length;o++)i.parts.push(l(r.parts[o],t))}else{for(var a=[],o=0;o<r.parts.length;o++)a.push(l(r.parts[o],t));f[r.id]={id:r.id,refs:1,parts:a}}}}function i(e){for(var t=[],n={},r=0;r<e.length;r++){var i=e[r],o=i[0],a=i[1],s=i[2],l=i[3],u={css:a,media:s,sourceMap:l};n[o]?n[o].parts.push(u):t.push(n[o]={id:o,parts:[u]})}return t}function o(e,t){var n=h(),r=v[v.length-1];if("top"===e.insertAt)r?r.nextSibling?n.insertBefore(t,r.nextSibling):n.appendChild(t):n.insertBefore(t,n.firstChild),v.push(t);else{if("bottom"!==e.insertAt)throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");n.appendChild(t)}}function a(e){e.parentNode.removeChild(e);var t=v.indexOf(e);t>=0&&v.splice(t,1)}function s(e){var t=document.createElement("style");return t.type="text/css",o(e,t),t}function l(e,t){var n,r,i;if(t.singleton){var o=m++;n=g||(g=s(t)),r=u.bind(null,n,o,!1),i=u.bind(null,n,o,!0)}else n=s(t),r=c.bind(null,n),i=function(){a(n)};return r(e),function(t){if(t){if(t.css===e.css&&t.media===e.media&&t.sourceMap===e.sourceMap)return;r(e=t)}else i()}}function u(e,t,n,r){var i=n?"":r.css;if(e.styleSheet)e.styleSheet.cssText=y(t,i);else{var o=document.createTextNode(i),a=e.childNodes;a[t]&&e.removeChild(a[t]),a.length?e.insertBefore(o,a[t]):e.appendChild(o)}}function c(e,t){var n=t.css,r=t.media,i=t.sourceMap;if(r&&e.setAttribute("media",r),i&&(n+="\n/*# sourceURL="+i.sources[0]+" */",n+="\n/*# sourceMappingURL=data:application/json;base64,"+btoa(unescape(encodeURIComponent(JSON.stringify(i))))+" */"),e.styleSheet)e.styleSheet.cssText=n;else{for(;e.firstChild;)e.removeChild(e.firstChild);e.appendChild(document.createTextNode(n))}}var f={},p=function(e){var t;return function(){return"undefined"==typeof t&&(t=e.apply(this,arguments)),t}},d=p(function(){return/msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase())}),h=p(function(){return document.head||document.getElementsByTagName("head")[0]}),g=null,m=0,v=[];e.exports=function(e,t){t=t||{},"undefined"==typeof t.singleton&&(t.singleton=d()),"undefined"==typeof t.insertAt&&(t.insertAt="bottom");var n=i(e);return r(n,t),function(e){for(var o=[],a=0;a<n.length;a++){var s=n[a],l=f[s.id];l.refs--,o.push(l)}if(e){var u=i(e);r(u,t)}for(var a=0;a<o.length;a++){var l=o[a];if(0===l.refs){for(var c=0;c<l.parts.length;c++)l.parts[c]();delete f[l.id]}}}};var y=function(){var e=[];return function(t,n){return e[t]=n,e.filter(Boolean).join("\n")}}()},function(e,t,n){var r=n(4);"string"==typeof r&&(r=[[e.id,r,""]]);n(8)(r,{});r.locals&&(e.exports=r.locals)}])});
 
 /***/ })
 /******/ ]);

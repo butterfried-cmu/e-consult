@@ -122,6 +122,11 @@ const router = new VueRouter({
             component: UserList
         },
         {
+            path: '/graph',
+            name: 'graph',
+            component: Graph
+        },
+        {
             path: '/consults/add',
             name: 'consult-add',
             component: ConsultAdd
@@ -150,11 +155,6 @@ const router = new VueRouter({
             path: '/consults/:consult_id/reply',
             name: 'consult-reply',
             component: Reply
-        },
-        {
-            path:'/graph',
-            name: 'graph',
-            component: Graph
         },
         {
             path: '/consult-print',
