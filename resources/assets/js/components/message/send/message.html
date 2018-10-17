@@ -42,6 +42,7 @@
                 <vk-offcanvas-content>
                         <vk-button @click="show = !show" class="uk-align-center">Click to view Information</vk-button>
                         <vk-offcanvas :show.sync="show">
+                                <vk-offcanvas-close @click="show = false"></vk-offcanvas-close>
                                 <div id="personalinfo">
                                         <div class="uk-text-left">
                                             <h2 class="uk-heading-line"><span>Patient's Information</span></h2>
