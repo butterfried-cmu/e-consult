@@ -6,6 +6,7 @@ use App\Attachment;
 use App\Message;
 use Illuminate\Http\Request;
 use Validator;
+use JWTAuth;
 
 class MessageController extends Controller
 {
@@ -34,6 +35,10 @@ class MessageController extends Controller
         $request = request();
 
         $currentUser = JWTAuth::parseToken()->toUser();
+
+        if (!$currentUser) return response()->json([
+            'authentication' => 'fail',
+        ], 200);
 
         $messages = [
             'required' => 'required',

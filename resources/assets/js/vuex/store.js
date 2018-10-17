@@ -97,7 +97,9 @@ export const store = new Vuex.Store({
             state.currentConsult = consult;
         },
         setCurrentConsultMessages(state, messages) {
-            state.currentConsultMessages = messages;
+            if(messages.length != 0){
+                state.currentConsultMessages = messages;
+            }
         },
     },
     actions: {
@@ -587,7 +589,52 @@ export const store = new Vuex.Store({
                     );
                 }, 1000);
             });
-        }
+        },
+
+        postUploadFiles({commit}, payload) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.post("/messages/" + payload.consult_id + "/attachments/?token=" + localStorage.getItem('token'), {
+                        'attachments': payload.files
+                    })
+                        .then(
+                            response => {
+                                console.log(response);
+                                // commit('setDoneConsults', response.data.consults);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
+        postSendMessage({commit}, payload) {
+            console.log('postSendMessage: called');
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.post("/messages/" + payload.consult_id + "/?token=" + localStorage.getItem('token'), {
+                        'message': payload.message
+                    })
+                        .then(
+                            response => {
+                                console.log(response);
+                                // commit('setDoneConsults', response.data.consults);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
 
     },
 });

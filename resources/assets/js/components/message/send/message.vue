@@ -2,6 +2,13 @@
 export default {
     template: require('./message.html'),
 
+    data(){
+        return {
+            message:"",
+            uploadFiles: []
+        }
+    },
+
     mounted(){
         let payload = this.$route.params.consult_id;
         this.$store.dispatch('getConsult',payload).then(
@@ -30,6 +37,55 @@ export default {
         isSelf(user_id){
             if( user_id == this.currentUser.user_id ) return true;
             return false;
+        },
+        onFilesChange(e) {
+            this.uploadFiles = [];
+            let files = e.target.files || e.dataTransfer.files;
+            if (!files.length)
+                return;
+            for(var i = 0; i < files.length; i++ ){
+                // console.log(this.getBase64(files[i]))
+                // this.uploadFiles.push(this.getBase64(files[i]));
+                this.getBase64(files[i]).then(
+                    data => {
+                        this.uploadFiles.push(data);
+                    }
+                );
+            }
+            console.log(this.uploadFiles)
+        },
+        getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        },
+        uploadFiles() {
+            let payload = {
+                consult_id: this.currentConsult.consult_id,
+                files: this.files
+            }
+            this.$store.dispatch('postUploadFiles',payload).then(
+                response => {
+                }
+            );
+        },
+        sendMessage(){
+            console.log('sendMessage: clicked');
+            let payload = {
+                consult_id: this.currentConsult.consult_id,
+                message: this.message
+            }
+            console.log(payload);
+            this.$store.dispatch('postSendMessage',payload).then(
+                response => {
+                    // if success
+                    this.message = '';
+                    this.loadMessages(this.currentConsult.consult_id);
+                }
+            );
         }
     },
 
