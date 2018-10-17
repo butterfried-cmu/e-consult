@@ -3,7 +3,6 @@
         template: require('./reply.html'),
         data() {
             return {
-                currentConsult: {},
                 consult_order: '',
             }
         },
@@ -18,11 +17,15 @@
         methods: {
             replyConsult() {
                 ///consults/{consult_id}/reply
-                this.$store.dispatch('postReplyConsult', this.consult_order)
+                let payload = {
+                    consult_id: this.currentConsult.consult_id,
+                    consult_order: this.consult_order,
+                };
+                this.$store.dispatch('postReplyConsult', payload)
                     .then(response => {
                             if (!!response.data.message && response.data.message === "success") {
-                                alert("Succeeded");
-                                console.log('consult edited');
+                                console.log('reply Succeeded');
+                                alert('reply Succeeded');
                                 this.$router.push("/");
                             } else {
                                 this.error = response.data;

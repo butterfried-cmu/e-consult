@@ -5,7 +5,8 @@ export default {
     data(){
         return {
             message:"",
-            uploadFiles: []
+            upload_files: [],
+            upload_files_extension: []
         }
     },
 
@@ -33,26 +34,32 @@ export default {
             );
         },
         loadAttachments(consult_id){
+            this.$store.dispatch('getConsultAttachments',consult_id).then(
+                response => {
+                }
+            );
         },
         isSelf(user_id){
             if( user_id == this.currentUser.user_id ) return true;
             return false;
         },
         onFilesChange(e) {
-            this.uploadFiles = [];
+            this.upload_files = [];
+            this.upload_files_extension = [];
             let files = e.target.files || e.dataTransfer.files;
             if (!files.length)
                 return;
             for(var i = 0; i < files.length; i++ ){
                 // console.log(this.getBase64(files[i]))
-                // this.uploadFiles.push(this.getBase64(files[i]));
+                // this.upload_files.push(this.getBase64(files[i]));
                 this.getBase64(files[i]).then(
                     data => {
-                        this.uploadFiles.push(data);
+                        this.upload_files.push(data);
                     }
                 );
+                this.upload_files_extension.push(files[i].name.split('.').pop());
             }
-            console.log(this.uploadFiles)
+            console.log(this.upload_files)
         },
         getBase64(file) {
             return new Promise((resolve, reject) => {
@@ -65,9 +72,10 @@ export default {
         uploadFiles() {
             let payload = {
                 consult_id: this.currentConsult.consult_id,
-                files: this.files
+                files: this.upload_files,
+                files_type: this.upload_files_extension
             }
-            this.$store.dispatch('postUploadFiles',payload).then(
+            this.$store.dispatch('postSendAttachments',payload).then(
                 response => {
                 }
             );
@@ -98,6 +106,9 @@ export default {
         },
         messages(){
             return this.$store.getters['currentConsultMessages'];
+        },
+        attachments(){
+            return this.$store.getters['currentConsultAttachments'];
         }
     },
 }

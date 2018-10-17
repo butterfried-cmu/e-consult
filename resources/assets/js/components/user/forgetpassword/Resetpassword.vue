@@ -6,7 +6,7 @@
         template: require('./resetpassword.html'),
         data() {
             return {
-                requestId: this.$route.query.test,
+                requestId: this.$route.query.request_id,
                 password: '',
                 password_confirmation: '',
                 error: {

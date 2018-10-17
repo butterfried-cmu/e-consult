@@ -18,6 +18,7 @@ export const store = new Vuex.Store({
         consultSearch: null,
         currentConsult: null,
         currentConsultMessages: null,
+        currentConsultAttachments: null,
     },
     getters: {
         isLoggedIn(state) {
@@ -52,6 +53,9 @@ export const store = new Vuex.Store({
         },
         currentConsultMessages(state) {
             return state.currentConsultMessages;
+        },
+        currentConsultAttachments(state) {
+            return state.currentConsultAttachments;
         }
     },
     mutations: {
@@ -97,9 +101,10 @@ export const store = new Vuex.Store({
             state.currentConsult = consult;
         },
         setCurrentConsultMessages(state, messages) {
-            if(messages.length != 0){
-                state.currentConsultMessages = messages;
-            }
+            state.currentConsultMessages = messages;
+        },
+        setCurrentConsultAttachments(state, attachments) {
+            state.currentConsultAttachments = attachments;
         },
     },
     actions: {
@@ -356,7 +361,7 @@ export const store = new Vuex.Store({
             // console.log(email);
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    axios.post("/auth/password/update", payload)
+                    axios.post("/auth/password/reset", payload)
                         .then(
                             response => {
                                 console.log(response);
@@ -373,7 +378,7 @@ export const store = new Vuex.Store({
             });
         },
 
-        getAllConsults({commit,state}) {
+        getAllConsults({commit, state}) {
             if (!localStorage.getItem('token') || localStorage.getItem('token') == "") {
                 console.log("No Token in localStorage");
             } else {
@@ -424,7 +429,7 @@ export const store = new Vuex.Store({
             }
         },
 
-        saveConsult({commit}, payload){
+        saveConsult({commit}, payload) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     axios.post("/consults/?token=" + localStorage.getItem('token'), payload)
@@ -444,7 +449,7 @@ export const store = new Vuex.Store({
             });
         },
 
-        editConsult({commit}, payload){
+        editConsult({commit}, payload) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     console.log("Edit Consult id = " + payload.consult_id);
@@ -549,11 +554,11 @@ export const store = new Vuex.Store({
             });
         },
 
-        postReplyConsult({commit}, consult_order) {
+        postReplyConsult({commit}, payload) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    axios.post("/consults/" + consult_id + "/?token=" + localStorage.getItem('token'), {
-                        'consult_order': consult_order
+                    axios.post("/consults/" + payload.consult_id + "/reply/?token=" + localStorage.getItem('token'), {
+                        'consult_order': payload.consult_order
                     })
                         .then(
                             response => {
@@ -591,11 +596,32 @@ export const store = new Vuex.Store({
             });
         },
 
-        postUploadFiles({commit}, payload) {
+        getConsultAttachments({commit}, consult_id) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    axios.get("/messages/" + consult_id + "/attachments/?token=" + localStorage.getItem('token'))
+                        .then(
+                            response => {
+                                console.log(response);
+                                commit('setCurrentConsultAttachments', response.data.attachments);
+                                resolve(response);
+                            }
+                        ).catch(
+                        error => {
+                            console.log(error);
+                            reject(error);
+                        }
+                    );
+                }, 1000);
+            });
+        },
+
+        postSendAttachments({commit}, payload) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     axios.post("/messages/" + payload.consult_id + "/attachments/?token=" + localStorage.getItem('token'), {
-                        'attachments': payload.files
+                        'attachments': payload.files,
+                        'attachments_type': payload.files_type
                     })
                         .then(
                             response => {

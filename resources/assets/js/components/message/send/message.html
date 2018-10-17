@@ -261,9 +261,12 @@
                 <progress id="js-progressbar" class="uk-progress" value="0" max="100" hidden></progress>
                 <!-- Uploaded file(s) position -->
                 <div class="scrollbox">
-                    <vk-grid gutter="small" class="uk-child-width-1-2@s uk-child-width-1-3@m uk-text-center">
+                    <vk-grid gutter="small" class="uk-child-width-1-1@s uk-child-width-1-2@m uk-text-center">
                         <div v-for="attachment in attachments">
-                            <vk-card>Item</vk-card>
+                            <vk-card>
+                                type = {{attachment.type}}<br>
+                                name = {{attachment.file_name}}
+                            </vk-card>
                         </div>
                     </vk-grid>
                 </div>

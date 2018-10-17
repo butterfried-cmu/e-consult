@@ -42,8 +42,8 @@ class ValidImage implements Rule
                 $image = str_replace('data:image/png;base64,', '', $image);
                 $image = str_replace('data:image/jpeg;base64,', '', $image);
                 $image = str_replace(' ', '+', $image);
-                $imageName = 'temp.jpg';
-                \File::put(public_path(''). '/' . $imageName, base64_decode($image));
+                $image_name = 'temp.jpg';
+                \File::put(public_path(''). '/' . $image_name, base64_decode($image));
                 return true;
             }else{
                 return false;

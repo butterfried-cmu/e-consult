@@ -7,6 +7,7 @@ use App\Message;
 use Illuminate\Http\Request;
 use Validator;
 use JWTAuth;
+use File;
 
 class MessageController extends Controller
 {
@@ -91,7 +92,67 @@ class MessageController extends Controller
     }
 
     public function postSendAttachment($consult_id){
+        $request = request();
 
+        $messages = [
+            'required' => 'required',
+            'exists' => 'not_exist',
+        ];
+
+        $validator = Validator::make(array_merge(['consult_id' => $consult_id],$request->all()), [
+            'consult_id' => 'exists:consults',
+            'attachments' => 'required',
+//            'attachments_type' => 'required'
+        ], $messages);
+
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 200);
+        }
+
+        $path = public_path().'/storage/attachments/' . $consult_id;
+        if(!File::exists($path)) {
+            // path does not exist
+            File::makeDirectory($path, $mode = 0777, true, true);
+        }
+
+        $attachments = $request->attachments;
+        $attachments_type = $request->attachments_type;
+
+        foreach ($attachments as $key=>$attachment){
+
+            if (strpos($attachment, 'data:image/png;base64,') !== false ||
+                strpos($attachment, 'data:image/jpeg;base64,') !== false ){
+                $type = 'image';
+            }else{
+                $type = 'file';
+            }
+
+            $attachment_id = $this->generateAttachmentID();
+
+//            $data = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAA.';
+//            $data = $attachment;
+//            $pos  = strpos($data, ';');
+//            $file_type = explode(':', substr($data, 0, $pos))[1];
+
+            $file_type = $request->attachments_type;
+
+            $file_name = $attachment_id . '.' . $attachments_type[$key];
+            \File::put(public_path(''). '/storage/attachments/' . $consult_id . '/' . $file_name, base64_decode($attachment));
+
+            $new_attachment = new Attachment([
+                'attachment_id' => $attachment_id,
+                'consult_id' => $consult_id,
+                'type' => $type,
+                'file_name' => $file_name
+
+            ]);
+            $new_attachment->save();
+
+        }
+
+        return response()->json([
+            'message' => 'success',
+        ], 200);
     }
 
     public function getDownloadAttachment($attachment_id){
