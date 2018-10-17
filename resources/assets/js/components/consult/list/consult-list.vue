@@ -35,7 +35,20 @@ export default {
             var payload = this.keyword;
             this.$store.dispatch('postSearchConsult',payload ).then(
             )
-        }
+        },
+        printConsult(consult_id) {
+            var payload = consult_id;
+            this.$store.dispatch('getPrintConsult', payload).then(
+                response => {
+                    console.log(response);
+                    // this.loadConsultList();
+                    window.open(response.data.file_link, '_blank');
+                },
+                error => {
+                    console.log('Unable to print')
+                }
+            );
+        },
     }
 }
 </script>

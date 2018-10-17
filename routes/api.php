@@ -136,6 +136,6 @@ Route::get('/messages/download/{attachment_id}', [
 //    'middleware' => ['auth.jwt', 'role:ADMIN']
 ]);
 
-Route::get('/consult/print', [
+Route::get('/consults/{consult_id}/print', [
     'uses' => 'consultcontroller@printConsultForm',
 ]);

@@ -374,16 +374,41 @@ class ConsultController extends Controller
         ], 200, [],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
     }
 
-    public function printConsultForm()
+    public function printConsultForm($consult_id)
     {
+
+        $messages = [
+            'required' => 'required',
+            'exists' => 'not_exist',
+        ];
+
+        $validator = Validator::make(array_merge(['consult_id' => $consult_id]), [
+            'consult_id' => 'required|exists:consults',
+        ], $messages);
+
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 200);
+        }
+
         // Fetch all customers from database
 //        $data = Customer::get();
+        $consult = Consult::with('user')->where('consult_id', $consult_id)->first();
+
+        if( $consult->status != 'done' ){
+            return response()->json([
+                'consult_id' => ['not_done']
+            ], 200);
+        }
         // Send data to the view using loadView function of PDF facade
-        $pdf = PDF::loadView('consultFormTemplate');
+        $pdf = PDF::loadView('consultFormTemplate', ['consult' => $consult]);
         // If you want to store the generated pdf to the server then you can use the store function
-        $pdf->save(public_path().'\storage\consults\consult.pdf');
+        $path = public_path().'\storage\consults\report\\' . $consult_id . '.pdf';
+        $pdf->save($path);
         // Finally, you can download the file using download function
-        return asset('storage/consults/consult.pdf');
+        $options = app('request')->header('accept-charset') == 'utf-8' ? JSON_UNESCAPED_UNICODE : null;
+        return response()->json([
+            'file_link' => asset('storage/consults/report/' . $consult_id . '.pdf')
+        ], 200,[], JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
     }
 
 
