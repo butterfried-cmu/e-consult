@@ -43947,8 +43947,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.$store.dispatch('getConsult', payload).then(function (response) {
             _this.fetchData(_this.currentConsult.consult_id);
             _this.timer1 = setInterval(function () {
-                return _this.fetchData(_this.currentConsult.consult_id);
+                return _this.loadMessages(_this.currentConsult.consult_id);
             }, 3000);
+            _this.timer1 = setInterval(function () {
+                return _this.loadAttachments(_this.currentConsult.consult_id);
+            }, 10000);
         });
     },
 

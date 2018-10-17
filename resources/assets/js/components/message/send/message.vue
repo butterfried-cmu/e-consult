@@ -7,7 +7,8 @@ export default {
         this.$store.dispatch('getConsult',payload).then(
             response => {
                 this.fetchData(this.currentConsult.consult_id)
-                this.timer1 = setInterval(() => this.fetchData(this.currentConsult.consult_id), 3000);
+                this.timer1 = setInterval(() => this.loadMessages(this.currentConsult.consult_id), 3000);
+                this.timer1 = setInterval(() => this.loadAttachments(this.currentConsult.consult_id), 10000);
             }
         );
     },
