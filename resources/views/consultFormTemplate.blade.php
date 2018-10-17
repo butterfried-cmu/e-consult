@@ -68,22 +68,22 @@ h2 {
               <tr>
                   <td>BW:</td>
                   <td>65</td>
-          
+
                   <td>BMI:</td>
                   <td>26.6</td>
-          
+
                   <td>T</td>
                   <td>37</td>
-          
+
                   <td>FBS:</td>
                   <td>100</td>
-          
+
                   <td>Cr:</td>
                   <td>0.43</td>
-          
+
                   <td>Clearance:</td>
                   <td>122.1</td>
-          
+
                   <td>Stage:</td>
                   <td>1</td>
               </tr>
@@ -100,13 +100,13 @@ h2 {
                 <tr>
                     <td>FBS:</td>
                     <td>100</td>
-                
+
                     <td>BP1</td>
                     <td>200/90</td>
-                
+
                     <td>BP2:</td>
                     <td>110/90</td>
-                
+
                     <td>P:</td>
                     <td>120</td>
                 </tr>
@@ -120,13 +120,13 @@ h2 {
                   <tr>
                       <td>FBS:</td>
                       <td>100</td>
-                  
+
                       <td>BP1</td>
                       <td>155/90</td>
-                  
+
                       <td>BP2:</td>
                       <td>110/90</td>
-                  
+
                       <td>P:</td>
                       <td>80</td>
                   </tr>
@@ -137,7 +137,7 @@ h2 {
                     <td>Chief Complain	</td>
                     <td>FBS >= 130 mg% 2 visit</td>
                   </tr>
-            
+
                   <tr>
                     <td>Assessment and plan</td>
                     <td>MFM 1x2 0pc, Slmvas 1209 ½ x ns</td>

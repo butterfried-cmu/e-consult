@@ -4,22 +4,6 @@
         <br/>
         <h1 class="uk-text-center">Welcome to MED E-CONSULTS</h1>
     </header>
-
-    <!--<section class="uk-container">-->
-        <!--<vk-grid class="uk-child-width-expand@s uk-text-center">-->
-            <!--<div class="uk-width-auto@s"></div>-->
-            <!--<div class="uk-margin">-->
-                <!--<form class="uk-search uk-search-default uk-width-1-2@s">-->
-                    <!--<input class="uk-search-input" type="search" v-model="keyword" placeholder="Search...">-->
-                <!--</form>-->
-                <!--<button class="uk-button uk-button-primary uk-width-auto@l uk-width-1-5@m" v-on:click="search()">-->
-                    <!--<vk-icon icon="search"></vk-icon>-->
-                <!--</button>-->
-            <!--</div>-->
-            <!--<div class="uk-width-auto@s"></div>-->
-        <!--</vk-grid>-->
-    <!--</section>-->
-
     <section class="uk-container">
         <vk-grid class="uk-child-width-expand@s">
             <div class="title">
@@ -43,7 +27,6 @@
                                     <td>{{consult.created_by.first_name}} {{consult.created_by.last_name}}</td>
                                     <td>{{consult.created_at}}</td>
                                     <td><span class="uk-label uk-label-warning">Draft</span></td>
-
                                     <td>
                                         <button v-on:click="viewConsult(consult.consult_id)"
                                                 class="uk-button uk-button-default" type="button">View
@@ -143,5 +126,4 @@
             </div>
         </vk-grid>
     </section>
-
 </div>

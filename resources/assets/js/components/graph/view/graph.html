@@ -1,3 +1,59 @@
 <div id="graph">
-<h1>Hello Graph!</h1>
+    <div class="uk-container">
+        <br/>
+        <ul class="uk-breadcrumb">
+            <li><a href="../../..#/">Home</a></li>
+            <!-- Current Page -->
+            <li><span>Graph Summary</span></li>
+        </ul>
+
+        <vk-grid>
+                <div class="uk-width-auto@s uk-visible@m" id="wrap">
+                    <div class="uk-margin">
+                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">Start Date</label>
+                            <div class="uk-form-controls ">
+                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
+                            </div>
+                    </div>
+                    <div class="uk-margin">
+                            <label class="uk-form-label uk-text-uppercase" for="form-horizontal-text">End Date</label>
+                            <div class="uk-form-controls ">
+                                <input class="uk-input uk-form-width-medium" id="form-horizontal-text" type="date" placeholder="">
+                            </div>
+                    </div>
+                    <div class="uk-margin uk-text-center">
+                            <button class="uk-button uk-button-primary">SHOW</button>
+                    </div>
+                </div>
+                <div class="uk-width-expand@m">
+                    <div class="Chart uk-text-center">
+                        <h2><b>The graph showing the number of consulations group.</b></h2>
+                        <h5>Grouping by Non Communicable Disease</h5>
+                        <line-chart></line-chart>
+                    </div>
+                    <br/>
+                    <!--<vk-grid gutter="small" class="uk-child-width-expand@s uk-text-center card">-->
+                        <!--<div>-->
+                            <!--&lt;!&ndash; total number of consult wait for reply&ndash;&gt;-->
+                            <!--<div class="uk-background-muted uk-padding">-->
+                                <!--<span class="span-font-style">Pending Consult</span>-->
+                                <!--<h1><b>103</b></h1>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div>-->
+                            <!--<div class="uk-background-primary uk-padding uk-light">-->
+                                <!--<span class="span-font-style">Case Closed</span>-->
+                                <!--<h1><b>10</b></h1>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div>-->
+                            <!--<div class="uk-background-secondary uk-padding uk-light">-->
+                                <!--<span class="span-font-style">Total consult</span>-->
+                                <!--<h1><b>113</b></h1>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</vk-grid>-->
+                </div>        
+        </vk-grid>
+    </div>
 </div>
