@@ -133,8 +133,8 @@ export default {
     margin-top: 30px;
 }
 .scrollbox {
-    height: 80vh;
     overflow:auto;
+    max-height: 80vh;
 }
 
 html, body {
@@ -326,6 +326,8 @@ a{
     padding: 10px;
     border-radius: 2px;
     box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.07);
+    max-width: 300px;
+    word-wrap: break-word;
 }
 .msg p {
     font-size: 0.8rem;
@@ -427,5 +429,38 @@ chatbox {
     color: #666;
     font-weight: 400;
     font-size: 15px;
+}
+@media only screen and (max-width:360px){
+    #message-box {
+    max-width: 185px;
+    }
+}
+@media only screen and (max-width:567px) and (min-width: 361px) {
+    #message-box {
+    max-width: 70%;
+    }
+}
+@media only screen and (max-width:767px) and (min-width: 568px) {
+    #message-box {
+    max-width: 220px;
+    }
+}
+@media only screen and (max-width:812px) and (min-width:768px) {
+    #message-box {
+    max-width: 85%;
+    }
+}
+@media only screen and (min-width:813px) and (max-width:1024px) {
+    #message-box {
+    max-width: 300px;
+    }
+}
+@media only screen and (min-width:1025px) {
+    #message-box {
+    max-width: 500px;
+    }
+}
+#send-btn {
+    margin-top: 7px;
 }
 </style>
