@@ -39,10 +39,10 @@
                     datasets: [
                         {
                             label: 'Bipolar disorder',
-                            borderColor: '#05CBE1',
+                            borderColor: '#ffffff',
                             pointBackgroundColor: 'white',
                             pointBorderColor: '#05CBE1',
-                            borderWidth: 1,
+                            borderWidth: 3,
                             data: data_set,
                             backgroundColor: backgroundColors,
                         }
