@@ -213,6 +213,17 @@
         max-height: 80vh;
     }
 
+    .column-2 {
+        height: -webkit-fill-available;
+        border: 1px solid lightgray;
+        border-top: none;
+    }
+
+    .sendMessage-wrap {
+        border: 1px solid lightgray;
+        border-top: none;
+    }
+
     html, body {
         background: #e5e5e5;
         font-family: 'Lato', sans-serif;

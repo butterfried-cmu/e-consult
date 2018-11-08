@@ -33,6 +33,19 @@
     }
 </script>
 
-<style lang="scss">
-    // @import './navbar.scss';
+<style scoped>
+    .nav-bg {
+        background-color: #00203c!important;
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+    }
+    .uk-navbar-nav>li>a, .nav-bg a {
+        color: white;
+    }
+
+    .nav-bg a:hover {
+        color: #6f8ea9;
+        text-decoration: none;
+    }
 </style>
