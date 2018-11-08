@@ -13,6 +13,7 @@
                 datacollection: null,
                 start_date: null,
                 end_date: null,
+                data_set: null,
             }
         },
         mounted() {
@@ -31,20 +32,17 @@
                 data.forEach(function(item) {
                     labels.push(item.disease_name);
                     data_set.push(item.amount);
-                    backgroundColors.push(self.randomColor());
+                    // backgroundColors.push(self.randomColor());
                 });
 
                 this.datacollection = {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Bipolar disorder',
-                            borderColor: '#05CBE1',
-                            pointBackgroundColor: 'white',
-                            pointBorderColor: '#05CBE1',
-                            borderWidth: 1,
+                            label: 'Data One',
                             data: data_set,
-                            backgroundColor: backgroundColors,
+                            backgroundColor: '#0000ff60',
+                            // backgroundColor: backgroundColors,
                         }
                     ]
                 }
@@ -57,6 +55,7 @@
                             response => {
                                 console.log(response);
                                 this.fillData(response.data);
+                                this.data_set = response.data;
                             }
                         ).catch(
                         error => {
@@ -76,6 +75,7 @@
                             response => {
                                 console.log(response);
                                 this.fillData(response.data);
+                                this.data_set = response.data;
                             }
                         ).catch(
                         error => {

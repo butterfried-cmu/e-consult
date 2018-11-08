@@ -44531,7 +44531,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             datacollection: null,
             start_date: null,
-            end_date: null
+            end_date: null,
+            data_set: null
         };
     },
     mounted: function mounted() {
@@ -44551,19 +44552,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             data.forEach(function (item) {
                 labels.push(item.disease_name);
                 data_set.push(item.amount);
-                backgroundColors.push(self.randomColor());
+                // backgroundColors.push(self.randomColor());
             });
 
             this.datacollection = {
                 labels: labels,
                 datasets: [{
-                    label: 'Bipolar disorder',
-                    borderColor: '#05CBE1',
-                    pointBackgroundColor: 'white',
-                    pointBorderColor: '#05CBE1',
-                    borderWidth: 1,
+                    label: 'Data One',
                     data: data_set,
-                    backgroundColor: backgroundColors
+                    backgroundColor: '#0000ff60'
+                    // backgroundColor: backgroundColors,
                 }]
             };
         },
@@ -44574,6 +44572,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("/consults/summary/?token=" + localStorage.getItem('token')).then(function (response) {
                     console.log(response);
                     _this.fillData(response.data);
+                    _this.data_set = response.data;
                 }).catch(function (error) {
                     console.log(error);
                 });
@@ -44589,6 +44588,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }).then(function (response) {
                     console.log(response);
                     _this2.fillData(response.data);
+                    _this2.data_set = response.data;
                 }).catch(function (error) {
                     console.log(error);
                 });
@@ -44664,25 +44664,58 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    extends: __WEBPACK_IMPORTED_MODULE_0_vue_chartjs__["a" /* Doughnut */],
+    extends: __WEBPACK_IMPORTED_MODULE_0_vue_chartjs__["a" /* Bar */],
     mixins: [__WEBPACK_IMPORTED_MODULE_0_vue_chartjs__["b" /* mixins */].reactiveProp],
     data: function data() {
         return {
-            gradient: null,
-            gradient2: null
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        gridLines: {
+                            display: true
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        gridLines: {
+                            display: false
+                        }
+                    }]
+                },
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    enabled: true,
+                    mode: 'single',
+                    callbacks: {
+                        label: function label(tooltipItems, data) {
+                            return tooltipItems.yLabel;
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                height: 200
+            }
         };
     },
     mounted: function mounted() {
         // Graph Color
-        this.gradient = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450);
-        this.gradient.addColorStop(0, 'rgba(255, 0,0, 0.5)');
-        this.gradient.addColorStop(0.5, 'rgba(255, 0, 0, 0.25)');
-        this.gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
-
-        this.gradient2 = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450);
-        this.gradient2.addColorStop(0, 'rgba(0, 231, 255, 0.9)');
-        this.gradient2.addColorStop(0.5, 'rgba(0, 231, 255, 0.25)');
-        this.gradient2.addColorStop(1, 'rgba(0, 231, 255, 0)');
+        // this.gradient = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450)
+        // this.gradient.addColorStop(0, 'rgba(255, 0,0, 0.5)')
+        // this.gradient.addColorStop(0.5, 'rgba(255, 0, 0, 0.25)');
+        // this.gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+        //
+        // this.gradient2 = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450)
+        // this.gradient2.addColorStop(0, 'rgba(0, 231, 255, 0.9)')
+        // this.gradient2.addColorStop(0.5, 'rgba(0, 231, 255, 0.25)');
+        // this.gradient2.addColorStop(1, 'rgba(0, 231, 255, 0)');
 
         // Overwriting base render method with actual data.
         // this.renderChart({
@@ -44713,9 +44746,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* unused harmony export VueCharts */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_index_js__ = __webpack_require__(279);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__BaseCharts__ = __webpack_require__(280);
-/* unused harmony reexport Bar */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_1__BaseCharts__["a"]; });
 /* unused harmony reexport HorizontalBar */
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_1__BaseCharts__["c"]; });
+/* unused harmony reexport Doughnut */
 /* unused harmony reexport Line */
 /* unused harmony reexport Pie */
 /* unused harmony reexport PolarArea */
@@ -55507,7 +55540,7 @@ module.exports = {
 /* 325 */
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"graph\">\r\n    <div class=\"uk-container\">\r\n        <br/>\r\n        <ul class=\"uk-breadcrumb\">\r\n            <li><a href=\"../../..#/\">Home</a></li>\r\n            <!-- Current Page -->\r\n            <li><span>Graph Summary</span></li>\r\n        </ul>\r\n\r\n        <vk-grid>\r\n            <div class=\"uk-width-auto@s uk-visible@m\" id=\"wrap\">\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Start Date</label>\r\n                    <div class=\"uk-form-controls \">\r\n                        <input v-model=\"start_date\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\"\r\n                               type=\"date\" placeholder=\"\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">End Date</label>\r\n                    <div class=\"uk-form-controls \">\r\n                        <input v-model=\"end_date\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\"\r\n                               type=\"date\" placeholder=\"\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"uk-margin uk-text-center\">\r\n                    <button v-on:click=\"getSummary\" class=\"uk-button uk-button-primary\">SHOW</button>\r\n                </div>\r\n                <div class=\"uk-margin uk-text-center\">\r\n                    <button v-on:click=\"getAllSummary\" class=\"uk-button uk-button-secondary\">ALL</button>\r\n                </div>\r\n            </div>\r\n            <div class=\"uk-width-expand@m\">\r\n                <div class=\"Chart uk-text-center\">\r\n                    <h2><b>The graph showing the number of consulations group.</b></h2>\r\n                    <h5>Grouping by Non Communicable Disease</h5>\r\n                    <line-chart :chart-data=\"datacollection\"></line-chart>\r\n                </div>\r\n                <br/>\r\n                <!--<vk-grid gutter=\"small\" class=\"uk-child-width-expand@s uk-text-center card\">-->\r\n                <!--<div>-->\r\n                <!--&lt;!&ndash; total number of consult wait for reply&ndash;&gt;-->\r\n                <!--<div class=\"uk-background-muted uk-padding\">-->\r\n                <!--<span class=\"span-font-style\">Pending Consult</span>-->\r\n                <!--<h1><b>103</b></h1>-->\r\n                <!--</div>-->\r\n                <!--</div>-->\r\n                <!--<div>-->\r\n                <!--<div class=\"uk-background-primary uk-padding uk-light\">-->\r\n                <!--<span class=\"span-font-style\">Case Closed</span>-->\r\n                <!--<h1><b>10</b></h1>-->\r\n                <!--</div>-->\r\n                <!--</div>-->\r\n                <!--<div>-->\r\n                <!--<div class=\"uk-background-secondary uk-padding uk-light\">-->\r\n                <!--<span class=\"span-font-style\">Total consult</span>-->\r\n                <!--<h1><b>113</b></h1>-->\r\n                <!--</div>-->\r\n                <!--</div>-->\r\n                <!--</vk-grid>-->\r\n            </div>\r\n        </vk-grid>\r\n    </div>\r\n</div>";
+module.exports = "<div id=\"graph\">\r\n    <div class=\"uk-container\">\r\n        <br/>\r\n        <ul class=\"uk-breadcrumb\">\r\n            <li><a href=\"../../..#/\">Home</a></li>\r\n            <!-- Current Page -->\r\n            <li><span>Graph Summary</span></li>\r\n        </ul>\r\n\r\n        <vk-grid>\r\n            <div class=\"uk-width-auto@s uk-visible@m\" id=\"wrap\">\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">Start Date</label>\r\n                    <div class=\"uk-form-controls \">\r\n                        <input v-model=\"start_date\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\"\r\n                               type=\"date\" placeholder=\"\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"uk-margin\">\r\n                    <label class=\"uk-form-label uk-text-uppercase\" for=\"form-horizontal-text\">End Date</label>\r\n                    <div class=\"uk-form-controls \">\r\n                        <input v-model=\"end_date\" class=\"uk-input uk-form-width-medium\" id=\"form-horizontal-text\"\r\n                               type=\"date\" placeholder=\"\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"uk-margin uk-text-center\">\r\n                    <button v-on:click=\"getSummary\" class=\"uk-button uk-button-primary\">SHOW</button>\r\n                </div>\r\n                <div class=\"uk-margin uk-text-center\">\r\n                    <button v-on:click=\"getAllSummary\" class=\"uk-button uk-button-secondary\">ALL</button>\r\n                </div>\r\n            </div>\r\n            <div class=\"uk-width-expand@m\">\r\n                <div class=\"Chart uk-text-center\">\r\n                    <h2><b>The graph showing the number of consulations group.</b></h2>\r\n                    <h5>Grouping by Non Communicable Disease</h5>\r\n                    <line-chart :chart-data=\"datacollection\"></line-chart>\r\n                </div>\r\n                <br/>\r\n\r\n                <table>\r\n                    <thead>\r\n                    <tr>\r\n                        <td>Name</td>\r\n                        <td>Amount</td>\r\n                    </tr>\r\n                    </thead>\r\n                    <tbody>\r\n                    <tr v-if=\"data_set.length != 0\" v-for=\"item in data_set\">\r\n                        <td>{{item.disease_name}}</td>\r\n                        <td>{{item.amount}}</td>\r\n                    </tr>\r\n                    </tbody>\r\n                </table>\r\n\r\n                <!--<vk-grid gutter=\"small\" class=\"uk-child-width-expand@s uk-text-center card\">-->\r\n                <!--<div>-->\r\n                <!--&lt;!&ndash; total number of consult wait for reply&ndash;&gt;-->\r\n                <!--<div class=\"uk-background-muted uk-padding\">-->\r\n                <!--<span class=\"span-font-style\">Pending Consult</span>-->\r\n                <!--<h1><b>103</b></h1>-->\r\n                <!--</div>-->\r\n                <!--</div>-->\r\n                <!--<div>-->\r\n                <!--<div class=\"uk-background-primary uk-padding uk-light\">-->\r\n                <!--<span class=\"span-font-style\">Case Closed</span>-->\r\n                <!--<h1><b>10</b></h1>-->\r\n                <!--</div>-->\r\n                <!--</div>-->\r\n                <!--<div>-->\r\n                <!--<div class=\"uk-background-secondary uk-padding uk-light\">-->\r\n                <!--<span class=\"span-font-style\">Total consult</span>-->\r\n                <!--<h1><b>113</b></h1>-->\r\n                <!--</div>-->\r\n                <!--</div>-->\r\n                <!--</vk-grid>-->\r\n            </div>\r\n        </vk-grid>\r\n    </div>\r\n</div>";
 
 /***/ }),
 /* 326 */

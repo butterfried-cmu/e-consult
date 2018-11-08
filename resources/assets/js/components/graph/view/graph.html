@@ -37,6 +37,22 @@
                     <line-chart :chart-data="datacollection"></line-chart>
                 </div>
                 <br/>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <td>Name</td>
+                        <td>Amount</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-if="data_set.length != 0" v-for="item in data_set">
+                        <td>{{item.disease_name}}</td>
+                        <td>{{item.amount}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
                 <!--<vk-grid gutter="small" class="uk-child-width-expand@s uk-text-center card">-->
                 <!--<div>-->
                 <!--&lt;!&ndash; total number of consult wait for reply&ndash;&gt;-->
