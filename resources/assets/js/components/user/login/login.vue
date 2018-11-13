@@ -30,7 +30,22 @@
                     );
             }
         },
-        computed: {}
+        computed: {},
+        mounted() {
+            this.isMounted = true;
+            this.timer1 = setInterval(() => {
+                if (this.$store.getters['isLoggedIn']) {
+                    this.$router.push("/");
+                }
+                if (!this.isMounted) {
+                    clearInterval(this.timer1);
+                }
+            }, 500);
+        },
+        beforeDestroy() {
+            console.log('unmounted');
+            this.isMounted = false;
+        },
     }
 </script>
 

@@ -38,10 +38,12 @@
                     <li v-for="user in paginated('users')">
                         <vk-grid gutter="small" class="uk-child-width-expand@s">
                                 <div class="uk-child-width-auto@s">
-                                    <img class="uk-border-circle uk-child-width-1-5"
-                                         :src="'images/users/' + user.user.image_name" v-if="user.user.image_name">
-                                    <img class="uk-border-circle uk-child-width-1-5" src="user.png"
-                                         v-if="!user.user.image_name">
+                                    <div class="uk-width-medium uk-align-center">
+                                        <img class="uk-align-center"
+                                             :src="'images/users/' + user.user.image_name" v-if="user.user.image_name" height="120" width="120">
+                                        <img class="uk-align-center" src="user.png"
+                                             v-if="!user.user.image_name" height="120" width="120">
+                                    </div>
                                 </div>
                                 <div class="uk-child-width-expand@s">
                                     <span class="uk-text-bold">{{ user.user.name_title }} {{ user.user.first_name }} {{ user.user.last_name }}</span><br>
