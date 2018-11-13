@@ -233,7 +233,7 @@
 
             <!-- center column -->
             <div class="uk-width-expand@m">
-                <div class="scrollbox">
+                <div class="scrollbox column-2">
                     <ol class="chat">
                         <li v-for="message in messages"
                             v-bind:class="{ self: isSelf(message.user_id), 'other': !isSelf(message.user_id) }">
@@ -245,7 +245,7 @@
                         </li>
                     </ol>
                 </div>
-                <div class="centered" v-if="isPending()">
+                <div class="centered sendMessage-wrap" v-if="isPending()">
                     <textarea v-model="message" v-on:keyup.enter="sendMessage" class="uk-textarea center-block chatbox" id="message-box" rows="2" type="text" placeholder="Type here"></textarea>
                     <button v-on:click="sendMessage" class="uk-button uk-button-primary" id="send-btn">Send</button>
                 </div>

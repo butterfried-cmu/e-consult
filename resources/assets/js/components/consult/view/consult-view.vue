@@ -72,6 +72,9 @@
     }
 </script>
 <style scoped>
-
+.sticky {
+    position: sticky;
+    top: 120px;
+}
 </style>
 
