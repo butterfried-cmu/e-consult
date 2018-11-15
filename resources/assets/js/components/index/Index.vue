@@ -111,7 +111,7 @@
     }
 
     th {
-        font-size: large;
+        font-size: inherit;
     }
 
     .title {

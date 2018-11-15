@@ -24,12 +24,13 @@
 </script>
 
 <style>
-header,#consult-add,#graph,#consult-view,#message,#register,#user-list,#edit,#profile,#reply {
-    margin-top: 80px;
-}
-
-.sticky {
-    top: 120px!important;
-    position: sticky;
+@media (min-width:769px) {
+    #consult-add,#graph,#consult-view,#message,#register,#user-list,#edit,#profile,#reply {
+        margin-top: 80px;
+    }
+    .sticky {
+        top: 120px!important;
+        position: sticky;
+    }
 }
 </style>

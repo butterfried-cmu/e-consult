@@ -52,9 +52,6 @@ export default {
 }
 </script>
 <style scoped>
-#personalinfo,#medicalinfo,#recordinfo,#consultinfo {
-    padding: 2%;
-}
 .unit input::-webkit-input-placeholder {
   /* WebKit browsers */
   text-align: right;
@@ -74,11 +71,16 @@ export default {
 .unit input::placeholder {
   text-align: right;
 }
-
-.sticky {
-  position: -webkit-sticky; /* Safari */
-  position: sticky;
-  top: 0;
+@media (min-width:769px) {
+    .sticky {
+        position: -webkit-sticky; /* Safari */
+        position: sticky;
+        top: 0;
+    }
+    #personalinfo,#medicalinfo,#recordinfo,#consultinfo {
+        padding: 2%;
+    }
 }
+
 </style>
 

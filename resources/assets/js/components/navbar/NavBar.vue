@@ -34,17 +34,39 @@
 </script>
 
 <style scoped>
+    .uk-button-default, .uk-button-default:focus, .uk-button-default:hover {
+        border: none;
+        padding: 0 15px
+    } 
+    @media (max-width: 768px) {
+        .nav-bg {
+            display: none;
+        }
+    }
+    @media (min-width:769px) {
+        .nav-medium {
+            display: none;
+        }
+    }
     .nav-bg {
-        background-color: #00203c!important;
+            background-color: #00203c!important;
             position: fixed;
             width: 100%;
             z-index: 100;
+            top: 0;
+        }
+    .nav-medium {
+        padding: 10px 0;
+        background-color: #00203c!important;
     }
-    .uk-navbar-nav>li>a, .nav-bg a {
-        color: white;
+    .nav-medium svg {
+        fill:white;
     }
 
-    .nav-bg a:hover {
+    .uk-navbar-nav>li>a, .nav-bg a, .toggle a{
+            color: white;
+    }
+    .nav-bg a:hover , .toggle a:hover{
         color: #6f8ea9;
         text-decoration: none;
     }

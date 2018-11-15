@@ -571,6 +571,15 @@
         }
     }
 
+    @media (max-width: 768px){
+        #consultinfo, .wrap, .vertical-divider{
+            display: none;
+        }
+    }
+    @media (min-width: 769px){
+        
+    }
+
     #send-btn {
         margin-top: 7px;
     }

@@ -1,4 +1,4 @@
-<div id="navbar" class="uk-overflow-auto">
+<div id="navbar" class="uk-overflow-visible">
     <vk-navbar v-if="isLoggedIn" class="uk-navbar nav-bg">
         <vk-navbar-nav>
             <vk-navbar-nav-item icon="home" title="MED E-CONSULTs" href="../..#/"></vk-navbar-nav-item>
@@ -27,7 +27,26 @@
             </vk-navbar-item>
             <vk-navbar-nav-item title="logout" v-on:click="logout">
             </vk-navbar-nav-item>
-            <!--<vk-navbar-nav-item icon="cog"></vk-navbar-nav-item>-->
         </vk-navbar-nav>
+    </vk-navbar>
+
+    <vk-navbar class="nav-medium">
+        <vk-button class="toggle"><vk-icons-menu></vk-icons-menu>&nbsp;&nbsp;<a href="../..#/">Med E-CONSULTs</a></vk-button>
+            <vk-dropdown>
+                <vk-nav-dropdown>
+                    <vk-nav-item-header title="Authentication" v-if="isRole(1)"></vk-nav-item-header>
+                    <vk-nav-item title="Add User" href="../..#/add" v-if="isRole(1)"></vk-nav-item>
+                    <vk-nav-item title="User List" href="../..#/users" v-if="isRole(1)"></vk-nav-item>
+                    
+                    <vk-nav-item-header title="Consult"></vk-nav-item-header>
+                    
+                    <vk-nav-item title="Create Consult" v-if="isRole(3)" href="../..#/consults/add"></vk-nav-item>
+                    <vk-nav-item title="Search Consult" v-if="isRole(1)|isRole(2)|isRole(3)" href="../..#/consults"></vk-nav-item>
+                    <vk-nav-item title="Summary graph" href="../..#/graph" ></vk-nav-item>
+
+                    <vk-nav-item-divider></vk-nav-item-divider>
+                    <vk-nav-item-header title="Logout" v-on:click="logout"></vk-nav-item-header>
+                </vk-nav-dropdown>
+            </vk-dropdown>
     </vk-navbar>
 </div>

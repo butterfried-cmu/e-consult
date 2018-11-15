@@ -3,12 +3,13 @@
         <vk-grid class="uk-grid-small">
             <!-- left column -->
             <div class="uk-width-1-4@m crop scrollbox">
-                <br/>
-                <div>
+                
+                <div class="wrap">
+                    <br/>
                     <p class="uk-label uk-label-warning sticky">Consult ID {{currentConsult.consult_id}}</p>
+                    <br/>
                 </div>
                 <!-- Consult Request -->
-                <br/>
                 <div id="consultinfo">
                     <div class="uk-text-left">
                         <h2 class="uk-heading-line"><span>Consult Request</span></h2>
@@ -39,7 +40,7 @@
                     </div>
                 </div>
                 <br/>
-                <vk-offcanvas-content>
+                <vk-offcanvas-content class="wrap">
                         <vk-button @click="show = !show" class="uk-align-center">Click to view Information</vk-button>
                         <vk-offcanvas :show.sync="show">
                                 <vk-offcanvas-close @click="show = false"></vk-offcanvas-close>
